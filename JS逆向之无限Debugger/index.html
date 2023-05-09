@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之无限Debugger | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  关于无限debugger在进入无限debugger之前先看下三个问题。 在什么情况下会遇到debugger在分析网络请求，查看元素的事件监听器，跟踪JS等需求下，第一步就是打开浏览器的开发者工具，而打开浏览器工具就可能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之无限Debugger">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  关于无限debugger在进入无限debugger之前先看下三个问题。 在什么情况下会遇到debugger在分析网络请求，查看元素的事件监听器，跟踪JS等需求下，第一步就是打开浏览器的开发者工具，而打开浏览器工具就可能">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203011429562.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203011437352.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203011451282.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203011454862.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021440132.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021518960.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021521617.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021524337.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021542199.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021544313.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021545551.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021550437.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021551951.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021552862.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021603310.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021603182.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021721122.jpg?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-02-28T02:12:45.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:46.806Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203011429562.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之无限Debugger</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之无限Debugger</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-02-28T02:12:45.000Z" itemprop="datePublished" class="page-time">
+  2022-02-28
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%85%B3%E4%BA%8E%E6%97%A0%E9%99%90debugger"><span class="post-toc-number">1.</span> <span class="post-toc-text">关于无限debugger</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%9C%A8%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E4%BC%9A%E9%81%87%E5%88%B0debugger"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">在什么情况下会遇到debugger</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%8D%E7%88%AC%E8%99%AB%E4%BC%9A%E7%94%A8%E5%88%B0debugger"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">为什么反爬虫会用到debugger</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#debugger%E5%8F%8D%E7%88%AC%E7%9A%84%E4%BC%98%E5%8A%BF%E5%9C%A8%E5%93%AA"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">debugger反爬的优势在哪</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%B8%B8%E8%A7%81%E6%97%A0%E9%99%90debugger%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="post-toc-number">2.</span> <span class="post-toc-text">常见无限debugger及解决方案</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%A4%84%E7%90%86%E6%97%A0%E9%99%90debugger%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F"><span class="post-toc-number">3.</span> <span class="post-toc-text">处理无限debugger的几种方式</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90"><span class="post-toc-number">4.</span> <span class="post-toc-text">案例分析</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%9F%90%E6%B0%94%E7%BD%91"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">某气网</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%8E%A8%E8%8D%90%E4%B8%80%E4%BA%9B%E7%BB%83%E6%89%8B%E7%9A%84%E6%97%A0%E9%99%90debugger%E7%BD%91%E7%AB%99"><span class="post-toc-number">4.2.</span> <span class="post-toc-text">推荐一些练手的无限debugger网站</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">5.</span> <span class="post-toc-text">总结</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向之无限Debugger"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之无限Debugger</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-02-28 10:12:45" datetime="2022-02-28T02:12:45.000Z"  itemprop="datePublished">2022-02-28</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p>免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
+</blockquote>
+<h4 id="关于无限debugger"><a href="#关于无限debugger" class="headerlink" title="关于无限debugger"></a>关于无限debugger</h4><p>在进入无限debugger之前先看下三个问题。</p>
+<h5 id="在什么情况下会遇到debugger"><a href="#在什么情况下会遇到debugger" class="headerlink" title="在什么情况下会遇到debugger"></a>在什么情况下会遇到debugger</h5><p>在分析网络请求，查看元素的事件监听器，跟踪JS等需求下，第一步就是打开浏览器的开发者工具，而打开浏览器工具就可能会碰到无限debugger死循环，或者在我们的调试过程中也可能出现无限debugger。</p>
+<h5 id="为什么反爬虫会用到debugger"><a href="#为什么反爬虫会用到debugger" class="headerlink" title="为什么反爬虫会用到debugger"></a>为什么反爬虫会用到debugger</h5><p>因为分析代码逻辑，调试JS代码是JS逆向的必要手段，而分析调试则需要使用开发者工具。然后就可以在关键的地方设防，精准的设置第一道防线。</p>
+<h5 id="debugger反爬的优势在哪"><a href="#debugger反爬的优势在哪" class="headerlink" title="debugger反爬的优势在哪"></a>debugger反爬的优势在哪</h5><ol>
+<li><p>实现比较简单，前端工程师可以不会写那种复杂的反人类的反爬代码，但是写个无限debugger是个基本操作。</p>
+</li>
+<li><p>效果比较明显，如果第一步都没法通过的话，就不会有下一步了。</p>
+</li>
+<li><p>一定程度上可以提高代码的安全性，可以阻止我们调试分析代码逻辑。</p>
+</li>
+</ol>
+<p>接下来正式进入无限debugger</p>
+<h4 id="常见无限debugger及解决方案"><a href="#常见无限debugger及解决方案" class="headerlink" title="常见无限debugger及解决方案"></a>常见无限debugger及解决方案</h4><ol>
+<li>按代码逻辑划分</li>
+</ol>
+<ul>
+<li>无限循环，比如for&#x2F;while循环里面包含debugger关键字</li>
+<li>无限递归，一个方法包含debugger关键字，并且递归调用自己</li>
+<li>两个方法互调，两个方法彼此都包含debugger关键字，然后彼此调用彼此。</li>
+<li>定时器，使用定时器执行一个方法，方法里面包含debugger关键字，就会定时执行debugger。</li>
+</ul>
+<ol start="2">
+<li>按是否混淆划分</li>
+</ol>
+<ul>
+<li>直接在方法中使用debugger关键字或者通过eval执行，比如eval(“debugger”)</li>
+<li>重度混淆，通过对debugger字符串进行混淆，然后使用eval执行，从而在全局搜索中搜索不到debugger关键字。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Function</span>(<span class="string">&quot;debugger&quot;</span>).<span class="title function_">call</span>()/<span class="title function_">apply</span>() 或赋值 <span class="title function_">bind</span>()</span><br><span class="line">xxx.<span class="title function_">constructor</span>(<span class="params"><span class="string">&quot;debugger&quot;</span></span>).<span class="title function_">call</span>(<span class="string">&quot;action&quot;</span>)</span><br><span class="line"><span class="title class_">Fuction</span>.<span class="title function_">constructor</span>(<span class="params"><span class="string">&quot;debugger&quot;</span></span>).<span class="title function_">call</span>(<span class="string">&quot;action&quot;</span>)</span><br><span class="line">(<span class="keyword">function</span>(<span class="params"></span>)&#123;<span class="keyword">return</span> !{% image <span '];&#125;[<span class="string">&quot;constructor&quot;</span>](<span class="string">&quot;debugger&quot;</span>)[<span class="string">&quot;call&quot;</span>' 'class=string>&quot;action&quot;</span>)' %}</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="3">
+<li>其它的方式</li>
+</ol>
+<p>debugger关键字贯穿整个JS文件。</p>
+<h4 id="处理无限debugger的几种方式"><a href="#处理无限debugger的几种方式" class="headerlink" title="处理无限debugger的几种方式"></a>处理无限debugger的几种方式</h4><ol>
+<li>去除断点</li>
+</ol>
+<p>这种情况针对debugger关键字比较少，可以选中debugger关键字的行号，鼠标右键添加conditional breakpoint，即添加条件断点，然后条件设置为false；也可以鼠标右键设置never pause here，即永远不会在此行暂停，这样也可以跳过这个debugger。</p>
+<ol start="2">
+<li>替换debugger关键字</li>
+</ol>
+<p>如果debugger关键字非常多，贯穿多个JS文件，这时候一个个手动去除断点就显得非常麻烦了，这时候我们考虑保存相应的JS文件到本地，然后全局替换里面的debugger关键字，比如说把debugger关键字替换为false或者替换成debugger字符串，然后通过<a target="_blank" rel="noopener" href="http://blog.heshipeng.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/">JS逆向之Chrome浏览器工具你知多少？</a>介绍的override面板，把相应的请求代理到本地文件，或者说通过<a target="_blank" rel="noopener" href="http://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E4%B9%8BCharles%E5%B7%A5%E5%85%B7%E7%AF%87/">JS逆向之Charles工具篇</a>介绍的Chares，利用其反向代理，也可以达到同样的目的，这样就可以屏蔽debugger关键字了。</p>
+<ol start="3">
+<li>hook某些方法</li>
+</ol>
+<p>手动置空包含debugger关键字的方法或者重写这个方法，这样做的前提是这个方法里面不包含有效的业务逻辑，不然虽然去除了无限debugger，但是相应的业务逻辑被修改了，导致我们无法调试正确的结果。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxx = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h4><h5 id="某气网"><a href="#某气网" class="headerlink" title="某气网"></a>某气网</h5><p>网址：aHR0cHM6Ly93d3cuYXFpc3R1ZHkuY24vaGlzdG9yeWRhdGEvZGF5ZGF0YS5waHA&#x2F;Y2l0eT0lRTYlOUQlQUQlRTUlQjclOUUmbW9udGg9MjAyMjAy</p>
+<p>打开浏览器输入网址然后本打算按照往常调出开发者工具，结果</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203011429562.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220301142911458" title="">
+                </div>
+                <div class="image-caption">image-20220301142911458</div>
+            </figure>
+
+<p>😮有意思，第一次遇到这样的网站，google了下遇到这种情况，首先打开一个空的tab，调出开发者工具，然后再输入网址，发现成功断上了。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203011437352.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220301143747259" title="">
+                </div>
+                <div class="image-caption">image-20220301143747259</div>
+            </figure>
+
+<p>这里就出现了一个无限debugger，右键第三行然后选择Never pause here，接着往下调试：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203011451282.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220301145120187" title="">
+                </div>
+                <div class="image-caption">image-20220301145120187</div>
+            </figure>
+
+<p>又出现了一个无限debugger，递归调用自己。我们在console控制台，把txsdefwsw这个方法置空：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">txsdefwsw = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接着往下调试，接着又遇到一系列的检测：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203011454862.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220301145404806" title="">
+                </div>
+                <div class="image-caption">image-20220301145404806</div>
+            </figure>
+
+<p>我们依次把方法重写：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">endebug = <span class="keyword">function</span>(<span class="params">off, code</span>) &#123;&#125; </span><br><span class="line"><span class="variable language_">document</span>.<span class="property">onkeydown</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">oncontextmenu</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接着往下调试，会发现有一段代码通过检测窗口的outerHeight与innerHeight的差值判断是否打开了开发者工具：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021440132.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302144052945" title="">
+                </div>
+                <div class="image-caption">image-20220302144052945</div>
+            </figure>
+
+<p>这里我们把window.innerHeight设置为1200。上边还有一个检测时间差值的我们重写这个getTime方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>.<span class="property">innerHeight</span> = <span class="number">1400</span></span><br><span class="line"><span class="title class_">Date</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">getTime</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123; <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>综合以上的分析，我们可以利用<a target="_blank" rel="noopener" href="http://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E4%B9%8BTampermonkey%E5%B7%A5%E5%85%B7%E7%AF%87/">JS逆向之Tampermonkey工具篇</a>介绍的油猴插件，更加方便的进行代码分析，油猴插件脚本内容如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021518960.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302151850796" title="">
+                </div>
+                <div class="image-caption">image-20220302151850796</div>
+            </figure>
+
+<p>解释下上面for循环代码的含义，由于前面我们提到的无论是txsdefwsw还是endebug方法，都是通过匿名定时器来实现无限debugger的，<strong>匿名定时器无法根据定时器的名字来取消定时器，但是定时器的id基本都是1～1000，所以我们穷举这1000个id暴力取消这些匿名定时器</strong>。这不妨也是一种小技巧。</p>
+<p>启用之后，我们刷新页面，就可以看到页面上已经加载出来数据了：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021521617.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302152127528" title="">
+                </div>
+                <div class="image-caption">image-20220302152127528</div>
+            </figure>
+
+<p>我们再来分析网络请求，看看能否抓取到数据包。没有发现XHR请求。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021524337.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302152404276" title="">
+                </div>
+                <div class="image-caption">image-20220302152404276</div>
+            </figure>
+
+<p>我们找到一个daydata.php的请求，然后里面有2个通过eval计算字符串的代码，如上图。我们在当前html页面并没有找到dUHTtbN9Om和dwDMxkUh0FG方法，那就很明显这两个方法在其它的JS文件里面，我们查看下这个html页面看看它引入了哪些JS文件，找到一个可疑的js文件de8qI5LXFNehN.min.js，我们找到这个文件，查看其内容：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021542199.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302154247031" title="">
+                </div>
+                <div class="image-caption">image-20220302154247031</div>
+            </figure>
+
+<p>然后用eval执行，得到文件内容如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021544313.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302154446239" title="">
+                </div>
+                <div class="image-caption">image-20220302154446239</div>
+            </figure>
+
+<p>我们阅读下代码，发现以下几点：</p>
+<ol>
+<li>里面有一个Ajax请求是获取数据的。</li>
+</ol>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021545551.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302154557476" title="">
+                </div>
+                <div class="image-caption">image-20220302154557476</div>
+            </figure>
+
+<ol start="2">
+<li>有一段读取本地缓存的逻辑，如果读取本地缓存没有数据然后再发Ajax请求去获取数据：</li>
+</ol>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021550437.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302155002354" title="">
+                </div>
+                <div class="image-caption">image-20220302155002354</div>
+            </figure>
+
+<p>这也就解释了之前为啥没有XHR请求，只是有一个php请求，我们删除localStorage测试下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021551951.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302155104877" title="">
+                </div>
+                <div class="image-caption">image-20220302155104877</div>
+            </figure>
+
+<p>然后重新刷新页面，果然看到了XHR请求：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021552862.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302155235769" title="">
+                </div>
+                <div class="image-caption">image-20220302155235769</div>
+            </figure>
+
+<ol start="3">
+<li>前面找不到的dUHTtbN9Om和dwDMxkUh0FG方法，在这个文件中找到了。我们利用JS文件中找到的这2个方法，解开php中两串神秘的代码：</li>
+</ol>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021603310.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302160300199" title="">
+                </div>
+                <div class="image-caption">image-20220302160300199</div>
+            </figure>
+
+<p>第一段是反爬检测的代码。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021603182.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220302160331099" title="">
+                </div>
+                <div class="image-caption">image-20220302160331099</div>
+            </figure>
+
+<p>第二段是数据解密的代码。</p>
+<p>😶‍🌫️分析了这么多，是不是感觉有一点混乱，那我们理理头绪，看看这个JS文件与PHP文件的关系。数据获取在JS文件里面，先读本地缓存，如果有的话取本地缓存数据；如果没有的话，发送Ajax请求。无论是Ajax请求来的还是本地读取的数据，都是加密的，解密的算法放在JS文件里面，然后渲染到PHP页面上去，整个JS文件的入口在PHP文件里面。总结下来就是JS文件包含数据的加密(Ajax参数)，解密(Ajax返回数据)和发送请求代码，PHP里则是存放JS的入口方法。</p>
+<p>在分析的过程中有一点需要注意，这个网站大概几分钟会重新加载一次dom，这样混淆的代码名字又会变了，所以调试的时候将文件保存在本地，然后再进行分析。</p>
+<p>最后说一下整个数据抓取的思路，首先请求php文件，然后通过正则匹配出php文件里面上面提到的那个加密解密的JS，执行JS里面的eval，得到实时的加密解密代码，然后用解密的代码去解密php文件里第二段的加密数据即可。</p>
+<h5 id="推荐一些练手的无限debugger网站"><a href="#推荐一些练手的无限debugger网站" class="headerlink" title="推荐一些练手的无限debugger网站"></a>推荐一些练手的无限debugger网站</h5><ol>
+<li>aHR0cHM6Ly93d3cubm1wYS5nb3YuY24v</li>
+<li>网址：aHR0cDovL3p3Zncuc2FuLWhlLmdvdi5jbi9pY2l0eS9pY2l0eS9ndWVzdGJvb2svaW50ZXJhY3Q&#x3D;</li>
+</ol>
+<p>​       接口：aHR0cDovL3p3Zncuc2FuLWhlLmdvdi5jbi9pY2l0eS9hcGktdjIvYXBwLmljaXR5Lmd1ZXN0Ym9vay5Xcml0ZUNtZC9nZXRMaXN0</p>
+<ol start="3">
+<li>aHR0cHM6Ly9iei56enptaC5jbi9pbmRleA&#x3D;&#x3D;</li>
+</ol>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>本文介绍了常见的几种无限debugger的形式以及对应的几种解决方案。然后通过一个相对复杂的例子做了一个演示，这个网站通过检测浏览器高度，代码执行延迟来反调试，仔细阅读相关的代码我们还可以找到其对无头浏览器也做了检测，这样如果想用playwright之类的浏览器工具的话可能也会被检测到，而且请求的参数以及返回的数据也是做了动态的加密，总体而言反爬还是比较严的。本文的相关代码已经上传，关注公众号，回复关键字“代码 某气网”，即可获取案例完整代码。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203021721122.jpg?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="qrcode_for_gh_509fdefd3c81_258" title="">
+                </div>
+                <div class="image-caption">qrcode_for_gh_509fdefd3c81_258</div>
+            </figure>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:46.806Z" itemprop="dateUpdated">2023-05-09 18:16:46</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/&title=《JS逆向之无限Debugger》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/&title=《JS逆向之无限Debugger》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之无限Debugger》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向之快速定位关键代码</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8BTampermonkey%E5%B7%A5%E5%85%B7%E7%AF%87/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向之Tampermonkey工具篇</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/&title=《JS逆向之无限Debugger》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/&title=《JS逆向之无限Debugger》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之无限Debugger》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACo0lEQVR42u3aS27jMBAFwNz/0gkwe8uvf4kHKK0Gsi2xOADJvO6vr/j6/ne9uv98JU9Lvv/q04ULDw8PrzX058E933n1aY7J7+RjxsPDw7vmPS/f+WsSUv7khPrGgoeHh/envB6gN0HV6cPDw8P7v3jP3+zdx8PDw/t8XjVcyOParcP0edaCh4eHV6tJFQpgn/Dvw/oeHh4e3qCqPlnW57+ajxYPDw/vgtcLVfPDbnXd7pXB3mweeHh4eMe8vGVqErNWpyMJIwqdtnh4eHhjXvKnfqHgNHhaXhKrNmPh4eHhXfN6ZbDe1CThxVqVDw8PD++MN4keqgNK4oleMIGHh4d3wUuOpHlUkfz2eabzADdqLMDDw8P7FV41Wp2UuCbTUYhu8fDw8FZ5kwN0b+i9yGOyeeDh4eHd8eZLf+/A3dswougWDw8P74A3WeLzZXr3yYVDNh4eHt6v8PJWqur3e4nBKErGw8PDO+DN2wJ2W6nyMRSarvDw8PCOebt3rreZaGPDw8PDW+VtLd/VstlWY8GbseHh4eEd8JLB9ZpH51tCfmSP4g88PDy8VV4emObFpyqgF+BG48HDw8M74yXh7CTendSkek/Dw8PDu+BVi09bi3tvgyk/AQ8PD++AV40JJkFqPhF5oFxu88LDw8Mb85JD8CQmuA4j3mwJeHh4eAe8fN/otQtUm6gKO1hLgYeHhzfnfRev6ut7k1UNi8tZCx4eHt6AN9lJJg2suy0I840EDw8Pr8pLNoNeM+u8faracFBoIMDDw8Mb85L4davJIP9Vdet6mVXj4eHhfQCvusRXy2NJJHG4MeDh4eEt8XrH63m8O/oUDw8P74zXOzRXD9/5e3ub0ELWgoeHh1d7Y1QAy5ulqqWv/Hhd/Q/Aw8PDW+L9AGTy+T7uUychAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

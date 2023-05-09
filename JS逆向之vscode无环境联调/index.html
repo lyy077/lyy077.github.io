@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之vscode无环境联调 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="为啥使用VSCodeVSCode强大，支持多种语言。在JS逆向项目中，会涉及到Python和JS代码，如果Python使用Pycharm调试，JS使用WebStorm或者Hbuilder进行调试，那么需要在多个开发者工具中切换，比较麻烦，VSCode的多语言支持完美的解决这个麻烦事。此外，最重要的是VSCode可以配置JS代码的无环境联调，即可以与浏览器的dev-tools工具交互实现在VSCod">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之vscode无环境联调">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="为啥使用VSCodeVSCode强大，支持多种语言。在JS逆向项目中，会涉及到Python和JS代码，如果Python使用Pycharm调试，JS使用WebStorm或者Hbuilder进行调试，那么需要在多个开发者工具中切换，比较麻烦，VSCode的多语言支持完美的解决这个麻烦事。此外，最重要的是VSCode可以配置JS代码的无环境联调，即可以与浏览器的dev-tools工具交互实现在VSCod">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204092230545.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204092352976.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204100006494.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204092354173.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204100014508.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204100017478.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204100018481.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204100027373.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204181659615.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204181710387.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204181714424.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204181716202.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204181717469.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-04-09T14:12:32.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:28.802Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204092230545.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之vscode无环境联调</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之vscode无环境联调</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-04-09T14:12:32.000Z" itemprop="datePublished" class="page-time">
+  2022-04-09
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E4%B8%BA%E5%95%A5%E4%BD%BF%E7%94%A8VSCode"><span class="post-toc-number">1.</span> <span class="post-toc-text">为啥使用VSCode</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%AE%89%E8%A3%85VSCode"><span class="post-toc-number">2.</span> <span class="post-toc-text">安装VSCode</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%85%8D%E7%BD%AE%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83"><span class="post-toc-number">3.</span> <span class="post-toc-text">配置无环境联调</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%94%A8VS-Code%E8%BF%9B%E8%A1%8C%E8%B0%83%E8%AF%95"><span class="post-toc-number">4.</span> <span class="post-toc-text">用VS Code进行调试</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向之vscode无环境联调"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之vscode无环境联调</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-04-09 22:12:32" datetime="2022-04-09T14:12:32.000Z"  itemprop="datePublished">2022-04-09</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h5 id="为啥使用VSCode"><a href="#为啥使用VSCode" class="headerlink" title="为啥使用VSCode"></a>为啥使用VSCode</h5><p>VSCode强大，支持多种语言。在JS逆向项目中，会涉及到Python和JS代码，如果Python使用Pycharm调试，JS使用WebStorm或者Hbuilder进行调试，那么需要在多个开发者工具中切换，比较麻烦，VSCode的多语言支持完美的解决这个麻烦事。此外，最重要的是VSCode可以配置JS代码的无环境联调，即可以与浏览器的dev-tools工具交互实现在VSCode中开发，浏览器工具中调试，这也是其它工具没有的。</p>
+<h5 id="安装VSCode"><a href="#安装VSCode" class="headerlink" title="安装VSCode"></a>安装VSCode</h5><p>VSCode下载地址：<a target="_blank" rel="noopener" href="https://code.visualstudio.com/">https://code.visualstudio.com/</a></p>
+<p>安装好VSCode之后，可以配置语言为中文。具体方法是，点击下图的图标，选择Extension，然后在搜索中输入”Chinese”，选择简体中文，然后重启浏览器即可。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204092230545.png" alt="image-20220409223010250" title="">
+                </div>
+                <div class="image-caption">image-20220409223010250</div>
+            </figure>
+
+
+
+<h5 id="配置无环境联调"><a href="#配置无环境联调" class="headerlink" title="配置无环境联调"></a>配置无环境联调</h5><p>首先安装好NodeJS环境。</p>
+<p>然后打开工作目录，选择任意一个JS文件，选择运行-&gt;启动调试就可以运行或者debug JS代码了。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204092352976.png" alt="image-20220409235241659" title="">
+                </div>
+                <div class="image-caption">image-20220409235241659</div>
+            </figure>
+
+
+
+<p>然后通过命令<code>npm install -g node-inspect</code>全局安装依赖包，如果是Linux&#x2F;Mac系统，需要sudo权限。</p>
+<p>输入命令<code>node-inspect</code>，查看node-inspect是否安装成功：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204100006494.png" alt="image-20220410000634331" title="">
+                </div>
+                <div class="image-caption">image-20220410000634331</div>
+            </figure>
+
+
+
+<p>我们选择运行-&gt;打开配置：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204092354173.png" alt="image-20220409235420113" title="">
+                </div>
+                <div class="image-caption">image-20220409235420113</div>
+            </figure>
+
+<p>出现一个新的文件launch.json文件，这个文件用来配置项目的运行环境，比如执行脚本，解释器，命令行参数等等。修改这个配置文件，内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="comment">// 使用 IntelliSense 了解相关属性。 </span></span><br><span class="line">    <span class="comment">// 悬停以查看现有属性的描述。</span></span><br><span class="line">    <span class="comment">// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.2.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;node&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;request&quot;</span><span class="punctuation">:</span> <span class="string">&quot;launch&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;启动程序&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;skipFiles&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="string">&quot;&lt;node_internals&gt;/**&quot;</span></span><br><span class="line">            <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;program&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;/aerfaying.js&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;node&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;request&quot;</span><span class="punctuation">:</span> <span class="string">&quot;launch&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;无环境浏览器&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;skipFiles&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="string">&quot;&lt;node_internals&gt;/**&quot;</span></span><br><span class="line">            <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;runtimeExecutable&quot;</span><span class="punctuation">:</span> <span class="string">&quot;node-inspect&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;program&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;/aerfaying.js&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>把之前的运行环境改了个名，叫做启动程序，然后新建了一个环境，叫做无环境浏览器，这个环境除了名字之外唯一不同的是增加了一个runtimeExecutable，把我们上边安装的node-inspect包给引入进来。</p>
+<p>保存好配置文件之后，这个时候我们左上角就出现2个环境供我们选择了：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204100014508.png" alt="image-20220410001442317" title="">
+                </div>
+                <div class="image-caption">image-20220410001442317</div>
+            </figure>
+
+
+
+<p>我们点击无环境浏览器，就会启动无环境浏览器模式下的调试模式。打开任意一个Chrome浏览器窗口，打开开发者工具，在开发者工具的Elements面板左边出现一个绿色的图标，如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204100017478.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410001701254" title="">
+                </div>
+                <div class="image-caption">image-20220410001701254</div>
+            </figure>
+
+<p>表示开启了VSCode与浏览器的联调模式，如果这个图标为灰色，表示关闭了联调模式。</p>
+<p>点击这个图标，就弹出了DevTools：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204100018481.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410001856382" title="">
+                </div>
+                <div class="image-caption">image-20220410001856382</div>
+            </figure>
+
+
+
+<p>可以看到已经帮我们把刚才调试的那个JS文件的内容自动导入，同时开启了debug模式。为什么叫做无环境浏览器？就是这个DevTools跟我们在浏览器中调试几乎是一模一样的，只不过一些浏览器的环境变量没有，比如window，document等等。这样既可以继续使用浏览器进行调试，又可以没有window&#x2F;document等环境，模拟真实独立的开发环境，方便我们补环境。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204100027373.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410002734125" title="">
+                </div>
+                <div class="image-caption">image-20220410002734125</div>
+            </figure>
+
+
+
+<h5 id="用VS-Code进行调试"><a href="#用VS-Code进行调试" class="headerlink" title="用VS Code进行调试"></a>用VS Code进行调试</h5><p>首先看下左下角的这2个选项，如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204181659615.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220418165953520" title="">
+                </div>
+                <div class="image-caption">image-20220418165953520</div>
+            </figure>
+
+
+
+<p>Caught Exception指的是对于加了try catch的代码块，如果执行了catch逻辑(即代码抛了异常)，依然在抛异常的地方断住。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204181710387.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220418171006294" title="">
+                </div>
+                <div class="image-caption">image-20220418171006294</div>
+            </figure>
+
+
+
+<p>Uncaught Exceptions指的是忽略try catch中的异常，在try 之外的代码块报错，才会断住。如图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204181714424.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220418171418283" title="">
+                </div>
+                <div class="image-caption">image-20220418171418283</div>
+            </figure>
+
+
+
+<p>一般会勾选Uncaught Exceptions，因为try中的代码抛异常属于正常逻辑。如果这俩选项都没勾选，也没有自定义断点，程序就会直接运行完，并不会断住。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204181716202.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220418171636116" title="">
+                </div>
+                <div class="image-caption">image-20220418171636116</div>
+            </figure>
+
+
+
+<p>再说说调试用的的一组按钮，如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204181717469.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220418171746410" title="">
+                </div>
+                <div class="image-caption">image-20220418171746410</div>
+            </figure>
+
+<p>第一个按钮，表示继续，从当前停顿的地方一直执行到下一个断点，如果没有下一个断点，则按照程序的正常执行顺序，顺序执行一步。</p>
+<p>第二个按钮，表示单步执行，从当前位置开始，顺序执行一步，如果遇到函数调用，不进入函数内部顺序执行。</p>
+<p>第三个按钮，表示单步执行，从当前位置开始，顺序执行一步，如果遇到函数调用，进入到函数内部单步执行。</p>
+<p>第四个按钮，表示单步执行，如果当前调试是在函数内部单步执行，则跳过函数剩余的执行代码，回到函数调用处，往下执行一步。</p>
+<p>第五个按钮，重启程序。</p>
+<p>第六个按钮，停止。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:28.802Z" itemprop="dateUpdated">2023-05-09 18:16:28</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/&title=《JS逆向之vscode无环境联调》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/&title=《JS逆向之vscode无环境联调》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之vscode无环境联调》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向案例——问财网补环境</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%98%BF%E5%B0%94%E6%B3%95%E8%90%A5webpack%E6%8A%A0JS/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向案例——阿尔法营webpack抠JS</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/&title=《JS逆向之vscode无环境联调》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/&title=《JS逆向之vscode无环境联调》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之vscode无环境联调》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADLklEQVR42u3awY7iMBAE0Pn/n2alva1GJFXtoE3MywlBhvgZaVpd7Z+f+Hr9vd698+717/uPPz2+//XrOn7iBRc2Njb2Q9ivw+t4EfkS37GT5+bs/LnY2NjY+7GPi8oxsgUc/1VbIPOnYGNjY2Mn4LyotJ/mz8LGxsbGXilaK+lNm/9gY2NjY8+WdYzMm4122PDfsjRsbGzs27PbQe+dX39wvo2NjY19S/ZrdOXFqQ2hVopTsX5sbGzsjdizMcBVx3SSuL+tO8V3YmNjY2/Bbh9wHLhfVa7actgeAMLGxsbeiT07fNkezWz/No+K2oExNjY29n7sWQMwi3uuGgPk7U3Re2FjY2M/lp20EG3BaFuUdnOT0hu1LtjY2NhbsGcxzUoYNGMUUVHQGmFjY2N/Aztf4vqcuUi/St6wYmNjY2M/kH1V45HETHkrMguqooKHjY2NvRF7JZrPx6vt5q4McZNtwsbGxt6JnYc465F9y5ttevJt2NjY2DuxV2KdZLSQM9qRcLKGk7VhY2Njb8FeLx5XjRzyEGo2Tv7nfWxsbOwvYM8OzcwGCXlRbNueuqJiY2NjP5a9PnxtS9fKdsyG0ydZGjY2NvZj2bOYqZghL5SffDtWSiY2Njb2HuwkoJkNA5LS1ZbMlaM/UfXGxsbGfhS7HfHOxgazwta2NEWxxMbGxt6IPXt8e3SmCO6X2Xkbg42Njb0TO/l3nw9328M6s1FBO2bGxsbG/h727CDm57ZpJZwqsjRsbGzsx7LbQOeqO9twqu2rToYK2NjY2Juy25LThk3t8c281BXgWTeDjY2NfWP2LEiatQ2zLZ79DBcMerGxsbEfwl4//ph/Q77QlUAq+jGwsbGxN2K3B3RW2o/8+M6slObREjY2NvZO7Fd5zQ5Htu9cVRTfbhM2Njb2Ruz8apc1Ky1tgbzgCCY2Njb2FuxZhLRyT3Icp+W1ZQ8bGxt7P3ZbNvISlXzzp0Olk/NK2NjY2NglLC88+TbVgw1sbGzsr2QnD86LzWzAkA8nTlaCjY2NvR37E4FRGyS1gdFsaI2NjY29H7ttLfKFttuRA9qVDGfd2NjY2Hdn/wGPwvOHRcyI1gAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

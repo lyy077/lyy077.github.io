@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之快速定位关键代码 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="快速定位之搜索 DOM元素或者当前页面内容的搜索  Element面板快捷键CTRL+F就可以打开搜索框，搜索DOM元素。                                                                                              image-20220313194959329                  全局搜索">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之快速定位关键代码">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="快速定位之搜索 DOM元素或者当前页面内容的搜索  Element面板快捷键CTRL+F就可以打开搜索框，搜索DOM元素。                                                                                              image-20220313194959329                  全局搜索">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203131949450.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203131952349.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203131953520.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203140027831.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203140030770.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203141346655.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203141625197.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203141707913.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203141711126.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203141743582.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150055349.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150108324.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150111733.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150114096.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150122662.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150124093.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150127672.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-03-01T14:23:00.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:15.883Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203131949450.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之快速定位关键代码</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之快速定位关键代码</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-03-01T14:23:00.000Z" itemprop="datePublished" class="page-time">
+  2022-03-01
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E4%B9%8B%E6%90%9C%E7%B4%A2"><span class="post-toc-number">1.</span> <span class="post-toc-text">快速定位之搜索</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E4%B9%8B%E6%96%AD%E7%82%B9"><span class="post-toc-number">2.</span> <span class="post-toc-text">快速定位之断点</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E4%B9%8Bhook"><span class="post-toc-number">3.</span> <span class="post-toc-text">快速定位之hook</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E4%B9%8B%E5%88%86%E6%9E%90"><span class="post-toc-number">4.</span> <span class="post-toc-text">快速定位之分析</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向之快速定位关键代码"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之快速定位关键代码</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-03-01 22:23:00" datetime="2022-03-01T14:23:00.000Z"  itemprop="datePublished">2022-03-01</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h5 id="快速定位之搜索"><a href="#快速定位之搜索" class="headerlink" title="快速定位之搜索"></a>快速定位之搜索</h5><ol>
+<li>DOM元素或者当前页面内容的搜索</li>
+</ol>
+<p>Element面板快捷键CTRL+F就可以打开搜索框，搜索DOM元素。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203131949450.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220313194959329" title="">
+                </div>
+                <div class="image-caption">image-20220313194959329</div>
+            </figure>
+
+
+
+<ol start="2">
+<li>全局搜索</li>
+</ol>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203131952349.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220313195223274" title="">
+                </div>
+                <div class="image-caption">image-20220313195223274</div>
+            </figure>
+
+
+
+<p>全局搜索包含页面搜索</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203131953520.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220313195307491" title="">
+                </div>
+                <div class="image-caption">image-20220313195307491</div>
+            </figure>
+
+
+
+<h5 id="快速定位之断点"><a href="#快速定位之断点" class="headerlink" title="快速定位之断点"></a>快速定位之断点</h5><ol>
+<li>XHR断点</li>
+</ol>
+<p>XHR断点只对请求内容为XHR的请求生效。在<a target="_blank" rel="noopener" href="http://blog.heshipeng.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/">JS逆向之Chrome浏览器工具你知多少？</a>中介绍过通过网络面板抓包可以看到请求的类型，如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203140027831.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220314002711032" title="">
+                </div>
+                <div class="image-caption">image-20220314002711032</div>
+            </figure>
+
+<p>通过抓包得到XHR请求的URL之后，就可以打上XHR断点了。开发者工具切换到Source面板，展开XHR&#x2F;fetch Breakpoints点击+号新建一个XHR断点。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203140030770.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220314003042713" title="">
+                </div>
+                <div class="image-caption">image-20220314003042713</div>
+            </figure>
+
+<p>XHR断点不填任何字符表示对任何XHR请求都会断上，也可以填一个完整的URL，也可以填URL的一部分，如上图。<strong>注意：通常会去掉URL后边的参数，因为URL后边的参数可能是动态变化的，如果是动态变化的会导致每次都匹配不上，就没法断上。</strong></p>
+<ol start="2">
+<li>DOM断点</li>
+</ol>
+<p>DOM断点一般指的是页面元素的断点。打DOM断点的方式是在Source面板，选中某一个元素右键选择Break on，如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203141346655.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220314134609560" title="">
+                </div>
+                <div class="image-caption">image-20220314134609560</div>
+            </figure>
+
+<p>subtree modifications表示子树发生更改，attribute modifications表示节点属性值发生改变，node removal表示节点被移除。我们也第二个attribute modifications为例，更改百度首页的百度一下，将其替换为谷歌一下。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203141625197.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220314162541977" title="">
+                </div>
+                <div class="image-caption">image-20220314162541977</div>
+            </figure>
+
+<p>然后就成功断下了。DOM断点的应用场景在哪？比如说有一个Input输入框，然后每次点击submit按钮，Input输出框的value属性都会改变，同时把这个value值提交到后端，这个时候通过DOM断点就可以断到value值发生改变的地方，通过调用栈去查找对应改变value值的代码。</p>
+<ol start="3">
+<li>Event断点</li>
+</ol>
+<p>Event断点在Source面板的Event Listener Breakpoints一栏。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203141707913.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220314170733786" title="">
+                </div>
+                <div class="image-caption">image-20220314170733786</div>
+            </figure>
+
+<p>这里我们以鼠标的click事件为例，选择Mouse&#x2F;Click事件，然后点击百度一下按钮：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203141711126.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220314171105093" title="">
+                </div>
+                <div class="image-caption">image-20220314171105093</div>
+            </figure>
+
+<p>可以看到成功断上了。</p>
+<h5 id="快速定位之hook"><a href="#快速定位之hook" class="headerlink" title="快速定位之hook"></a>快速定位之hook</h5><ol>
+<li>json</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> my_stringfy = <span class="title class_">JSON</span>.<span class="property">stringfy</span>;</span><br><span class="line"><span class="title class_">JSON</span>.<span class="property">stringfy</span> = <span class="keyword">function</span>(<span class="params">params</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;xxx&quot;</span>, params);</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">my_stringfy</span>(params);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> my_parse = <span class="title class_">JSON</span>.<span class="property">parse</span>;</span><br><span class="line"><span class="title class_">JSON</span>.<span class="property">parse</span> = <span class="keyword">function</span>(<span class="params">params</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;xxx&quot;</span>, params);</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">my_parse</span>(params);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>cookie</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> cookie_cache = <span class="variable language_">document</span>.<span class="property">cookie</span>;</span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(<span class="variable language_">document</span>, <span class="string">&#x27;cookie&#x27;</span>, &#123;</span><br><span class="line">    <span class="attr">get</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Getting cookie&#x27;</span>);</span><br><span class="line">        <span class="keyword">return</span> cookie_cache;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">set</span>: <span class="keyword">function</span>(<span class="params">val</span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Setting cookie&#x27;</span>, val);</span><br><span class="line">        <span class="keyword">var</span> cookie = val.<span class="title function_">split</span>(<span class="string">&quot;;&quot;</span>)[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">var</span> ncookie = cookie.<span class="title function_">split</span>(<span class="string">&quot;=&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> flag = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">var</span> cache = cookie_cache.<span class="title function_">split</span>(<span class="string">&quot;; &quot;</span>);</span><br><span class="line">        cache = cache.<span class="title function_">map</span>(<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span> (a.<span class="title function_">split</span>(<span class="string">&quot;=&quot;</span>)[<span class="number">0</span>] === ncookie[<span class="number">0</span>]) &#123;</span><br><span class="line">                flag = <span class="literal">true</span>;</span><br><span class="line">                <span class="keyword">return</span> cookie;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> a;</span><br><span class="line">        &#125;);</span><br><span class="line">        cookie_cache = cache.<span class="title function_">join</span>(<span class="string">&quot;; &quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (!flag) &#123;</span><br><span class="line">            cookie_cache += cookie + <span class="string">&quot;; &quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">_value</span> = val;</span><br><span class="line">        <span class="keyword">return</span> cookie_cache;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="3">
+<li>window attr</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> window_flag_1 = <span class="string">&quot;_t&quot;</span>;</span><br><span class="line"><span class="keyword">var</span> window_flag_2 = <span class="string">&quot;ccc&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> key_value_map = &#123;&#125;;</span><br><span class="line"><span class="keyword">var</span> window_value = <span class="variable language_">window</span>[window_flag_1];</span><br><span class="line"></span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(<span class="variable language_">window</span>, window_flag_1, &#123;</span><br><span class="line">    <span class="attr">get</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Getting&quot;</span>, <span class="variable language_">window</span>, window_flag_1, <span class="string">&quot;=&quot;</span>, window_value);</span><br><span class="line">        <span class="keyword">return</span> window_value;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">set</span>: <span class="keyword">function</span>(<span class="params">val</span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Setting&quot;</span>, <span class="variable language_">window</span>, window_flag_1, <span class="string">&quot;=&quot;</span>, val);</span><br><span class="line">        window_value = val;</span><br><span class="line">        key_value_map[<span class="variable language_">window</span>[window_flag_1]] = window_flag_1;</span><br><span class="line">        <span class="title function_">set_obj_attr</span>(<span class="variable language_">window</span>[window_flag_1], window_flag_2);</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">set_obj_attr</span>(<span class="params">obj, attr</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> obj_attr_value = obj[attr];</span><br><span class="line">    <span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(obj, attr, &#123;</span><br><span class="line">        <span class="attr">get</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Getting&quot;</span>, key_value_map[obj], attr, <span class="string">&quot;=&quot;</span>, obj_attr_value);</span><br><span class="line">            <span class="keyword">return</span> obj_attr_value;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">set</span>: <span class="keyword">function</span>(<span class="params">val</span>) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Setting&quot;</span>, key_value_map[obj], attr, <span class="string">&quot;=&quot;</span>, val);</span><br><span class="line">            obj_attr_value = val;</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>简单测试如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203141743582.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220314174331478" title="">
+                </div>
+                <div class="image-caption">image-20220314174331478</div>
+            </figure>
+
+
+
+<ol start="4">
+<li>eval&#x2F;Function</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>.<span class="property">__cr_eval</span> = <span class="variable language_">window</span>.<span class="property">eval</span>;</span><br><span class="line"><span class="keyword">var</span> my_eval = <span class="keyword">function</span>(<span class="params">src</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(src);</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;============eval end===========&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">window</span>.<span class="title function_">__cr_eval</span>(src);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _my_eval = <span class="built_in">eval</span>.<span class="title function_">bind</span>(<span class="literal">null</span>);</span><br><span class="line">_my_eval.<span class="property">toString</span> = <span class="variable language_">window</span>.<span class="property">__cr_eval</span>.<span class="property">toString</span>;</span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(<span class="variable language_">window</span>, <span class="string">&#x27;eval&#x27;</span>, &#123; <span class="attr">value</span>: _my_eval &#125;);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>.<span class="property">__cr_fun</span> = <span class="variable language_">window</span>.<span class="property">Function</span>;</span><br><span class="line"><span class="keyword">var</span> myfun = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> args = <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">slice</span>.<span class="title function_">call</span>(<span class="variable language_">arguments</span>, <span class="number">0</span>, -<span class="number">1</span>).<span class="title function_">join</span>(<span class="string">&quot;,&quot;</span>).<span class="property">src</span> = <span class="variable language_">arguments</span>[<span class="variable language_">arguments</span>.<span class="property">length</span> - <span class="number">1</span>];</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(src);</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;===========Function end=========&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">window</span>.<span class="property">__cr_fun</span>.<span class="title function_">apply</span>(<span class="variable language_">this</span>, <span class="variable language_">arguments</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">myfun.<span class="property">toString</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123; <span class="keyword">return</span> <span class="variable language_">window</span>.<span class="property">__cr_fun</span> + <span class="string">&quot;&quot;</span> &#125;</span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(<span class="variable language_">window</span>, <span class="string">&#x27;Function&#x27;</span>, &#123; <span class="attr">value</span>: myfun &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>  简单测试如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150055349.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220315005512673" title="">
+                </div>
+                <div class="image-caption">image-20220315005512673</div>
+            </figure>
+
+
+
+<ol start="5">
+<li>websocket</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">WebSocket</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">senda</span> = <span class="title class_">WebSocket</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">send</span>;</span><br><span class="line"><span class="title class_">WebSocket</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">send</span> = <span class="keyword">function</span> (<span class="params">data</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;Hook WebSocket, data&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="title function_">senda</span>(data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="快速定位之分析"><a href="#快速定位之分析" class="headerlink" title="快速定位之分析"></a>快速定位之分析</h5><ol>
+<li>Elements Event Listeners</li>
+</ol>
+<p>在Elements面板，右边Event Listeners可以看到全部的事件监听器，如图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150108324.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220315010815283" title="">
+                </div>
+                <div class="image-caption">image-20220315010815283</div>
+            </figure>
+
+
+
+<ol start="2">
+<li>Network type initator</li>
+</ol>
+<p>在Network网络面板，请求列表的第三列是网络类型，第四列是调用栈。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150111733.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220315011120666" title="">
+                </div>
+                <div class="image-caption">image-20220315011120666</div>
+            </figure>
+
+<p>常见的网络类型有xhr(XHR类型的请求)，gif，png，jpeg，stylesheet(css文件)，script(JS文件)，Json等。</p>
+<p>鼠标悬浮任意一个请求的第四列，可以看到该请求的全部调用栈，如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150114096.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220315011435032" title="">
+                </div>
+                <div class="image-caption">image-20220315011435032</div>
+            </figure>
+
+<p>通常通过网络面板抓包抓到我们需要的请求，然后可以查看它的调用栈，迅速定位到相关的代码。</p>
+<ol start="3">
+<li>Console Log XMLHttpRequests</li>
+</ol>
+<p>打开XMLHttpRequests日志的方法，点击开发者工具上的那个设置按钮：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150122662.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220315012217598" title="">
+                </div>
+                <div class="image-caption">image-20220315012217598</div>
+            </figure>
+
+<p>找到Console那一部分，选中Log XMLHttpRequests，如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150124093.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220315012414737" title="">
+                </div>
+                <div class="image-caption">image-20220315012414737</div>
+            </figure>
+
+<p>重新刷新页面，可以看到打印出了XMLRequests的请求日志了，点击可以看到调用栈：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203150127672.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220315012715597" title="">
+                </div>
+                <div class="image-caption">image-20220315012715597</div>
+            </figure>
+
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:15.883Z" itemprop="dateUpdated">2023-05-09 18:16:15</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/&title=《JS逆向之快速定位关键代码》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/&title=《JS逆向之快速定位关键代码》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之快速定位关键代码》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向中用到的常见的编码和加密</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%97%A0%E9%99%90Debugger/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向之无限Debugger</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/&title=《JS逆向之快速定位关键代码》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/&title=《JS逆向之快速定位关键代码》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之快速定位关键代码》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD9klEQVR42u3bW07rQBAFwOx/0yDxC7HP6R5zuVL5K0qUsacGqdMPXq/4+vi63r3//Xr36fWa7+6SPM+7u7+euHDgwIEDR7B0u7HkW+82kKx8vdV8zXyPOHDgwIHjLMdsA5vgl79Owuf+Wzhw4MCB4/c52mCZh8/80+R18ikOHDhw4PhrHG1Rb1b4O3VHHDhw4MDx+xxJcTAPhC1xXtrLn/zxWikOHDhw4Lh6zmHw+19ePzjfgQMHDhw4ykC1H3HI796OJmzKlD/cHQcOHDhwrDnytCr59Gy0z4cS2hVu1sSBAwcOHAuOPBy2LaU2NOb3bQfsro/2xg8HDhw4cCw4Zm2Y/Fv71tTsSYaBFgcOHDhwrDn2j5KnhafKgqcS0R9qpThw4MCBY8GRJ2x5GjYLe+0z5O9EZUccOHDgwHGUIx9K2ATm4ZBBDD0bwqh/HeDAgQMHjkuOTeMn79q0TaDZYEQe8utKJw4cOHDgWEyszdKzU4Gw5cuPYQiEAwcOHDhGHPtNJpRFqS4+jByxCOQ4cODAgWPB0ZbqbgbO4kdPAmESsGclSxw4cODA8TRHfrN20GFTZEwOry1oRr84cODAgQPHmuNUkS5pI+VjE3lpbz9agQMHDhw4nuDIy3n5JmflwjxAroYVvq+AAwcOHDgWHPtQ1w4QtO+35ctVkREHDhw4cJzp17zypKtOh9aNotn2DgRpHDhw4MAx4pgFqs1Qwtlt7wPtTQqHAwcOHDgmHaJhKW0TMtv186JhXnxsnwoHDhw4cOS9+6JDFaR8s1C9KSMmiNFgBA4cOHDgWHPMxgKSQLhfsx2PSMqXxbdw4MCBA8chjjYBm6VM+xJkS5MMTODAgQMHjj3HbDggSoHiVG0zPNHC3dwRBw4cOHAc5dgX+9qw98Tw3OwAovYcDhw4cOBIez3DfxxNkro8rdqPU8wKhThw4MCB4yzHqTRsFhTzsl0SUA+sgwMHDhw4jnLko2yzhlM7DNEmcvnIxds/Ahw4cODAsebYDAq0iV/+uO19Tw1M4MCBAweOPUcOsSkLJilWXkDMG0v1TwQcOHDgwHGIY9NeykNsm1ad7a1FK+PAgQMHjjXHJqHKk6V2fGEGPUsgbxI5HDhw4MBRcnyUV54OtWMHM9Y84YzSURw4cODAseZog1MyrJCPMuTFxDy4tsc2vHDgwIEDR5nSPJGezdY8lQoWgRYHDhw4cBziyFs1m6JhG9Rz6NnB4MCBAweOv8Cx2XwyTn0qacwPEgcOHDhw/CuOWbsoaU3l7av8AJJC4SrQ4sCBAweOS462OLhv/CTrt5uf7aKY8sCBAwcOHAHH2YGG2SRFm7DlhcLZoeLAgQMHjhHHJ15I3ahHveRiAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

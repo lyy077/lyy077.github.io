@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之webpack扣JS思路 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS,WebPack">
+    <meta name="description" content="前言这篇文章通过站在逆向的角度，解决遇到JS文件如果通过webpack的方式去组织代码模块如何扣JS代码，进行逆向分析的问题。 关于webpackJS的自执行函数IIFE 全称 Immediately-invoked Function Expressions，即自执行函数。这种模式本质上就是函数表达式（命名的或者匿名的）在创建后立即执行。当函数变成立即执行的函数表达式时，表达式中的变量不能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之webpack扣JS思路">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="前言这篇文章通过站在逆向的角度，解决遇到JS文件如果通过webpack的方式去组织代码模块如何扣JS代码，进行逆向分析的问题。 关于webpackJS的自执行函数IIFE 全称 Immediately-invoked Function Expressions，即自执行函数。这种模式本质上就是函数表达式（命名的或者匿名的）在创建后立即执行。当函数变成立即执行的函数表达式时，表达式中的变量不能">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203290055624.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291612665.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291613208.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291614519.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291616929.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291634343.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291814720.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203292001605.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203292004706.png">
+<meta property="article:published_time" content="2022-03-28T08:59:43.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:31.923Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta property="article:tag" content="WebPack">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203290055624.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之webpack扣JS思路</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之webpack扣JS思路</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-03-28T08:59:43.000Z" itemprop="datePublished" class="page-time">
+  2022-03-28
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%89%8D%E8%A8%80"><span class="post-toc-number">1.</span> <span class="post-toc-text">前言</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%85%B3%E4%BA%8Ewebpack"><span class="post-toc-number"></span> <span class="post-toc-text">关于webpack</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#JS%E7%9A%84%E8%87%AA%E6%89%A7%E8%A1%8C%E5%87%BD%E6%95%B0"><span class="post-toc-number">1.</span> <span class="post-toc-text">JS的自执行函数</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E8%87%AA%E6%89%A7%E8%A1%8C%E5%87%BD%E6%95%B0%E7%9A%84%E5%87%A0%E7%A7%8D%E5%BD%A2%E5%BC%8F"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">自执行函数的几种形式</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E8%87%AA%E6%89%A7%E8%A1%8C%E5%87%BD%E6%95%B0%E4%BC%A0%E5%8F%82"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">自执行函数传参</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#call-apply-bind%E4%B8%89%E5%85%84%E5%BC%9F"><span class="post-toc-number">2.</span> <span class="post-toc-text">call, apply, bind三兄弟</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#call"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">call</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#apply"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">apply</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#bind"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">bind</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E7%90%86%E8%A7%A3webpack"><span class="post-toc-number">3.</span> <span class="post-toc-text">理解webpack</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#webpack%E6%A8%A1%E5%9D%97%E5%8C%96%E7%BC%96%E7%A8%8B%E7%9A%84JS%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84%E7%89%B9%E7%82%B9"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">webpack模块化编程的JS代码结构特点</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#webpack%E6%89%A3JS%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">webpack扣JS的步骤</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">4.</span> <span class="post-toc-text">总结</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向之webpack扣JS思路"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之webpack扣JS思路</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-03-28 16:59:43" datetime="2022-03-28T08:59:43.000Z"  itemprop="datePublished">2022-03-28</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <div align="center"><iframe width="560" height="315" src="https://www.youtube.com/embed/iJAxeafvn8Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+
+
+
+<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>这篇文章通过站在逆向的角度，解决遇到JS文件如果通过webpack的方式去组织代码模块如何扣JS代码，进行逆向分析的问题。</p>
+<h3 id="关于webpack"><a href="#关于webpack" class="headerlink" title="关于webpack"></a>关于webpack</h3><h4 id="JS的自执行函数"><a href="#JS的自执行函数" class="headerlink" title="JS的自执行函数"></a>JS的自执行函数</h4><p>IIFE 全称 Immediately-invoked Function Expressions，即自执行函数。这种模式本质上就是函数表达式（命名的或者匿名的）在创建后立即执行。当函数变成立即执行的函数表达式时，表达式中的变量不能从外部访问。IIFE 主要用来隔离作用域，避免污染。</p>
+<h5 id="自执行函数的几种形式"><a href="#自执行函数的几种形式" class="headerlink" title="自执行函数的几种形式"></a>自执行函数的几种形式</h5><ol>
+<li>匿名函数前面加上一元操作符，后面加上 <code>()</code>。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">!<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125;();</span><br><span class="line"></span><br><span class="line">+<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    </span><br><span class="line">&#125;();</span><br><span class="line"></span><br><span class="line">-<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    </span><br><span class="line">&#125;();</span><br><span class="line"></span><br><span class="line">~<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    </span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>匿名函数后边加上<code>()</code>，然后再用<code>()</code>将整个括起来。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="3">
+<li>先用 <code>()</code> 将匿名函数括起来，再在后面加上 <code>()</code>。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="4">
+<li>使用箭头函数表达式，先用 <code>()</code> 将箭头函数表达式括起来，再在后面加上 <code>()</code>。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="5">
+<li>匿名函数前面加上 <code>void</code> 关键字，后面加上 <code>()</code>， <code>void</code> 指定要计算或运行一个表达式，但是不返回值。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+
+
+
+<p>有的时候，我们还有可能见到立即执行函数前面后分号的情况，比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">;(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;())</span><br><span class="line"></span><br><span class="line">;!<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="自执行函数传参"><a href="#自执行函数传参" class="headerlink" title="自执行函数传参"></a>自执行函数传参</h5><p>将参数放在末尾的 <code>()</code> 里即可实现参数传递，如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> list = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];</span><br><span class="line"></span><br><span class="line">(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; list.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        sum += list[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(sum);</span><br><span class="line">&#125;)(list);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> dict = &#123;<span class="attr">name</span>: <span class="string">&quot;Bob&quot;</span>, <span class="attr">age</span>: <span class="string">&quot;20&quot;</span>&#125;;</span><br><span class="line"></span><br><span class="line">(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(dict.<span class="property">name</span>);</span><br><span class="line">&#125;)(dict);</span><br><span class="line"></span><br><span class="line">(<span class="keyword">function</span> (<span class="params">a, b, c, d</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(a + b + c + d);</span><br><span class="line">&#125;)(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="call-apply-bind三兄弟"><a href="#call-apply-bind三兄弟" class="headerlink" title="call, apply, bind三兄弟"></a>call, apply, bind三兄弟</h4><p><code>Function.prototype.call()</code>、<code>Function.prototype.apply()</code>、<code>Function.prototype.bind()</code> 都是比较常用的方法。它们的作用一毛一样，即<strong>改变函数中的 <code>this</code> 指向</strong>，它们的区别如下：</p>
+<ul>
+<li><code>call()</code> 方法会立即执行这个函数，接受一个多个参数，参数之间用逗号隔开；</li>
+<li><code>apply()</code> 方法会立即执行这个函数，接受一个包含多个参数的数组；</li>
+<li><code>bind()</code> 方法不会立即执行这个函数，返回的是一个修改过后的函数，便于稍后调用，接受的参数和 <code>call()</code> 一样。</li>
+</ul>
+<h5 id="call"><a href="#call" class="headerlink" title="call"></a>call</h5><p><code>call()</code> 方法接受多个参数，第一个参数 thisArg 指定了函数体内 this 对象的指向，如果这个函数处于非严格模式下，指定为 null 或 undefined 时会自动替换为指向全局对象（浏览器中就是 window 对象），在严格模式下，函数体内的 this 还是为 null。从第二个参数开始往后，每个参数被依次传入函数，基本语法如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">call</span>(<span class="params">thisArg, arg1, arg2, ...</span>)</span><br></pre></td></tr></table></figure>
+
+<p>比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">func1</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(func1.<span class="title function_">call</span>(<span class="literal">null</span>, <span class="number">1</span>, <span class="number">2</span>)); <span class="comment">// 3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">func2</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>[<span class="number">0</span>] + <span class="variable language_">this</span>[<span class="number">1</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(func2.<span class="title function_">call</span>([<span class="number">1</span>, <span class="number">2</span>])); <span class="comment">// 3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">func3</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">a</span> + <span class="variable language_">this</span>.<span class="property">b</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(func3.<span class="title function_">call</span>(&#123;<span class="string">&quot;a&quot;</span>: <span class="number">1</span>, <span class="string">&quot;b&quot;</span>: <span class="number">2</span>&#125;)); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="apply"><a href="#apply" class="headerlink" title="apply"></a>apply</h5><p><code>apply()</code> 方法接受两个参数，第一个参数 thisArg 与 <code>call()</code> 方法一致，第二个参数为一个带下标的集合，这个集合可以为数组，也可以为类数组，<code>apply()</code> 方法把这个集合中的元素作为参数传递给被调用的函数，基本语法如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span>.<span class="title function_">apply</span>(thisArg, [arg1, arg2, ...])</span><br></pre></td></tr></table></figure>
+
+<p>比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">func2</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>[<span class="number">0</span>] + <span class="variable language_">this</span>[<span class="number">1</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(func2.<span class="title function_">apply</span>([<span class="number">1</span>, <span class="number">2</span>])); <span class="comment">// 3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">func3</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">a</span> + <span class="variable language_">this</span>.<span class="property">b</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(func3.<span class="title function_">apply</span>(&#123;<span class="string">&quot;a&quot;</span>: <span class="number">1</span>, <span class="string">&quot;b&quot;</span>: <span class="number">2</span>&#125;)); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="bind"><a href="#bind" class="headerlink" title="bind"></a>bind</h5><p><code>bind()</code> 方法和 <code>call()</code> 接受的参数是相同的，只不过 <code>bind()</code> 返回的是一个函数，基本语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function.bind(thisArg, arg1, arg2, ...)</span><br></pre></td></tr></table></figure>
+
+<p>比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">func</span>(<span class="params">a, b, c</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b + c;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(func.<span class="title function_">bind</span>(<span class="literal">null</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)()); <span class="comment">// 6</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">func1</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>[<span class="number">0</span>] + <span class="variable language_">this</span>[<span class="number">1</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(func1.<span class="title function_">bind</span>([<span class="number">1</span>, <span class="number">2</span>])()); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="理解webpack"><a href="#理解webpack" class="headerlink" title="理解webpack"></a>理解webpack</h4><p>有了以上知识后，我们再来理解一下模块化编程，也就是前面所说的 webpack 写法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">!<span class="keyword">function</span> (<span class="params">allModule</span>) &#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">useModule</span>(<span class="params">whichModule, xxx, xxx, <span class="comment">/*...*/</span></span>) &#123;</span><br><span class="line">        allModule[whichModule].<span class="title function_">call</span>(<span class="literal">null</span>, xxx, xxx, <span class="comment">/*...*/</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_">useModule</span>(<span class="number">0</span>, <span class="string">&#x27;abc&#x27;</span>, <span class="literal">null</span>, <span class="comment">/*...*/</span>)</span><br><span class="line">&#125;([</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">module0</span>(<span class="params">param</span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;module0: &quot;</span> + param)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">module1</span>(<span class="params">param</span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;module1: &quot;</span> + param)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">module2</span>(<span class="params">param</span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;module2: &quot;</span> + param)</span><br><span class="line">    &#125;,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+
+<p>所谓webpack模块化编程，就是把一类函数——这些函数服务于某个或者某几个功能起作用——以列表或者对象的形式放在一起，封装到一个自执行的函数中，这些函数对外是不可见的，并且只对外暴露一个函数，这个函数叫做模块加载函数，外部通过这个加载函数访问自执行函数内部的函数，从而起到模块化的作用。</p>
+<h5 id="webpack模块化编程的JS代码结构特点"><a href="#webpack模块化编程的JS代码结构特点" class="headerlink" title="webpack模块化编程的JS代码结构特点"></a>webpack模块化编程的JS代码结构特点</h5><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> (<span class="params">x</span>) &#123;</span><br><span class="line">    <span class="comment">/*加载模块的方法*/</span></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">xx</span>(<span class="params">yy</span>) &#123;</span><br><span class="line">        x[yy].<span class="title function_">call</span>(x1, x2, x3);</span><br><span class="line">        <span class="comment">// x[yy].apply([x1, x2, x3]);</span></span><br><span class="line">        <span class="comment">// x[yy].bind(x1, x2, x3)();</span></span><br><span class="line">        </span><br><span class="line">    &#125;([</span><br><span class="line">        <span class="comment">// 可供加载的模块列表</span></span><br><span class="line">        <span class="keyword">function</span>(<span class="params">x1, x2, x3</span>) &#123;&#125;,</span><br><span class="line">        <span class="keyword">function</span>(<span class="params">x1, x2, x3</span>) &#123;&#125;</span><br><span class="line">    ]</span><br><span class="line">     <span class="comment">// 或者是</span></span><br><span class="line">      &#123;</span><br><span class="line">      	<span class="string">&quot;xxx&quot;</span>: <span class="keyword">function</span>(<span class="params">x1, x2, x3</span>) &#123;&#125;,</span><br><span class="line">        <span class="string">&quot;xxx&quot;</span>: <span class="keyword">function</span>(<span class="params">x1, x2, x3</span>) &#123;&#125;</span><br><span class="line">      &#125;</span><br><span class="line">     );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>webpack模块化编程的JS代码特点是包含2个部分，上面是一个加载模块的方法，也叫模块加载器。下面是可供加载的模块列表。可供加载的模块列表是一个类数组(可以是数组，可以是对象)。</p>
+<h5 id="webpack扣JS的步骤"><a href="#webpack扣JS的步骤" class="headerlink" title="webpack扣JS的步骤"></a>webpack扣JS的步骤</h5><p>我们以这个网址——<a target="_blank" rel="noopener" href="https://www.gm99.com/">G妹游戏</a>——为例来介绍webpack扣js的一般步骤。我们的目的是抠出密码加密算法的那一部分JS代码。</p>
+<p>找到我们要扣JS的那个文件，抓包，打断点分析的过程就不赘述了，直接贴文件：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203290055624.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220329005533139" title="">
+                </div>
+                <div class="image-caption">image-20220329005533139</div>
+            </figure>
+
+
+
+<ol>
+<li>找到模块加载器(加载模块的方法)</li>
+</ol>
+<p>根据前面提到的webpack模块化编程的JS代码结构特点，很显然这个模块加载为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">e</span>(<span class="params">s</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> i = &#123;&#125;;</span><br><span class="line">	<span class="keyword">if</span> (i[s])</span><br><span class="line">		<span class="keyword">return</span> i[s].<span class="property">exports</span>;</span><br><span class="line">	<span class="keyword">var</span> n = i[s] = &#123;</span><br><span class="line">        <span class="attr">exports</span>: &#123;&#125;,</span><br><span class="line">        <span class="attr">id</span>: s,</span><br><span class="line">        <span class="attr">loaded</span>: !<span class="number">1</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">return</span> t[s].<span class="title function_">call</span>(n.<span class="property">exports</span>, n, n.<span class="property">exports</span>, e),</span><br><span class="line">    n.<span class="property">loaded</span> = !<span class="number">0</span>,</span><br><span class="line">    n.<span class="property">exports</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>构造一个自执行。可以是构造一个空的自执行，也可以是把网站的自执行JS扣下来，然后删除不必要的方法。如下：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">!<span class="keyword">function</span>(<span class="params">t</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> i = &#123;&#125;;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">e</span>(<span class="params">s</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (i[s])</span><br><span class="line">            <span class="keyword">return</span> i[s].<span class="property">exports</span>;</span><br><span class="line">        <span class="keyword">var</span> n = i[s] = &#123;</span><br><span class="line">            <span class="attr">exports</span>: &#123;&#125;,</span><br><span class="line">            <span class="attr">id</span>: s,</span><br><span class="line">            <span class="attr">loaded</span>: !<span class="number">1</span></span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">return</span> t[s].<span class="title function_">call</span>(n.<span class="property">exports</span>, n, n.<span class="property">exports</span>, e),</span><br><span class="line">        n.<span class="property">loaded</span> = !<span class="number">0</span>,</span><br><span class="line">        n.<span class="property">exports</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+
+<p>注意构造的这个自执行方法只需要保留模块加载方法。</p>
+<ol start="3">
+<li>找到并抠出调用的模块。从可供加载的模块列表中抠出包含我们需要的加密方法的模块。</li>
+</ol>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291612665.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220329161258366" title="">
+                </div>
+                <div class="image-caption">image-20220329161258366</div>
+            </figure>
+
+<p>通过抓包，找请求调用栈，定位到密码加密相关的地方。打上断点，调试这个方法，如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291613208.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220329161353804" title="">
+                </div>
+                <div class="image-caption">image-20220329161353804</div>
+            </figure>
+
+<p>接着断点，接着调试：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291614519.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220329161453244" title="">
+                </div>
+                <div class="image-caption">image-20220329161453244</div>
+            </figure>
+
+<p>最终找到需要调用的模块如图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291616929.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220329161649646" title="">
+                </div>
+                <div class="image-caption">image-20220329161649646</div>
+            </figure>
+
+<p>接着就是抠出这个调用模块，我们可以把整个文件复制下来，我们发现可供加载的模块是一个对象，用数字作为键，模块作为值，为了方便我们把键为0的叫做模块0，键为1的叫做模块1，依此类推。搜索关键代码<code>qe.prototype.encrypt</code>，根据代码缩进，找到封装<code>qe.prototype.encrypt</code>这个方法的模块是模块4，我们拷贝整个模块4的代码，粘贴到我们第二步构建的那个自执行方法的可供加载的模块列表中去，注意是以object的方法，不要用列表形式，同时给这个模块取一个名字，比如就叫做<code>encrypt</code>。</p>
+<p>注意到我们前面跟栈的示意图，生成密码的地方是调用模块3的<code>encode</code> 方法，而<code>encode</code>方法是调用模块4的<code>encrypt</code>方法，我们上边已经抠出来了模块4，不要忘了抠出模块3(虽然模块3比较简单，完全可以自己写)。同样的给模块3重新取个名为<code>encode</code>。</p>
+<p>最终模块3和模块4抠出来的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">!<span class="keyword">function</span>(<span class="params">t</span>) &#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">e</span>(<span class="params">s</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (i[s])</span><br><span class="line">            <span class="keyword">return</span> i[s].<span class="property">exports</span>;</span><br><span class="line">        <span class="keyword">var</span> n = i[s] = &#123;</span><br><span class="line">            <span class="attr">exports</span>: &#123;&#125;,</span><br><span class="line">            <span class="attr">id</span>: s,</span><br><span class="line">            <span class="attr">loaded</span>: !<span class="number">1</span></span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">return</span> t[s].<span class="title function_">call</span>(n.<span class="property">exports</span>, n, n.<span class="property">exports</span>, e),</span><br><span class="line">            n.<span class="property">loaded</span> = !<span class="number">0</span>,</span><br><span class="line">            n.<span class="property">exports</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;(&#123;</span><br><span class="line">    <span class="string">&quot;encrypt&quot;</span>: <span class="keyword">function</span>(<span class="params">t, e, i</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> s, n, r;</span><br><span class="line">        s = <span class="keyword">function</span>(<span class="params">t, e, i</span>) &#123;</span><br><span class="line">            </span><br><span class="line">            	    <span class="comment">/* 省略若干行代码 */</span></span><br><span class="line">                    </span><br><span class="line">                    qe.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">decrypt</span> = <span class="keyword">function</span>(<span class="params">t</span>) &#123;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="title function_">getKey</span>().<span class="title function_">decrypt</span>(<span class="title function_">ye</span>(t))</span><br><span class="line">                        &#125; <span class="keyword">catch</span> (t) &#123;</span><br><span class="line">                            <span class="keyword">return</span> !<span class="number">1</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    ,</span><br><span class="line">                    qe.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">encrypt</span> = <span class="keyword">function</span>(<span class="params">t</span>) &#123;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            <span class="keyword">return</span> <span class="title function_">be</span>(<span class="variable language_">this</span>.<span class="title function_">getKey</span>().<span class="title function_">encrypt</span>(t))</span><br><span class="line">                        &#125; <span class="keyword">catch</span> (t) &#123;</span><br><span class="line">                            <span class="keyword">return</span> !<span class="number">1</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; </span><br><span class="line"></span><br><span class="line">                    <span class="comment">/* 省略若干行代码 */</span></span><br><span class="line"></span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="title function_">call</span>(e, i, e, t),</span><br><span class="line">        !(<span class="keyword">void</span> <span class="number">0</span> !== s &amp;&amp; (t.<span class="property">exports</span> = s))</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;encode&quot;</span>: <span class="keyword">function</span>(<span class="params">t, e, i</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> s;</span><br><span class="line">        s = <span class="keyword">function</span>(<span class="params">t, e, s</span>) &#123;</span><br><span class="line">            <span class="keyword">function</span> <span class="title function_">n</span>(<span class="params"></span>) &#123;</span><br><span class="line">                <span class="string">&quot;undefined&quot;</span> != <span class="keyword">typeof</span> r &amp;&amp; (<span class="variable language_">this</span>.<span class="property">jsencrypt</span> = <span class="keyword">new</span> r.<span class="property">JSEncrypt</span>,</span><br><span class="line">                <span class="variable language_">this</span>.<span class="property">jsencrypt</span>.<span class="title function_">setPublicKey</span>(<span class="string">&quot;-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDq04c6My441Gj0UFKgrqUhAUg+kQZeUeWSPlAU9fr4HBPDldAeqzx1UR92KJHuQh/zs1HOamE2dgX9z/2oXcJaqoRIA/FXysx+z2YlJkSk8XQLcQ8EBOkp//MZrixam7lCYpNOjadQBb2Ot0U/Ky+jF2p+Ie8gSZ7/u+Wnr5grywIDAQAB-----END PUBLIC KEY-----&quot;</span>))</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">var</span> r = <span class="title function_">i</span>(<span class="number">4</span>);</span><br><span class="line">            n.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">encode</span> = <span class="keyword">function</span>(<span class="params">t, e</span>) &#123;</span><br><span class="line">                <span class="keyword">var</span> i = e ? e + <span class="string">&quot;|&quot;</span> + t : t;</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">encodeURIComponent</span>(<span class="variable language_">this</span>.<span class="property">jsencrypt</span>.<span class="title function_">encrypt</span>(i))</span><br><span class="line">            &#125;</span><br><span class="line">            ,</span><br><span class="line">            s.<span class="property">exports</span> = n</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="title function_">call</span>(e, i, e, t),</span><br><span class="line">        !(<span class="keyword">void</span> <span class="number">0</span> !== s &amp;&amp; (t.<span class="property">exports</span> = s))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>扣完代码之后，我们将整个代码放到浏览器中执行一遍，验证下抠的JS代码没有问题：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291634343.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220329163418015" title="">
+                </div>
+                <div class="image-caption">image-20220329163418015</div>
+            </figure>
+
+
+
+<ol start="4">
+<li>导出相应的模块方法。我们只需要导出模块加载函数就行，因为加密中用到的<code>encode</code>和<code>encrypt</code>方法都是通过模块加载函数加载的。我们可以在自执行方法外面定义一个全局变量，然后把模块加载函数赋值给这个全局变量，这样就可以从自执行函数内部导出模块加载方法了。代码如下：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对外暴露模块加载函数</span></span><br><span class="line"><span class="keyword">var</span> _n = e;</span><br><span class="line"></span><br><span class="line">!<span class="keyword">function</span>(<span class="params">t</span>) &#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">e</span>(<span class="params">s</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (i[s])</span><br><span class="line">            <span class="keyword">return</span> i[s].<span class="property">exports</span>;</span><br><span class="line">        <span class="keyword">var</span> n = i[s] = &#123;</span><br><span class="line">            <span class="attr">exports</span>: &#123;&#125;,</span><br><span class="line">            <span class="attr">id</span>: s,</span><br><span class="line">            <span class="attr">loaded</span>: !<span class="number">1</span></span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">return</span> t[s].<span class="title function_">call</span>(n.<span class="property">exports</span>, n, n.<span class="property">exports</span>, e),</span><br><span class="line">            n.<span class="property">loaded</span> = !<span class="number">0</span>,</span><br><span class="line">            n.<span class="property">exports</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;(&#123;</span><br><span class="line">    <span class="string">&quot;encrypt&quot;</span>: <span class="keyword">function</span>(<span class="params">t, e, i</span>) &#123;</span><br><span class="line">        <span class="comment">// 省略函数体</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;encode&quot;</span>: <span class="keyword">function</span>(<span class="params">t, e, i</span>) &#123;</span><br><span class="line">        <span class="comment">// 省略函数体</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>修改完代码之后，我们在浏览器中验证一下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203291814720.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220329181407362" title="">
+                </div>
+                <div class="image-caption">image-20220329181407362</div>
+            </figure>
+
+<p>可以看到成功加载了<code>encrypt</code>函数，加载<code>encode</code>函数的时候报错，我们打上断点调试，发现报错的那一行代码是：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> r =  <span class="title function_">i</span>(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这里的i是<code>encode</code>的第三个参数，是<code>t[s].call(n.exports, n, n.exports, e)</code>的第四个参数即模块加载函数(前面提到过call的第一个参数是影响this指针的参数)，表示调用模块4，然而模块4我们改名为<code>encrypt</code>(熟悉的模块3调用模块4，但是模块3盒模块4我们都改名了，😮‍💨真是给自己挖坑，其实完全跟原始JS的保持一致的命名)。所以这里我们只需要把这行代码改为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> r =  <span class="title function_">i</span>(<span class="string">&quot;encrpty&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>改好之后，我们再次在浏览器中调试，没有报错。</p>
+<ol start="5">
+<li>编写代码测试。</li>
+</ol>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203292001605.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220329200136091" title="">
+                </div>
+                <div class="image-caption">image-20220329200136091</div>
+            </figure>
+
+<p>可以看到测试结果符合预期。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203292004706.png" alt="output-onlinepngtools" title="">
+                </div>
+                <div class="image-caption">output-onlinepngtools</div>
+            </figure>
+
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>这篇文章主要介绍了webpack模块化以及如何从中抠出相应的模块。抠JS的方法，总结起来分五步：</p>
+<ul>
+<li>找到模块加载器</li>
+<li>构造自执行</li>
+<li>找到并抠出需要的模块</li>
+<li>导出相应的模块方法</li>
+<li>编写代码测试</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:31.923Z" itemprop="dateUpdated">2023-05-09 18:16:31</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WebPack/" rel="tag">WebPack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/&title=《JS逆向之webpack扣JS思路》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/&title=《JS逆向之webpack扣JS思路》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之webpack扣JS思路》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向案例——某远海运公司webpack抠JS</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8BWebSocket%E5%8D%8F%E8%AE%AE/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向之WebSocket协议</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/&title=《JS逆向之webpack扣JS思路》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/&title=《JS逆向之webpack扣JS思路》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之webpack扣JS思路》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADOklEQVR42u3aQU7DQAwFUO5/6SKxYkHTbzsgxn1ZIWgzeVOJX9vz8RFfj68r+f3j2/Xslc9+Tu6c3+GGCxsbG/sQ9uPySpa5ftez3ySrJGsl9/9ha7CxsbHXsa8j5BFceYDl93zx6IM4xMbGxn5P9iSWqiF3Xd7MCxtsbGzs92Tn7ZsJbELCxsbGfmd2r8DIm0rJe/Mefq9kwsbGxt7K7gXS//z5F+fb2NjY2P+S3WvNT5r1SRTlr2kqsLGxsRexk2OO1eMy+fHN6iBhMrooPBA2Njb2geykNZNsSjXGJqOC3rrY2NjYu9m9jZiXCr2YTJr+zUE1NjY29rHsyYA2Wb7aYJoXJ1EEYmNjYx/OLjTTg5ZN76/zozzl12NjY2OvY+fj0knU5U2faimSf2BR1mFjY2OvYOdFRbJMLw7vOidZqLqwsbGxD2TfWzAkQdUrP/IGVuFd2NjY2CvY+eNeH9nJW1FJjFXHA+W/YmNjYy9i9w7r3FsSJBudb0dvc7GxsbFPZ1e/4t/VNrqrXMkjChsbG3sf+2+Kh96hnyREm60xbGxs7EXsKua6qZQvmZcovfBLGmHY2NjYO9jXgN4X/eqxnt49q4d+ovkGNjY29oHsyS3KC7RiKf8Y8tWxsbGxN7HzYW2vaKmWDUkB0xsDF6bE2NjY2Eex8+ZRNZzyVlFy/3yEkH+c2NjY2DvYk6C6t5GUb/FoBpKnKDY2NvYh7Ot/95NBwl3U+XaU6zBsbGzso9h58ZB8xa8WDNUyo9Akyich2NjY2IezJ6XF/HBkHmDz4W7US8PGxsY+kF1tGPVOA1WbU9UCqdzMwsbGxl7EngTMJDPzMqPakMqLJWxsbOwd7PyBekVL7+BOLybzTcTGxsbex86bRNUQyguMagOrOhh4kdjY2NjYh7Pzq1dg9A7i5MVPuZjBxsbGXsS+IQyCkcBvlDq9TSzjsbGxsQ9h56FVfaDJ1swD7EV7CxsbG3sdOwmtSTOoeuymOnguZzU2Njb2W7LLI9VWu7+3NdWiBRsbGxt7Ejb5NvUOACXvwsbGxt7Hngx3e+2k3rC2imwe3MHGxsY+in3XoLfX4u/FXnVrsLGxsZeyPwGvs6vPPF3cbwAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

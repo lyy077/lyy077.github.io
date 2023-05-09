@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向案例——某远海运公司webpack抠JS | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS,WebPack">
+    <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言webpack抠JS的一个案例，用来熟练如何从webpack打包的JS代码中抠关键的JS代码。 抠JS过程网址：aHR0cHM6Ly9zeW5jb25odWIuY29zY29zaGlwcGluZy5jb20v 目标">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向案例——某远海运公司webpack抠JS">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言webpack抠JS的一个案例，用来熟练如何从webpack打包的JS代码中抠关键的JS代码。 抠JS过程网址：aHR0cHM6Ly9zeW5jb25odWIuY29zY29zaGlwcGluZy5jb20v 目标">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041509227.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041624199.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041633567.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041634530.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041656123.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041656763.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041701058.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041709186.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202202231720872.jpg">
+<meta property="article:published_time" content="2022-04-03T15:28:00.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:20.290Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta property="article:tag" content="WebPack">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041509227.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向案例——某远海运公司webpack抠JS</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向案例——某远海运公司webpack抠JS</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-04-03T15:28:00.000Z" itemprop="datePublished" class="page-time">
+  2022-04-03
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%89%8D%E8%A8%80"><span class="post-toc-number">1.</span> <span class="post-toc-text">前言</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%8A%A0JS%E8%BF%87%E7%A8%8B"><span class="post-toc-number">2.</span> <span class="post-toc-text">抠JS过程</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">3.</span> <span class="post-toc-text">总结</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%85%B3%E4%BA%8E%E4%BB%A3%E7%A0%81%E7%9A%84%E8%8E%B7%E5%8F%96"><span class="post-toc-number">4.</span> <span class="post-toc-text">关于代码的获取</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向案例——某远海运公司webpack抠JS"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向案例——某远海运公司webpack抠JS</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-04-03 23:28:00" datetime="2022-04-03T15:28:00.000Z"  itemprop="datePublished">2022-04-03</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p>免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
+</blockquote>
+<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>webpack抠JS的一个案例，用来熟练如何从webpack打包的JS代码中抠关键的JS代码。</p>
+<h4 id="抠JS过程"><a href="#抠JS过程" class="headerlink" title="抠JS过程"></a>抠JS过程</h4><p>网址：aHR0cHM6Ly9zeW5jb25odWIuY29zY29zaGlwcGluZy5jb20v</p>
+<p>目标：登录接口的密码加密JS代码分析。</p>
+<p>老规矩，先抓包。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041509227.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404150944421" title="">
+                </div>
+                <div class="image-caption">image-20220404150944421</div>
+            </figure>
+
+<p>可以看到登录请求的密码这个参数是加密的。</p>
+<p>搜索关键词<code>password</code>，找到一个疑似加密的函数，如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041624199.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404162426120" title="">
+                </div>
+                <div class="image-caption">image-20220404162426120</div>
+            </figure>
+
+
+
+<p>点进去看到加密的地方：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041633567.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404163306525" title="">
+                </div>
+                <div class="image-caption">image-20220404163306525</div>
+            </figure>
+
+
+
+<p>接着点进去看这个<code>o.a</code>函数：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041634530.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404163401493" title="">
+                </div>
+                <div class="image-caption">image-20220404163401493</div>
+            </figure>
+
+<p>可以看到，对密码采用了RSA加密，然后进行Base64编码。然后看下代码结构，很显然是按照webpack模块化编程进行组织的。</p>
+<p>按照前面介绍的——<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/">JS逆向之webpack扣JS思路</a>——这篇文章总结的方法：</p>
+<ol>
+<li>找到模块加载器。</li>
+</ol>
+<p>快速定位模块加载器，一般可以通过搜索<code>&#125;(&#123;</code>，迅速定位到，但是包含加密函数的JS文件中并未找到模块加载器，没有找到的话，我们自己写一个好了。代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">b</span>(<span class="params">n</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (e[n])</span><br><span class="line">        <span class="keyword">return</span> e[n].<span class="property">exports</span>;</span><br><span class="line">    <span class="keyword">var</span> u = e[n] = &#123;</span><br><span class="line">        <span class="attr">i</span>: n,</span><br><span class="line">        <span class="attr">l</span>: !<span class="number">1</span>,</span><br><span class="line">        <span class="attr">exports</span>: &#123;&#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">return</span> c[n].<span class="title function_">call</span>(u.<span class="property">exports</span>, u, u.<span class="property">exports</span>, b),</span><br><span class="line">        u.<span class="property">l</span> = !<span class="number">0</span>,</span><br><span class="line">        u.<span class="property">exports</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>构造自执行。</li>
+</ol>
+<p>这个也比较简单，我们把上边的代码，稍微做修改：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">!<span class="keyword">function</span>(<span class="params">c</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> e = &#123;&#125;;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">b</span>(<span class="params">n</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (e[n])</span><br><span class="line">            <span class="keyword">return</span> e[n].<span class="property">exports</span>;</span><br><span class="line">        <span class="keyword">var</span> u = e[n] = &#123;</span><br><span class="line">            <span class="attr">i</span>: n,</span><br><span class="line">            <span class="attr">l</span>: !<span class="number">1</span>,</span><br><span class="line">            <span class="attr">exports</span>: &#123;&#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">return</span> c[n].<span class="title function_">call</span>(u.<span class="property">exports</span>, u, u.<span class="property">exports</span>, b),</span><br><span class="line">        u.<span class="property">l</span> = !<span class="number">0</span>,</span><br><span class="line">        u.<span class="property">exports</span></span><br><span class="line">    &#125;</span><br><span class="line">    encode = b;</span><br><span class="line">&#125;(&#123;</span><br><span class="line">	<span class="comment">// TODO</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="3">
+<li>找到并抠出需要的模块。</li>
+</ol>
+<p>抠JS就变成了一道填空题，把加密方法依赖到的模块抠出来，作为参数填到上边自执行函数中去。我们先抠出加密方法， 观察下依赖哪些模块：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> r = <span class="title function_">n</span>(<span class="string">&quot;XBrZ&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> t = r.<span class="property">pki</span>.<span class="title function_">publicKeyFromPem</span>(</span><br><span class="line">    <span class="string">&quot;-----BEGIN PUBLIC KEY-----\n MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsy4xppPDUT2eAOR5h0cyydzxtKB9O80A\n GjUT6FmDgg6CwelpnE0C2h2JQyP1gCveJs6GDwSDn20RVVpD67f//YPYErjaH/CBOxNG3k5IkW1o\n Qx04uqFNMtWvjzk0aFh2eJLsBi7Ha4elw3WySg00B8oZCL4VBay4ML9kyOAjjCj5jHCX8a2yxIMJ\n IF+EjW3kBR68IMwBvuDL45Qa0oB24vTffaSEs+hGjMTQvoCciOfti3pmEAlVc438/cBgAhK5cIMf\n IMElxYAVvmsDy0I7RCUTrajetKjX94Q+JuQUxnIHNC3IVtYsl1x0lNRtb93IhlRCkZ9djOu350eq\n hZIOXQIDAQAB\n  -----END PUBLIC KEY-----&quot;</span>).<span class="title function_">encrypt</span>(e, <span class="string">&quot;RSA-OAEP&quot;</span>, &#123;</span><br><span class="line">    <span class="attr">md</span>: r.<span class="property">md</span>.<span class="property">sha256</span>.<span class="title function_">create</span>(),</span><br><span class="line">    <span class="attr">mgf1</span>: &#123;</span><br><span class="line">        <span class="attr">md</span>: r.<span class="property">md</span>.<span class="property">sha1</span>.<span class="title function_">create</span>()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">return</span> <span class="variable language_">window</span>.<span class="title function_">btoa</span>(t)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>通过debug知e是我们填入的密码——即123456，唯一用到的模块是键为<code>XBrZ</code>的模块。我们全局搜索<code>XBrZ: </code>找到对应的模块定义：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041656123.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404165620085" title="">
+                </div>
+                <div class="image-caption">image-20220404165620085</div>
+            </figure>
+
+<p>点进去发现这个模块又引用了很多其它的模块，如果按照模块一个一个的抠的话，比较费时。所以我们将这整个文件中定义的模块全部抠下来，作为我们上边定义的自执行函数的参数。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041656763.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404165643735" title="">
+                </div>
+                <div class="image-caption">image-20220404165643735</div>
+            </figure>
+
+
+
+<p>整理完了之后，我们将代码放到浏览器中检验一下，防止出错：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041701058.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404170102015" title="">
+                </div>
+                <div class="image-caption">image-20220404170102015</div>
+            </figure>
+
+<p>不出意外的话就不会出意外，没有报错。</p>
+<ol start="4">
+<li>导出相应的模块。</li>
+</ol>
+<p>模块通过模块加载器加载，所以想要得到加密方法依赖的模块，只需要导出模块函数即可。定义一个全局变量，比如<code>encode</code>，然后将上边实现的模块加载函数赋值给这个全局变量即可。代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> encode;</span><br><span class="line"></span><br><span class="line">!<span class="keyword">function</span>(<span class="params">c</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> e = &#123;&#125;;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">b</span>(<span class="params">n</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (e[n])</span><br><span class="line">            <span class="keyword">return</span> e[n].<span class="property">exports</span>;</span><br><span class="line">        <span class="keyword">var</span> u = e[n] = &#123;</span><br><span class="line">            <span class="attr">i</span>: n,</span><br><span class="line">            <span class="attr">l</span>: !<span class="number">1</span>,</span><br><span class="line">            <span class="attr">exports</span>: &#123;&#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">return</span> c[n].<span class="title function_">call</span>(u.<span class="property">exports</span>, u, u.<span class="property">exports</span>, b),</span><br><span class="line">        u.<span class="property">l</span> = !<span class="number">0</span>,</span><br><span class="line">        u.<span class="property">exports</span></span><br><span class="line">    &#125;</span><br><span class="line">    encode = b;</span><br><span class="line">&#125;(&#123;</span><br><span class="line">    <span class="comment">// 此处省略若干行模块函数的定义</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="5">
+<li>编写测试代码。</li>
+</ol>
+<p>对于这个案例而言，测试代码就是那一串加密代码，看能否如期的得到类似的加密字符串，就证明我们抠的JS没有问题，测试代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">get_pass</span>(<span class="params">passwd</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> r = <span class="title function_">encode</span>(<span class="string">&quot;XBrZ&quot;</span>); <span class="comment">// 通过模块加载器加载XBrZ模块。</span></span><br><span class="line">    <span class="keyword">var</span> t = r.<span class="property">pki</span>.<span class="title function_">publicKeyFromPem</span>(<span class="string">&quot;-----BEGIN PUBLIC KEY-----\n MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsy4xppPDUT2eAOR5h0cyydzxtKB9O80A\n GjUT6FmDgg6CwelpnE0C2h2JQyP1gCveJs6GDwSDn20RVVpD67f//YPYErjaH/CBOxNG3k5IkW1o\n Qx04uqFNMtWvjzk0aFh2eJLsBi7Ha4elw3WySg00B8oZCL4VBay4ML9kyOAjjCj5jHCX8a2yxIMJ\n IF+EjW3kBR68IMwBvuDL45Qa0oB24vTffaSEs+hGjMTQvoCciOfti3pmEAlVc438/cBgAhK5cIMf\n IMElxYAVvmsDy0I7RCUTrajetKjX94Q+JuQUxnIHNC3IVtYsl1x0lNRtb93IhlRCkZ9djOu350eq\n hZIOXQIDAQAB\n  -----END PUBLIC KEY-----&quot;</span>).<span class="title function_">encrypt</span>(passwd, <span class="string">&quot;RSA-OAEP&quot;</span>, &#123;</span><br><span class="line">        <span class="attr">md</span>: r.<span class="property">md</span>.<span class="property">sha256</span>.<span class="title function_">create</span>(),</span><br><span class="line">        <span class="attr">mgf1</span>: &#123;</span><br><span class="line">            <span class="attr">md</span>: r.<span class="property">md</span>.<span class="property">sha1</span>.<span class="title function_">create</span>()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">window</span>.<span class="title function_">btoa</span>(t)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">get_pass</span>(<span class="string">&quot;123456&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+
+
+<p>运行测试代码，正常的输出了密码加密之后的密文：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041709186.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404170927135" title="">
+                </div>
+                <div class="image-caption">image-20220404170927135</div>
+            </figure>
+
+
+
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>从webpack组织的JS代码中抠JS，虽然看起来比较简单，但是如果遇到复杂一点的案例，并且对JS语法不太熟的话，还是有一定的难度的的，所以需要对这一块多多练习。后边关于webpack的，还会再出一些案例，一些更加复杂的案例。</p>
+<h4 id="关于代码的获取"><a href="#关于代码的获取" class="headerlink" title="关于代码的获取"></a>关于代码的获取</h4><p>扫码关注微信号——逆向一步步，公众号内回复关键词<code>03</code>就可以获取本案例的全部代码。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202202231720872.jpg" alt="qrcode_for_gh_509fdefd3c81_258" title="">
+                </div>
+                <div class="image-caption">qrcode_for_gh_509fdefd3c81_258</div>
+            </figure>
+
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:20.290Z" itemprop="dateUpdated">2023-05-09 18:16:20</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WebPack/" rel="tag">WebPack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/&title=《JS逆向案例——某远海运公司webpack抠JS》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/&title=《JS逆向案例——某远海运公司webpack抠JS》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——某远海运公司webpack抠JS》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%98%BF%E5%B0%94%E6%B3%95%E8%90%A5webpack%E6%8A%A0JS/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向案例——阿尔法营webpack抠JS</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向之webpack扣JS思路</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/&title=《JS逆向案例——某远海运公司webpack抠JS》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/&title=《JS逆向案例——某远海运公司webpack抠JS》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——某远海运公司webpack抠JS》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAAEmCAAAAADqr2IGAAAEkklEQVR42u3aS27jMBAFQN//0h5gMLtkrPeaUiAqpVVgG6RUCtDsz+sVX++/1+dvv/7m/Z8rX//z51/XzD95XXFhwoQJE6ZbMr0/Xslmn//Ob/HzvsmO+S75s2PChAkTpmcwJcvlgTmPre1eKysv7YUJEyZMmH4BUxKw8+PFuX/nLwATJkyYMGHKU8Rkg5Xa8zpi/sIwYcKECdOzmdoQnmPlYTtvi+Zt1JUDDSZMmDBhegbTzwTme/594XwTJkyYMGG6AdN7dM0GYvIQnrRO82dZedJ/K2DChAkTpm2Z2rS2vdEr0suVQZz85R3UwjFhwoQJ0yZMs3JtcqN5K7T9ZLZy247FhAkTJkzPYMrHaxKs2bhPzpG/quSx8xUwYcKECdPuTHky2SbJyeDO7KCQtyrbbw8SYEyYMGHCtBVTGxRnDctkzbzgO3up+RHhoAqOCRMmTJg2Z5qlsjOsq4uzs6JwXRXAhAkTJkw3ZpoF6TwxboGSwJ8fL9aHkDBhwoQJ0zOY2mSybUkmNzo7LrRp/Ht0YcKECROmfZnacZxZGjkL/GcdPlZGgjBhwoQJ0+5MK+XXWfjPb64txc5Kxjk0JkyYMGHalym/uRwib47mh4/1lfMSMyZMmDBheh7TLDy3YzptkD6rW5uvU5yhMGHChAnTJkwryWrbVszT6ZagbWfWBwVMmDBhwrQt0zpWvs2sENwO+rQHkR/6n8KECRMmTD/ONCvUJoG85ctLt2363T5RMbKDCRMmTJhuz9SWd/OwnR8pWsq84To7uBxgYcKECROmxzHNktIV3KTIO7vP2W8wYcKECdOTmOr23ghuFqTPPbLkTVBMmDBhwvQMpvxH7W2tFJTb5LYtIs8EMGHChAnTXkyzsuxsnaXZonLNWQF62PvFhAkTJky3Z8pT03bwZZZqrgzL5keZogSMCRMmTJg2ZEo2az9fSVPf5fU5kM8GdL75PSZMmDBh2pYpafhFaWEA2ibSs5GdWbob3RsmTJgwYdqQqR1waSHacZmVZupKUfjgSTFhwoQJ07ZMbZk1D955sjor+64Xi5PX+ZptgAkTJkyYbsa03pjMk9v1wmue+iZHmZXmKCZMmDBh2pdppbSa39y5ZdwZwezQgwkTJkyY9mVqx2XaQZkrUuJkl7Ype7AjJkyYMGHahCm/0XaDNn2drd8OA+Wt1m8amZgwYcKEaVumPCltcWehun1Vs5GgfBdMmDBhwvQMprMS15Xft/XVs44LB8VoTJgwYcL0CKYWpdimfNR2JGglIY+eFxMmTJgwbcuUAOXxceXAccXV7lLcISZMmDBh2oTpXV5tAtmuOSv+rv/yABcTJkyYMG3LtB5cZ03KS0qxH48gyV4nHFMwYcKECdMtmWYBO0+MZ+3PNkHNA3w7GIQJEyZMmJ7BtFKiPbc0nAf7c89BB0+BCRMmTJh+DVMUPoOUNTkczBLjdpQnSsIxYcKECdMvYEqSybZl2H6b0OcQSZKMCRMmTJiewZQXefP0uC3atml23lJdKWdjwoQJE6bdmWYF1hZuxt2O7+TF39mhARMmTJgwbcX0B7Ukm3SGrGXYAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

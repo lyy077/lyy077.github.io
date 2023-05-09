@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>一文了解Android构建工具——AAPT2 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="android,aapt2">
+    <meta name="description" content="什么是AAPT2(Android Asset Packaging Tool)在Android开发过程中，我们通过Gradle命令，启动一个构建任务，最终会生成构建产物“APK”文件。常规APK的构建流程如下：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一文了解Android构建工具——AAPT2">
+<meta property="og:url" content="http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="什么是AAPT2(Android Asset Packaging Tool)在Android开发过程中，我们通过Gradle命令，启动一个构建任务，最终会生成构建产物“APK”文件。常规APK的构建流程如下：">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FmSi0GYeL8d3wSapWsPae4kr28Om?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/Fi1D2FYTzHg-7TmjhGnER91BjQ5H?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FnCbyMrXOigcxISFpeojInoEP4Fh?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FqQVM_68gVDZVPVS-x3kVehUf5Po?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FtTzF2KXRLIASXXu-IKcovhR9wGH?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/Fiu1UOXFwhx9Vj8_8jHACQLIXW7N?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FsFqakTFKfyvq4U4deD3pwN0AMt6?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/Ft1NO7v_GkvR_Rn5N_cfJYQL4doZ">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FrdQkv6mPBGr6Akv0YhonaOTyH07?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FqcguIF45SpTniymtYf6H89zRQQ5">
+<meta property="article:published_time" content="2022-01-01T02:54:45.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:33.655Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="android">
+<meta property="article:tag" content="aapt2">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FmSi0GYeL8d3wSapWsPae4kr28Om?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">一文了解Android构建工具——AAPT2</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">一文了解Android构建工具——AAPT2</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-01-01T02:54:45.000Z" itemprop="datePublished" class="page-time">
+  2022-01-01
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Android/">Android</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFAAPT2-Android-Asset-Packaging-Tool"><span class="post-toc-number">1.</span> <span class="post-toc-text">什么是AAPT2(Android Asset Packaging Tool)</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#AAPT2%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="post-toc-number">2.</span> <span class="post-toc-text">AAPT2如何工作</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Compile%E5%91%BD%E4%BB%A4"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">Compile命令</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Link%E5%91%BD%E4%BB%A4"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">Link命令</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#AAPT2%E5%AE%B9%E5%99%A8"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">AAPT2容器</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">3.</span> <span class="post-toc-text">总结</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-一文了解Android构建工具——AAPT2"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">一文了解Android构建工具——AAPT2</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-01-01 10:54:45" datetime="2022-01-01T02:54:45.000Z"  itemprop="datePublished">2022-01-01</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Android/">Android</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <meta name="referrer" content="no-referrer"/>
+<div align="middle"><iframe width="560" height="315" src="https://www.youtube.com/embed/tHv9XMzEnjo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+
+<h2 id="什么是AAPT2-Android-Asset-Packaging-Tool"><a href="#什么是AAPT2-Android-Asset-Packaging-Tool" class="headerlink" title="什么是AAPT2(Android Asset Packaging Tool)"></a>什么是AAPT2(Android Asset Packaging Tool)</h2><p>在Android开发过程中，我们通过Gradle命令，启动一个构建任务，最终会生成构建产物“APK”文件。常规APK的构建流程如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FmSi0GYeL8d3wSapWsPae4kr28Om?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="android构建.png" title="">
+                </div>
+                <div class="image-caption">android构建.png</div>
+            </figure>
+
+<p>（引用自Google官方文档）</p>
+<ul>
+<li>编译所有的资源文件，生成资源表和R文件；</li>
+<li>编译Java文件并把class文件打包为dex文件；</li>
+<li>打包资源和dex文件，生成未签名的APK文件；</li>
+<li>签名APK生成正式包。</li>
+</ul>
+<p>老版本的Android默认使用AAPT编译器进行资源编译，从Android Studio 3.0开始，AS默认开启了 AAPT2作为资源编译的编译器，目前看来，AAPT2也是Android发展的主流趋势，学习AAPT2的工作原理可以帮助Android开发更好的掌握APK构建流程，从而帮助解决实际开发中遇到的问题。</p>
+<p>AAPT2的可执行文件随Android SDK的Build Tools一起发布，在Android Studio的build-tools文件夹中就包含AAPT2工具，目录为（SDK目录&#x2F;build-tools&#x2F;version&#x2F;aapt2）。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/Fi1D2FYTzHg-7TmjhGnER91BjQ5H?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="aapt2路径.png" title="">
+                </div>
+                <div class="image-caption">aapt2路径.png</div>
+            </figure>
+
+<p>所以AAPT的作用，总结起来就是<strong>在APK打包的过程中对静态资源文件进行编译，打包</strong>。</p>
+<p>这里可能会有一个疑问：</p>
+<blockquote>
+<p>Java文件需要编译才能生class文件，这个我能明白，但资源文件编译到底是干什么的？为什么要对资源做编译？</p>
+</blockquote>
+<p>这里先插个眼，带着这个问题去深入学习AAPT，然后慢慢解开这个问题。</p>
+<h2 id="AAPT2如何工作"><a href="#AAPT2如何工作" class="headerlink" title="AAPT2如何工作"></a>AAPT2如何工作</h2><p>和AAPT不同，AAPT2把资源编译打包过程拆分为两部分，即编译和链接：</p>
+<ul>
+<li>编译阶段：将资源文件编译为二进制文件（flat)</li>
+<li>链接阶段：将编译后的文件合并，打包成单独文件。</li>
+</ul>
+<blockquote>
+<p>通过把资源编译拆分为两个部分，AAPT2能够很好的提升资源编译的性能。例如，之前一个资源文件发生变动，AAPT需要做一全量编译，AAPT2只需要重新编译改变的文件，然后和其他未发生改变的文件进行链接即可。</p>
+</blockquote>
+<p>AAPT2常用命令：</p>
+<table>
+<thead>
+<tr>
+<th align="center">二级命令</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">compile</td>
+<td align="center">编译资源，用于链接</td>
+</tr>
+<tr>
+<td align="center">link</td>
+<td align="center">链接资源至一个apk</td>
+</tr>
+<tr>
+<td align="center">…</td>
+<td align="center">其它命令，通过<code>aapt2 -h</code>查看</td>
+</tr>
+</tbody></table>
+<h3 id="Compile命令"><a href="#Compile命令" class="headerlink" title="Compile命令"></a>Compile命令</h3><p>Complie指令用于编译资源，AAPT2提供多个选项与Compile命令搭配使用，如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FnCbyMrXOigcxISFpeojInoEP4Fh?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="aapt2命令选项.png" title="">
+                </div>
+                <div class="image-caption">aapt2命令选项.png</div>
+            </figure>
+
+<p>Compile的一般用法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aapt2 compile path-to-input-files [options] -o output-directory/</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Compile 命令会对输入的资源文件的路径做校验，输入文件的路径必须满足path&#x2F;resource-type[config]&#x2F;file，否则会编译报错：error: bad resource path.</p>
+</blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FqQVM_68gVDZVPVS-x3kVehUf5Po?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="aapt2编译报错.png" title="">
+                </div>
+                <div class="image-caption">aapt2编译报错.png</div>
+            </figure>
+
+<p>新建一个目录drawable-hdpi，把用来测试的图片放在这个目录下，然后执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aapt2 compile drawable-hdpi/aapt2路径.png -o .</span><br></pre></td></tr></table></figure>
+
+<p>可以看到当前目录多了一个drawable-hdpi_aapt2.flat的文件。</p>
+<p>在Android Studio中，可以在app&#x2F;build&#x2F;intermediates&#x2F;merged_res&#x2F;debug&#x2F; 目录下找到编译生成的.flat文件。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FtTzF2KXRLIASXXu-IKcovhR9wGH?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="android studio打包产生的flat文件.png" title="">
+                </div>
+                <div class="image-caption">android studio打包产生的flat文件.png</div>
+            </figure>
+
+<p>当然Compile也支持编译多个文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aapt2 compile path-to-input-files1 path-to-input-files2 [options] -o output-directory/</span><br></pre></td></tr></table></figure>
+
+<p>编译整个目录,需要制定数据文件，编译产物是一个压缩文件，包含目录下所有的资源，通过文件名把资源目录结构扁平化。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aapt2 compile --<span class="built_in">dir</span> .../res [options] -o output-directory/resource.ap_</span><br></pre></td></tr></table></figure>
+
+<p>我们找个简单的Android项目测试下，首先进到项目的<code>app/src/main</code>目录下，然后执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aapt2 compile --<span class="built_in">dir</span> ./res -o resource.ap_</span><br></pre></td></tr></table></figure>
+
+<p>可以看到产生了一个压缩文件，用命令<code>unzip -lv resource.ap_</code>查看，可以看到里面是一堆<code>.flat</code>的文件</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/Fiu1UOXFwhx9Vj8_8jHACQLIXW7N?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="aapt2 compile编译目录.png" title="">
+                </div>
+                <div class="image-caption">aapt2 compile编译目录.png</div>
+            </figure>
+
+<p>随便找其中的一个文件打开，是乱码的，那么这个FLAT文件是到底是什么？我们先接着看aapt2的链接阶段，晚点再探讨这个话题。</p>
+<h3 id="Link命令"><a href="#Link命令" class="headerlink" title="Link命令"></a>Link命令</h3><p>在链接阶段，AAPT2 会合并在编译阶段生成的所有中间文件（.flat文件），并将它们打包成ZIP包（最终APK的原型，由于不包括DEX文件且未签名，所以无法正常安装）。</p>
+<p>链接资源使用link子命令，如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">aapt2 <span class="built_in">link</span> -o build/output.apk \</span><br><span class="line">    -I <span class="variable">$ANDROID_HOME</span>/platforms/android-29/android.jar \</span><br><span class="line">    --manifest build/intermediates/manifests/full/debug/AndroidManifest.xml \</span><br><span class="line">    build/layout_activity_main.xml.flat \</span><br><span class="line">    build/values_styles.arsc.flat \</span><br><span class="line">    build/values_colors.arsc.flat \</span><br><span class="line">    build/values_strings.arsc.flat \</span><br><span class="line">    build/mipmap-xxxhdpi_ic_launcher.png.flat \</span><br><span class="line">    build/mipmap-xxxhdpi_ic_launcher_round.png.flat</span><br></pre></td></tr></table></figure>
+
+<h3 id="AAPT2容器"><a href="#AAPT2容器" class="headerlink" title="AAPT2容器"></a>AAPT2容器</h3><p>FLAT文件是AAPT2编译的产物文件，也叫做AAPT2容器，文件由文件头和资源项两大部分组成。</p>
+<ol>
+<li>文件头</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">Size(in bytes)</th>
+<th align="center">Field</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">4</td>
+<td align="center">magic</td>
+<td align="left">AAPT2容器文件标识，AAPT或0x54504141</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">version</td>
+<td align="left">AAPT2容器版本</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">entry_count</td>
+<td align="left">容器中包含的条目数(一个flat文件中可以包含多个资源项)</td>
+</tr>
+</tbody></table>
+<p>用<code>UltraEdit</code>编辑上面任意一个flat文件，内容如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FsFqakTFKfyvq4U4deD3pwN0AMt6?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="UE打开flat文件.png" title="">
+                </div>
+                <div class="image-caption">UE打开flat文件.png</div>
+            </figure>
+
+<p>可以看到前4个字节是<code>0x54504141</code>(为啥不是0x41415054?因为是小端机器)，标识该文件是一个AAPT容器文件；紧接着4个字节是<code>0x00000001</code>表示该文件的版本号是1，接着4个字节是<code>0x000000001</code>表示该文件只有一个资源项。</p>
+<blockquote>
+<p>关于二进制文件的逆向工具，类Unix系统都自带<code>xxd</code>命令，可以直接输出二进制文件的十六进制格式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxd values-de_values-de.arsc.flat</span><br></pre></td></tr></table></figure>
+
+<p>或者使用<code>Vim</code>打开二进制文件，然后在命令模式中输入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%!xxd</span><br></pre></td></tr></table></figure>
+
+<p>在Windows系统中，则可以用UE(UltraEdit)打开二进制文件分析。</p>
+</blockquote>
+<ol start="2">
+<li>资源项</li>
+</ol>
+<p>先用一个表格看下资源项的数据格式：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Size(in bytes)</th>
+<th align="center">Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">4</td>
+<td align="center">entry_type</td>
+<td>资源类型，目前仅支持2种类型，RES_TABLE和RES_FILE</td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td align="center">entry_length</td>
+<td>资源文件数据长度</td>
+</tr>
+<tr>
+<td align="center">若干</td>
+<td align="center">entry_data</td>
+<td>资源数据</td>
+</tr>
+</tbody></table>
+<p>entry_type值分为两种类型:</p>
+<ul>
+<li>当entry_type的值等于<code>0x00000000</code>时，为<code>RES_TABLE</code>类型。</li>
+<li>当entry_type的值等于<code>0x00000001</code>时，为<code>RES_FILE</code>类型。</li>
+</ul>
+<p>很显然我们这里打开的文件是一个RES_FILE类型，因为这里的entry_type为<code>0x00000001</code>。</p>
+<p>接着8个字节<code>0x000000000001BFC8</code>表示该资源文件的长度，转为十进制，也即114632个字节。换算成以k为单位，就是111.95k，我们查看资源文件大小也刚好是112k。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/Ft1NO7v_GkvR_Rn5N_cfJYQL4doZ" alt="资源文件大小.png" title="">
+                </div>
+                <div class="image-caption">资源文件大小.png</div>
+            </figure>
+
+<p>接下来就是资源数据了，接下来看下RES_FILE文件的格式：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Size(inf bytes)</th>
+<th align="center">Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">4</td>
+<td align="center">header_size</td>
+<td>header的长度</td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td align="center">data_size</td>
+<td>data的长度</td>
+</tr>
+<tr>
+<td align="center">header_size</td>
+<td align="center">header</td>
+<td>表示protobuf序列化的CompiledFile结构</td>
+</tr>
+<tr>
+<td align="center">x</td>
+<td align="center">header_padding</td>
+<td>0-3个填充字节，用于data 32位对齐</td>
+</tr>
+<tr>
+<td align="center">data_size</td>
+<td align="center">data</td>
+<td>资源文件内容(PNG, 二进制, XML或者protobuf序列化的XmlNode结构)</td>
+</tr>
+<tr>
+<td align="center">y</td>
+<td align="center">data_paddning</td>
+<td>0-3个填充字节，用于data 32位对齐</td>
+</tr>
+</tbody></table>
+<p>可以用一张图看下完整的RES_FILE类型的flat文件的格式：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FrdQkv6mPBGr6Akv0YhonaOTyH07?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="RES_FILE类型的flat文件格式.png" title="">
+                </div>
+                <div class="image-caption">RES_FILE类型的flat文件格式.png</div>
+            </figure>
+
+<p>接着看刚才打开的.flat文件，<code>0000003F</code>4个字节，也即63表示该RES_FILE的header长度是63个字节，然后接着8个字节<code>0x000000000001BF7B</code>表示数据文件的长度，也即114555个字节。</p>
+<blockquote>
+<p>这里的data_length和上面的entry_length不是同一个长度，data_length指的是编译之前原始文件的数据长度(这里指原始png文件)，而entry_length指的是编译之后整个flat文件的长度。</p>
+</blockquote>
+<p>接下来就是header部分，前面计算了header的长度是63位，所以这里63个字节表示header，然后紧接着一个<code>00</code>是header_padding用来做32位对齐。</p>
+<p>然后接下来的114555个字节就是原始文件的数据内容(也即是png的内容)，最后一个<code>00</code>是用来填充数据做32位对齐的。</p>
+<p>总结一下，我们前面计算了整个flat文件的大小是114632个字节，114632&#x3D;4(用来存储header的长度)+8(用来存储data的长度)+63(header)+1(1个填充字节，用来填充header进行32位对齐)+114555(编译之前整个png的文件长度)+1(1个填充字节，用来填充data进行32位对齐)</p>
+<p>最后用一张图看下上边分析的RES_FILE格式：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/FqcguIF45SpTniymtYf6H89zRQQ5" alt="RES_FILE格式图示.png" title="">
+                </div>
+                <div class="image-caption">RES_FILE格式图示.png</div>
+            </figure>
+
+<p>另一种格式<code>RES_TABLE</code>格式比较简单，其实就是ResourceTable的<code>protobuf</code>序列化结果。数据结构如下：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Top level message representing a resource table.</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">ResourceTable</span> &#123;</span><br><span class="line">    <span class="comment">// 字符串池</span></span><br><span class="line">    StringPool source_pool = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// 用于生成资源id</span></span><br><span class="line">    <span class="keyword">repeated</span> Package <span class="keyword">package</span> = <span class="number">2</span>;</span><br><span class="line">    <span class="comment">// 资源叠加层相关</span></span><br><span class="line">    <span class="keyword">repeated</span> Overlayable overlayable = <span class="number">3</span>;</span><br><span class="line">    <span class="comment">// 工具版本</span></span><br><span class="line">    <span class="keyword">repeated</span> ToolFingerprint tool_fingerprint = <span class="number">4</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>资源表（ResourceTable）中包含：</p>
+<p><strong>StringPool</strong>：字符串池，字符串常量池是为了把资源文件中的string复用起来，从而减少体积，资源文件中对应的字符串会被替换为字符串池中的索引。</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">message </span><span class="title class_">StringPool</span> &#123;</span><br><span class="line">  <span class="type">bytes</span> data = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Package</strong>：包含资源id的相关信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// 资源id的包id部分，在 [0x00, 0xff] 范围内</span><br><span class="line">message PackageId &#123;</span><br><span class="line">  uint32 id = 1;</span><br><span class="line">&#125;</span><br><span class="line">// 资源id的命名规则</span><br><span class="line">message Package &#123;</span><br><span class="line">  // [0x02, 0x7f) 简单的说，由系统使用</span><br><span class="line">  // 0x7f 应用使用</span><br><span class="line">  // (0x7f, 0xff] 预留Id</span><br><span class="line">  PackageId package_id = 1;</span><br><span class="line">  // 包名</span><br><span class="line">  string package_name = 2;</span><br><span class="line">  // 资源类型，对应string, layout, xml, dimen, attr等，其对应的资源id区间为[0x01, 0xff]</span><br><span class="line">  repeated Type type = 3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>资源id的命令方式遵循0xPPTTEEEE的规则，其中PP对应PackageId，一般应用使用的资源为7f，TT对应的是资源文件夹的名成，最后4位为资源的id，从0开始。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过本文，了解到<em>AAPT2</em>（<em>Android</em> 资源打包工具）是一个构建工具，<em>Android Studio</em> 和 <em>Android Gradle Plugin</em> 使用它来编译和打包应用的资源。<em>AAPT2</em> 会解析资源、为资源编制索引，并将资源编译为针对 Android 平台进行过优化的二进制格式。</p>
+<p>在本文的开头，我们有如下的问题：</p>
+<blockquote>
+<p>Java文件需要编译才能生.class文件，这个我能明白，但资源文件编译到底是干什么的？为什么要对资源做编译？</p>
+</blockquote>
+<p>主要原因在于 <em>AAPT2</em> 将资源打包过程拆分成了两个阶段：「编译阶段」和「链接阶段」，为了在链接阶段得到资源更详细的信息，例如：资源名称、配置信息（<em>Configuration</em>） 等，因此，直接将资源的元信息连同资源本身一同编码进 <em>AAPT2</em> 容器文件中，这样，资源链接的过程可以完全与编译过程解耦了，而且，对于增量构建来说，这样大大提升了资源打包的性能。这样如果只是修改了其中若干个资源文件，则只需要对这些资源文件单独编译然后再链接，而不用对所有的资源文件重新链接，大大提高了性能。</p>
+<p>参考链接：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://booster.johnsonlee.io/architecture/aapt2-output-reversing.html#flat-%E4%B8%8E-aapt-%E4%BA%A7%E7%89%A9%E7%9A%84%E5%85%B3%E7%B3%BB">AAPT2产物逆向</a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040864174">Android构建工具–AAPT2源码解析（一）</a></li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:33.655Z" itemprop="dateUpdated">2023-05-09 18:16:33</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aapt2/" rel="tag">aapt2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/" rel="tag">android</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/&title=《一文了解Android构建工具——AAPT2》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/&title=《一文了解Android构建工具——AAPT2》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《一文了解Android构建工具——AAPT2》 — 何仕鹏的个人博客&url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/%E5%A4%A7%E7%AB%AF%E8%BF%98%E6%98%AF%E5%B0%8F%E7%AB%AF/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">大端还是小端？</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">从零开始学深度学习——泰勒公式</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/&title=《一文了解Android构建工具——AAPT2》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/&title=《一文了解Android构建工具——AAPT2》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《一文了解Android构建工具——AAPT2》 — 何仕鹏的个人博客&url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD8ElEQVR42u3aS27jQAwFwNz/0pltgEzk90g6yKK0MmRZ6i4boPn5+IiPzy/H1zPfr/np9fP1P51p331e4dmBAwcOHDjirX4/nh+WbHVzzxxoduf/3B8HDhw4cBxxJA97vvInlM198vCccETBGwcOHDhw/DrHc3ibUd4+MXkXBw4cOHD8NY5koUkadlWazKFx4MCBA8fvcLRbzUNdkuDNSoT5p95SK8WBAwcOHIuot6H5C6/fMt+BAwcOHDjKqbA89CZFwDbN2xcN633hwIEDB441x2aMYB+w24Jg0tDaMOHAgQMHjndzbIpo+UjcVYHvqmSJAwcOHDj2HHkgbJO02R2uCpT5F4MDBw4cOG45NiF2NnzQDj20vaH8b0Rdv8SBAwcOHI8ceVhqhwba4bZ3B9cokcOBAwcOHEccSRkuScbyIl3eTMq/mFnx8eJjOHDgwIHjplQ3a1xdPWuTQP74FeLAgQMHjiOOfKtJAjZMn8o0si1QRog4cODAgWPN0QbFWYOnTdXagN2eeZEE4sCBAweONUe7pXYQrXj84g4zjherwoEDBw4cJcdmHCE/M9vkJny2cPW2ceDAgQPHI0f7yFkYbsuFmxGHPHl70YXDgQMHDhyjObHZwEFeztuE4VmBchXmceDAgQPHTcY0HGXIj9m222bV7Mq6TokDBw4cOB452gW1i07CW1scnK1nOMSAAwcOHDhOOdpRtqtA3qZe+5IiDhw4cOC45WiLa/m4Q507Bi2lzT1f7BQHDhw4cBxxzIqACUf7ejO+cICCAwcOHDgWHG361A43tK2mq+GJ4deGAwcOHDiOONpS4GyJzyh5iE2KmHkTq84XceDAgQNHEAH3m2wXlI8y5CF5NqhXtJ1w4MCBA0eZZ21G09rAOUsU23XO/jTgwIEDB45bjraodzUMkYTYq9f1lAcOHDhw4Ig58lSqfVg+HtG2r97YKsOBAwcOHO+aOvjYBLCkvJgsfdM6ShI5HDhw4MDxOxxJEpUXCmdtp03wzsc1il8EDhw4cOCIOdrm0KaltB+AaKHrcI4DBw4cOI448tGB5N3ZNvLk6or+P6vCgQMHDhxrjmRjsyvzkt9sAGI/VPHiN4IDBw4cOEYcn+WRb3VT2svPtwXBF38gcODAgQPHmqMNePukbpOMbdK/ds04cODAgWPDsWkmbcYU2kCYPOsgYOPAgQMHjiOOzdLzJtYmY9pfE/3jwIEDBw4cv8ixCZCz8DwrMuZjc6tAiwMHDhw4jnKWttzWjjXMGkX5uy/uhgMHDhw4jjiS4uAsldqMRMzGLPKEc1UrxYEDBw4caXYTBap8jGCf5uWp4KxYiQMHDhw4jjj+AVW94pWXASYXAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

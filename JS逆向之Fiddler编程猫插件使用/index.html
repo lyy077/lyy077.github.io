@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之Fiddler编程猫插件使用 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="安装FD，配置编程猫插件首先需要安装Fiddler，要求版本&gt;&#x3D;4.6.3。建议官网下载，下载地址：https:&#x2F;&#x2F;www.telerik.com&#x2F;download&#x2F;fiddler&#x2F;fiddler4 下载安装完FD之后，找到FD的安装目录，打开一个叫做Scripts的文件夹：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之Fiddler编程猫插件使用">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="安装FD，配置编程猫插件首先需要安装Fiddler，要求版本&gt;&#x3D;4.6.3。建议官网下载，下载地址：https:&#x2F;&#x2F;www.telerik.com&#x2F;download&#x2F;fiddler&#x2F;fiddler4 下载安装完FD之后，找到FD的安装目录，打开一个叫做Scripts的文件夹：">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102042092.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102044610.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102046340.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102220279.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102227326.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102246448.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102248727.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102256630.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102301070.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102302871.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102345154.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102353138.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102358312.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204110028459.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204110030813.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204110035276.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204110036242.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204110039808.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202202231720872.jpg">
+<meta property="article:published_time" content="2022-04-10T11:17:22.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:37.772Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102042092.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之Fiddler编程猫插件使用</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之Fiddler编程猫插件使用</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-04-10T11:17:22.000Z" itemprop="datePublished" class="page-time">
+  2022-04-10
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%AE%89%E8%A3%85FD%EF%BC%8C%E9%85%8D%E7%BD%AE%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6"><span class="post-toc-number">1.</span> <span class="post-toc-text">安装FD，配置编程猫插件</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Fiddler%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="post-toc-number">2.</span> <span class="post-toc-text">Fiddler的使用</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Chrome%E9%85%8D%E7%BD%AEFiddler%E6%8A%93%E5%8C%85"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">Chrome配置Fiddler抓包</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Fiddler%E9%85%8D%E7%BD%AE%E6%8A%93%E5%8F%96HTTPS"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">Fiddler配置抓取HTTPS</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">编程猫插件的使用</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80"><span class="post-toc-number">3.</span> <span class="post-toc-text">编程猫插件下载地址</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向之Fiddler编程猫插件使用"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之Fiddler编程猫插件使用</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-04-10 19:17:22" datetime="2022-04-10T11:17:22.000Z"  itemprop="datePublished">2022-04-10</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h4 id="安装FD，配置编程猫插件"><a href="#安装FD，配置编程猫插件" class="headerlink" title="安装FD，配置编程猫插件"></a>安装FD，配置编程猫插件</h4><p>首先需要安装Fiddler，要求版本&gt;&#x3D;4.6.3。建议官网下载，下载地址：<a target="_blank" rel="noopener" href="https://www.telerik.com/download/fiddler/fiddler4">https://www.telerik.com/download/fiddler/fiddler4</a></p>
+<p>下载安装完FD之后，找到FD的安装目录，打开一个叫做Scripts的文件夹：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102042092.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410204247917" title="">
+                </div>
+                <div class="image-caption">image-20220410204247917</div>
+            </figure>
+
+
+
+<p>解压FD编程猫插件(插件下载地址见文末)，将里面的所有.dll扩展文件拷贝到上边的Scripts文件夹下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102044610.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410204433530" title="">
+                </div>
+                <div class="image-caption">image-20220410204433530</div>
+            </figure>
+
+
+
+<p>然后关闭Fiddler，并重新启动Fiddler，注意第一次启动需要以管理员身份运行。打开之后界面如下表示安装成功：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102046340.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410204605262" title="">
+                </div>
+                <div class="image-caption">image-20220410204605262</div>
+            </figure>
+
+
+
+<h4 id="Fiddler的使用"><a href="#Fiddler的使用" class="headerlink" title="Fiddler的使用"></a>Fiddler的使用</h4><h5 id="Chrome配置Fiddler抓包"><a href="#Chrome配置Fiddler抓包" class="headerlink" title="Chrome配置Fiddler抓包"></a>Chrome配置Fiddler抓包</h5><p>安装SwitchyOmega代理管理Chrome浏览器插件，在Chrome扩展应用商城中搜索SwitchyOmega，然后安装。添加好插件后，打开SwitchyOmega点击新建情景模式：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102220279.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410222059063" title="">
+                </div>
+                <div class="image-caption">image-20220410222059063</div>
+            </figure>
+
+<p>我们就把新建的情景命名为Fiddler，然后第一行，代理协议填HTTP，代理服务器地址填：127.0.0.1(因为我是用的虚拟机，所以这里填虚拟机的ip地址)，端口填8888。</p>
+<p>在最左边选择应用选项，就保存了刚才的配置。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102227326.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410222742171" title="">
+                </div>
+                <div class="image-caption">image-20220410222742171</div>
+            </figure>
+
+
+
+<p>打开一个页面，比如百度，然后点击SwitchyOmega，选择Fiddler插件，然后刷新页面。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102246448.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410224632321" title="">
+                </div>
+                <div class="image-caption">image-20220410224632321</div>
+            </figure>
+
+
+
+<p>这个时候可以看到Fiddler中已经成功抓到了百度的页面请求，但是由于百度使用的是HTTPS协议，我们还没有配置证书，导致Fiddler抓包的数据不正常，并且百度首页也如同上边展示的那样。FD配置证书抓取HTTPS，也正是接下来要讲的。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102248727.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410224830653" title="">
+                </div>
+                <div class="image-caption">image-20220410224830653</div>
+            </figure>
+
+
+
+<h5 id="Fiddler配置抓取HTTPS"><a href="#Fiddler配置抓取HTTPS" class="headerlink" title="Fiddler配置抓取HTTPS"></a>Fiddler配置抓取HTTPS</h5><p>打开Fiddler，点击工具栏的Tools-&gt;Options，点击HTTPS选项，按照如下图勾选相应的选项：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102256630.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410225612499" title="">
+                </div>
+                <div class="image-caption">image-20220410225612499</div>
+            </figure>
+
+<p>点击Trust Root Certificate，点击Export Root Certificate将FD的证书保存到桌面。这时候桌面上会出现证书FiddlerRoot.cer文件，点击OK设置成功，关闭fiddler。</p>
+<p>打开Chrome浏览器，在浏览器地址中输入：chrome:&#x2F;&#x2F;settings&#x2F;进入chrome的设置页面，在搜索栏中输入管理证书，点击管理证书会跳转到钥匙串管理程序(Mac系统)。</p>
+<p>将桌面的FD证书拖拽到这个钥匙串管理程序中，拖拽成功后，证书默认是不信任的，如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102301070.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410230101918" title="">
+                </div>
+                <div class="image-caption">image-20220410230101918</div>
+            </figure>
+
+
+
+<p>双击这个DO_NOT_TRUST_FiddlerRoot证书，在弹出的窗口中点击信任，选择始终信任。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102302871.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410230244807" title="">
+                </div>
+                <div class="image-caption">image-20220410230244807</div>
+            </figure>
+
+<p>点击左上角关闭按钮，弹出对话框输入root密码。</p>
+<p>打开Fiddler，刷新百度首页，可以看到百度首页正常加载，Fiddler中也能正常的抓到百度的请求。</p>
+<h5 id="编程猫插件的使用"><a href="#编程猫插件的使用" class="headerlink" title="编程猫插件的使用"></a>编程猫插件的使用</h5><p>点击右边的编程猫专用插件，会出现一列导航，如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102345154.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410234536919" title="">
+                </div>
+                <div class="image-caption">image-20220410234536919</div>
+            </figure>
+
+
+
+<p>生成易代码可以忽略，是易语言专用。JS调试工具，内置了一个V8引擎，可以在这个tab里面编辑JS代码，然后进行调试。JSON解析是只格式化JSON数据。数据加密解密，则提供一些常见的加密算法，比如MD5，Sha，AES，DES等。编码解码则提供了一些常见的编码工具，比如Base64。这个编程猫工具重点关注的是注入Hook与内存漫游。</p>
+<p>首先说注入Hook，默认提供了一个Hook Cookie的代码，如下图。勾选左边的开启，然后地址栏为空表示对所有的地址都注入Hook代码，如果只对特定的地址注入代码，则填上地址即可。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102353138.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410235308981" title="">
+                </div>
+                <div class="image-caption">image-20220410235308981</div>
+            </figure>
+
+
+
+<p>我们以百度首页为例，开启注入Hook之后，刷新百度首页，在console控制台上打印了日志信息，如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204102358312.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220410235817134" title="">
+                </div>
+                <div class="image-caption">image-20220410235817134</div>
+            </figure>
+
+
+
+<p>除了注入Hook Cookie的代码，还可以注入Hook window属性，websocket，内置函数或者自定义函数。参考<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/">JS逆向之快速定位关键代码</a></p>
+<p>接着说内存漫游。所谓浏览器内存漫游，其原理通过ast把浏览器中所有的变量，参数中间值在内存中的变化进行存储，然后我们就可以搜索这些值，从而根据值确定这个参数在浏览器中出现的位置，变化情况等等。</p>
+<p>我们以极验的w参数为例。FD上点击内存漫游tab，然后点击下边的开启内存漫游按钮：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204110028459.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220411002857220" title="">
+                </div>
+                <div class="image-caption">image-20220411002857220</div>
+            </figure>
+
+
+
+<p>我们打开极验的测试网址：<a target="_blank" rel="noopener" href="https://www.geetest.com/demo/slide-float.html%EF%BC%8C%E7%84%B6%E5%90%8E%E6%8B%96%E5%8A%A8%E6%BB%91%E5%9D%97%E5%AE%8C%E6%88%90%E9%AA%8C%E8%AF%81%E3%80%82%E6%89%BE%E5%88%B0%E8%BF%99%E4%B8%AAajax.php%E7%9A%84%E8%AF%B7%E6%B1%82%EF%BC%8C%E5%A4%8D%E5%88%B6%E4%B8%8B%E6%9D%A5w%E5%8F%82%E6%95%B0%E7%9A%84%E5%80%BC%EF%BC%8C%E5%A6%82%E4%B8%8B%E5%9B%BE%EF%BC%9A">https://www.geetest.com/demo/slide-float.html，然后拖动滑块完成验证。找到这个ajax.php的请求，复制下来w参数的值，如下图：</a></p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204110030813.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220411003041687" title="">
+                </div>
+                <div class="image-caption">image-20220411003041687</div>
+            </figure>
+
+
+
+<p>接着在console面板输入<code>hook.search(刚才复制下来的w的值)</code>，执行之后就可以看到w参数在浏览器中整个的运行情况：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204110035276.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220411003509171" title="">
+                </div>
+                <div class="image-caption">image-20220411003509171</div>
+            </figure>
+
+
+
+<p>可以看到w参数一共出现了2次，第一次是初始化，第二次是调用。我们随便点击一个的文件位置进去(比如点击第一个)，然后打上断点：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204110036242.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220411003649162" title="">
+                </div>
+                <div class="image-caption">image-20220411003649162</div>
+            </figure>
+
+
+
+<p>刷新页面，再次进行验证码的验证，可以看到成功断上了，并且debugger面板上也可以看到我们跟的值是w这个参数：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204110039808.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220411003930689" title="">
+                </div>
+                <div class="image-caption">image-20220411003930689</div>
+            </figure>
+
+
+
+<h4 id="编程猫插件下载地址"><a href="#编程猫插件下载地址" class="headerlink" title="编程猫插件下载地址"></a>编程猫插件下载地址</h4><p>扫码关注微信公众号——逆向一步步，然后公众号内回复“FD编程猫插件”，就可以获得插件下载地址。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202202231720872.jpg" alt="qrcode_for_gh_509fdefd3c81_258" title="">
+                </div>
+                <div class="image-caption">qrcode_for_gh_509fdefd3c81_258</div>
+            </figure>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:37.772Z" itemprop="dateUpdated">2023-05-09 18:16:37</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/&title=《JS逆向之Fiddler编程猫插件使用》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/&title=《JS逆向之Fiddler编程猫插件使用》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之Fiddler编程猫插件使用》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E7%BD%91%E4%B8%8A%E7%AE%A1%E5%AE%B6%E5%A9%86/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向案例——网上管家婆</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向案例——问财网补环境</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/&title=《JS逆向之Fiddler编程猫插件使用》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/&title=《JS逆向之Fiddler编程猫插件使用》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之Fiddler编程猫插件使用》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD6klEQVR42u3aQW7cQAwEQP//08klN2flbpK7CJDSyUjkkaZ0oNnDr6/4+vV4fb/z+2+9WjO58/v9z+/2fP/BhQMHDhw41lvNf35+oRYoWefVc1/9y/PnxIEDBw4cVxxtIXx+WF7RNlWv5YjeAQcOHDhwfJwjf0zbpCXPzT8DDhw4cOD49zmSApkDzVaYbRUHDhw4cHyeYxO3zZhmjV8b/70xK8WBAwcOHJPnFkXuX/75LfMdOHDgwIFjfaizCfvaaC8fX9jv6M9qOHDgwIFjzdEWrfwl2pAujxHb0Yq6+cSBAwcOHJeTY0WBTEYQ8uKXF9R8neNQEgcOHDhw3JzvFMc8m9Zr9mHaFvEsPcWBAwcOHItSui+Hz43ZpgznLV90kIYDBw4cONYcZy3N6KgpbwjbTeZPeXnshAMHDhw41hzvCODaO9vSmx9EJSOAOHDgwIHjiiPfRtuqJSMO7bPaYjxr8HDgwIEDx4YjWW7zQkUwVwJdxZc/tHA4cODAgaPkmIV6V8FiUrwTlE3ZPsg4ceDAgQPH4rXaA5595NcOXiRFNyqxOHDgwIGjfO4swmubrrwZmwWRs4L9l9/CgQMHDhxrjlnEltw5C/5mgwv5VTSfOHDgwIFjfezURnv56MMsNJxdeXRYlFgcOHDgwDHab1s+2wGCvM3bDEls3h8HDhw4cOw52lfflNU2pMu33UaHw784cODAgQPHqIdqI79Z+3d16JUfO83+LMCBAwcOHC3Hfht5GWvh9pFlfScOHDhw4FhzJEvMmp+k7LWB4/M6mzVx4MCBA8cVRx7Ybcbg8sKZN4059GoaAgcOHDhwrK+rSC5v52ZxZFJ0D1pKHDhw4MBRcnxmY214t/me+SHZDy0cDhw4cOAYcVwtVww6l8WyjQKTj5EXYxw4cODAseFoD5/aArbZav6GZ+N9OHDgwIFjxDGLAmdHUHmjmLDmPVfxLBw4cODAseaYLbcfemgDwRloew8OHDhw4Nhz7GO+2ZhCGw62reOsRcSBAwcOHLccybb37dP+sGrWQEaBIw4cOHDgOOLID3JmY3D5YVIbCM4+58v3wYEDBw4ca452e3VTFJfhqwAxWf+H+3HgwIEDx4LjanBtdhDVDsa9Izr8ar82Dhw4cOC4qXFfG6ZZ8zY77pp9MBw4cODAccsxGybYhIC3hXB2TPVyfRw4cODAccSxCd1mwwqbcHDVgD2vgAMHDhw4PsixadjyCG82SDGLC1+2cDhw4MCB4yMcZ23SYpAiv+e4AuPAgQMHjtMjpeR/W8rZ58kh8ncuBuZw4MCBA8fRWMOsJZsFfLOiPgs03/K3CQ4cOHD8vxy/AbW1mt2FYasBAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

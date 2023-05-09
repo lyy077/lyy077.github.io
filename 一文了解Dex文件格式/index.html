@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>一文了解Dex文件格式 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,android">
+    <meta name="description" content="     Dex文件是什么在明白什么是 Dex 文件之前，要先了解一下 JVM，Dalvik 和 ART。JVM 是 JAVA 虚拟机，用来运行 JAVA 字节码程序。Dalvik 是 Google 设计的用于 Android平台的运行时环境，适合移动环境下内存和处理器速度有限的系统。ART 即 Android Runtime，是 Google 为了替换 Dalvik">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一文了解Dex文件格式">
+<meta property="og:url" content="http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="     Dex文件是什么在明白什么是 Dex 文件之前，要先了解一下 JVM，Dalvik 和 ART。JVM 是 JAVA 虚拟机，用来运行 JAVA 字节码程序。Dalvik 是 Google 设计的用于 Android平台的运行时环境，适合移动环境下内存和处理器速度有限的系统。ART 即 Android Runtime，是 Google 为了替换 Dalvik">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201191407214.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201201103425.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201201134897.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201201435024.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201201502294.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201201647843.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211414388.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211501796.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211552340.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211612575.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211647542.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211830586.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211832915.awebp?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-01-17T09:27:25.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:22.945Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201191407214.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">一文了解Dex文件格式</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">一文了解Dex文件格式</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-01-17T09:27:25.000Z" itemprop="datePublished" class="page-time">
+  2022-01-17
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Android/">Android</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Dex%E6%96%87%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88"><span class="post-toc-number">1.</span> <span class="post-toc-text">Dex文件是什么</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%9E%84%E9%80%A0Dex%E6%96%87%E4%BB%B6"><span class="post-toc-number">2.</span> <span class="post-toc-text">构造Dex文件</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%BB%8E-java%E5%88%B0-class"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">从.java到.class</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%BB%8E-class%E5%88%B0-dex"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">从.class到.dex</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Dex%E6%A0%BC%E5%BC%8F%E8%AF%A6%E8%A7%A3"><span class="post-toc-number">3.</span> <span class="post-toc-text">Dex格式详解</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#header"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">header</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#1-%E9%AA%8C%E8%AF%81checksum"><span class="post-toc-number">3.1.1.</span> <span class="post-toc-text">1. 验证checksum</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#2-%E9%AA%8C%E8%AF%81signature"><span class="post-toc-number">3.1.2.</span> <span class="post-toc-text">2. 验证signature</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#3-%E9%AA%8C%E8%AF%81fileSize"><span class="post-toc-number">3.1.3.</span> <span class="post-toc-text">3. 验证fileSize</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#4-%E9%AA%8C%E8%AF%81headerSize"><span class="post-toc-number">3.1.4.</span> <span class="post-toc-text">4. 验证headerSize</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#string-ids"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">string_ids</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#type-ids"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">type_ids</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#proto-ids"><span class="post-toc-number">3.4.</span> <span class="post-toc-text">proto_ids</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#field-ids"><span class="post-toc-number">3.5.</span> <span class="post-toc-text">field_ids</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#method-ids"><span class="post-toc-number">3.6.</span> <span class="post-toc-text">method_ids</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#class-def"><span class="post-toc-number">3.7.</span> <span class="post-toc-text">class_def</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">4.</span> <span class="post-toc-text">总结</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="post-toc-number">5.</span> <span class="post-toc-text">参考资料</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-一文了解Dex文件格式"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">一文了解Dex文件格式</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-01-17 17:27:25" datetime="2022-01-17T09:27:25.000Z"  itemprop="datePublished">2022-01-17</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Android/">Android</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <p></p>
+<div align="center"><iframe width="560" height="315" src="https://www.youtube.com/embed/mXf3Klcn-sM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+
+
+
+<h3 id="Dex文件是什么"><a href="#Dex文件是什么" class="headerlink" title="Dex文件是什么"></a>Dex文件是什么</h3><p>在明白什么是 Dex 文件之前，要先了解一下 JVM，Dalvik 和 ART。JVM 是 JAVA 虚拟机，用来运行 JAVA 字节码程序。Dalvik 是 Google 设计的用于 Android平台的运行时环境，适合移动环境下内存和处理器速度有限的系统。ART 即 Android Runtime，是 Google 为了替换 Dalvik 设计的新 Android 运行时环境，在Android 4.4推出。ART 比 Dalvik 的性能更好。Android 程序一般使用 Java 语言开发，但是 Dalvik 虚拟机并不支持直接执行 JAVA 字节码，所以会对编译生成的 .class 文件进行翻译、重构、解释、压缩等处理，这个处理过程是由 dx 进行处理，处理完成后生成的产物会以 .dex 结尾，称为 Dex 文件。Dex 文件格式是专为 Dalvik 设计的一种压缩格式。所以可以简单的理解为：Dex 文件是很多 .class 文件处理后的产物，最终可以在 Android 运行时环境执行。</p>
+<h3 id="构造Dex文件"><a href="#构造Dex文件" class="headerlink" title="构造Dex文件"></a>构造Dex文件</h3><p>Java代码转化为dex文件的流程如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201191407214.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+<p>可以形象理解为Java源代码编译成<code>.class</code>文件，然后通过<code>dx</code>工具生成<code>dex</code>文件。</p>
+<h4 id="从-java到-class"><a href="#从-java到-class" class="headerlink" title="从.java到.class"></a>从.java到.class</h4><p>先建一个文件<code>Hello.java</code>，只是简单的打印一下<code>Hello, world</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Hello</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>进入该文件所在的目录，使用<code>javac</code>编译这个java文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javac Hello.java</span><br></pre></td></tr></table></figure>
+
+<p>javac 命令执行后会在当前目录生成 <code>Hello.class</code> 文件。</p>
+<h4 id="从-class到-dex"><a href="#从-class到-dex" class="headerlink" title="从.class到.dex"></a>从.class到.dex</h4><p>上面生成的 .class 文件虽然已经可以在 JVM 环境中运行，但是如果要在 Android 运行时环境中执行还需要特殊的处理，那就是 dx 处理，它会对 .class 文件进行翻译、重构、解释、压缩等操作。</p>
+<p>dx 处理会使用到一个工具 dx.jar，这个文件位于 SDK 中，具体的目录大致为 <strong>你的SDK根目录&#x2F;build-tools&#x2F;任意版本</strong> 里面。使用 dx 工具处理上面生成的Hello.class 文件，在 Hello.class 的目录下使用下面的命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dx --dex --output=Hello.dex Hello.class</span><br></pre></td></tr></table></figure>
+
+<p>执行完成后，会在当前目录下生成一个 Hello.dex 文件。这个 .dex 文件就可以直接在 Android 运行时环境执行。</p>
+<h3 id="Dex格式详解"><a href="#Dex格式详解" class="headerlink" title="Dex格式详解"></a>Dex格式详解</h3><p>先看下<code>dex</code>文件的整体布局:</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201201103425.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220120110317295" title="">
+                </div>
+                <div class="image-caption">image-20220120110317295</div>
+            </figure>
+
+
+
+<p>然后用xxd命令打开上边生成的<code>dex</code>文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxd Hello.dex</span><br></pre></td></tr></table></figure>
+
+<p>因为数据不长，这里直接贴出来整个<code>Hello.dex</code>的内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000</span>: <span class="number">6465</span> 780a <span class="number">3033</span> <span class="number">3500</span> <span class="number">555d</span> 340e <span class="number">86e9</span> 521c  dex<span class="number">.035</span>.U]<span class="number">4.</span>..R.</span><br><span class="line"><span class="number">00000010</span>: b10d <span class="number">5708</span> b448 3fb8 feba cd1c 22d3 0f65  ..W..H?.....<span class="string">&quot;..e</span></span><br><span class="line"><span class="string">00000020: e002 0000 7000 0000 7856 3412 0000 0000  ....p...xV4.....</span></span><br><span class="line"><span class="string">00000030: 0000 0000 4002 0000 0e00 0000 7000 0000  ....@.......p...</span></span><br><span class="line"><span class="string">00000040: 0700 0000 a800 0000 0300 0000 c400 0000  ................</span></span><br><span class="line"><span class="string">00000050: 0100 0000 e800 0000 0400 0000 f000 0000  ................</span></span><br><span class="line"><span class="string">00000060: 0100 0000 1001 0000 b001 0000 3001 0000  ............0...</span></span><br><span class="line"><span class="string">00000070: 7601 0000 7e01 0000 8d01 0000 9901 0000  v...~...........</span></span><br><span class="line"><span class="string">00000080: a201 0000 b901 0000 cd01 0000 e101 0000  ................</span></span><br><span class="line"><span class="string">00000090: f501 0000 f801 0000 fc01 0000 1102 0000  ................</span></span><br><span class="line"><span class="string">000000a0: 1702 0000 1c02 0000 0300 0000 0400 0000  ................</span></span><br><span class="line"><span class="string">000000b0: 0500 0000 0600 0000 0700 0000 0800 0000  ................</span></span><br><span class="line"><span class="string">000000c0: 0a00 0000 0800 0000 0500 0000 0000 0000  ................</span></span><br><span class="line"><span class="string">000000d0: 0900 0000 0500 0000 6801 0000 0900 0000  ........h.......</span></span><br><span class="line"><span class="string">000000e0: 0500 0000 7001 0000 0400 0100 0c00 0000  ....p...........</span></span><br><span class="line"><span class="string">000000f0: 0000 0000 0000 0000 0000 0200 0b00 0000  ................</span></span><br><span class="line"><span class="string">00000100: 0100 0100 0d00 0000 0200 0000 0000 0000  ................</span></span><br><span class="line"><span class="string">00000110: 0000 0000 0100 0000 0200 0000 0000 0000  ................</span></span><br><span class="line"><span class="string">00000120: 0200 0000 0000 0000 3102 0000 0000 0000  ........1.......</span></span><br><span class="line"><span class="string">00000130: 0100 0100 0100 0000 2502 0000 0400 0000  ........%.......</span></span><br><span class="line"><span class="string">00000140: 7010 0300 0000 0e00 0300 0100 0200 0000  p...............</span></span><br><span class="line"><span class="string">00000150: 2a02 0000 0800 0000 6200 0000 1a01 0100  *.......b.......</span></span><br><span class="line"><span class="string">00000160: 6e20 0200 1000 0e00 0100 0000 0300 0000  n ..............</span></span><br><span class="line"><span class="string">00000170: 0100 0000 0600 063c 696e 6974 3e00 0d48  .......&lt;init&gt;..H</span></span><br><span class="line"><span class="string">00000180: 656c 6c6f 2c20 776f 726c 6421 000a 4865  ello, world!..He</span></span><br><span class="line"><span class="string">00000190: 6c6c 6f2e 6a61 7661 0007 4c48 656c 6c6f  llo.java..LHello</span></span><br><span class="line"><span class="string">000001a0: 3b00 154c 6a61 7661 2f69 6f2f 5072 696e  ;..Ljava/io/Prin</span></span><br><span class="line"><span class="string">000001b0: 7453 7472 6561 6d3b 0012 4c6a 6176 612f  tStream;..Ljava/</span></span><br><span class="line"><span class="string">000001c0: 6c61 6e67 2f4f 626a 6563 743b 0012 4c6a  lang/Object;..Lj</span></span><br><span class="line"><span class="string">000001d0: 6176 612f 6c61 6e67 2f53 7472 696e 673b  ava/lang/String;</span></span><br><span class="line"><span class="string">000001e0: 0012 4c6a 6176 612f 6c61 6e67 2f53 7973  ..Ljava/lang/Sys</span></span><br><span class="line"><span class="string">000001f0: 7465 6d3b 0001 5600 0256 4c00 135b 4c6a  tem;..V..VL..[Lj</span></span><br><span class="line"><span class="string">00000200: 6176 612f 6c61 6e67 2f53 7472 696e 673b  ava/lang/String;</span></span><br><span class="line"><span class="string">00000210: 0004 6d61 696e 0003 6f75 7400 0770 7269  ..main..out..pri</span></span><br><span class="line"><span class="string">00000220: 6e74 6c6e 0001 0007 0e00 0301 0007 0e78  ntln...........x</span></span><br><span class="line"><span class="string">00000230: 0000 0002 0000 8180 04b0 0201 09c8 0200  ................</span></span><br><span class="line"><span class="string">00000240: 0d00 0000 0000 0000 0100 0000 0000 0000  ................</span></span><br><span class="line"><span class="string">00000250: 0100 0000 0e00 0000 7000 0000 0200 0000  ........p.......</span></span><br><span class="line"><span class="string">00000260: 0700 0000 a800 0000 0300 0000 0300 0000  ................</span></span><br><span class="line"><span class="string">00000270: c400 0000 0400 0000 0100 0000 e800 0000  ................</span></span><br><span class="line"><span class="string">00000280: 0500 0000 0400 0000 f000 0000 0600 0000  ................</span></span><br><span class="line"><span class="string">00000290: 0100 0000 1001 0000 0120 0000 0200 0000  ......... ......</span></span><br><span class="line"><span class="string">000002a0: 3001 0000 0110 0000 0200 0000 6801 0000  0...........h...</span></span><br><span class="line"><span class="string">000002b0: 0220 0000 0e00 0000 7601 0000 0320 0000  . ......v.... ..</span></span><br><span class="line"><span class="string">000002c0: 0200 0000 2502 0000 0020 0000 0100 0000  ....%.... ......</span></span><br><span class="line"><span class="string">000002d0: 3102 0000 0010 0000 0100 0000 4002 0000  1...........@...</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来对照这个dex文件的内容一步步解析整个dex文件的格式。</p>
+<h4 id="header"><a href="#header" class="headerlink" title="header"></a>header</h4><p>在android源码中对dex文件的格式，有了详细的定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexHeader</span> &#123;</span></span><br><span class="line">    u1  magic[<span class="number">8</span>];           <span class="comment">// 魔数</span></span><br><span class="line">    u4  checksum;           <span class="comment">// adler 校验值</span></span><br><span class="line">    u1  signature[kSHA1DigestLen]; <span class="comment">// sha1 校验值</span></span><br><span class="line">    u4  fileSize;           <span class="comment">// DEX 文件大小</span></span><br><span class="line">    u4  headerSize;         <span class="comment">// DEX 文件头大小</span></span><br><span class="line">    u4  endianTag;          <span class="comment">// 字节序</span></span><br><span class="line">    u4  linkSize;           <span class="comment">// 链接段大小</span></span><br><span class="line">    u4  linkOff;            <span class="comment">// 链接段的偏移量</span></span><br><span class="line">    u4  mapOff;             <span class="comment">// DexMapList 偏移量</span></span><br><span class="line">    u4  stringIdsSize;      <span class="comment">// DexStringId 个数</span></span><br><span class="line">    u4  stringIdsOff;       <span class="comment">// DexStringId 偏移量</span></span><br><span class="line">    u4  typeIdsSize;        <span class="comment">// DexTypeId 个数</span></span><br><span class="line">    u4  typeIdsOff;         <span class="comment">// DexTypeId 偏移量</span></span><br><span class="line">    u4  protoIdsSize;       <span class="comment">// DexProtoId 个数</span></span><br><span class="line">    u4  protoIdsOff;        <span class="comment">// DexProtoId 偏移量</span></span><br><span class="line">    u4  fieldIdsSize;       <span class="comment">// DexFieldId 个数</span></span><br><span class="line">    u4  fieldIdsOff;        <span class="comment">// DexFieldId 偏移量</span></span><br><span class="line">    u4  methodIdsSize;      <span class="comment">// DexMethodId 个数</span></span><br><span class="line">    u4  methodIdsOff;       <span class="comment">// DexMethodId 偏移量</span></span><br><span class="line">    u4  classDefsSize;      <span class="comment">// DexCLassDef 个数</span></span><br><span class="line">    u4  classDefsOff;       <span class="comment">// DexClassDef 偏移量</span></span><br><span class="line">    u4  dataSize;           <span class="comment">// 数据段大小</span></span><br><span class="line">    u4  dataOff;            <span class="comment">// 数据段偏移量</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>u</code>标识无符号整数，<code>u1</code>表示8位无符号整数即一个字节，<code>u4</code>表示32位无符号整数即四个字节。</p>
+<p>下面用一个表格对照<code>Hello.dex</code>对每一个成员含义做一个简单的说明，后边会针对某些字段有一个详细的说明。</p>
+<table>
+<thead>
+<tr>
+<th align="center">成员名称</th>
+<th align="center">成员长度（字节）</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">magic</td>
+<td align="center">8</td>
+<td>魔数，必须出现在文件开头，标识其文件格式，用8个1字节的无符号数来表示，它可以分解为：文件标识 dex + 换行符 + DEX 版本 + 0， 这里是<code>64 65 78 0a 30 33 35 00</code>，表示dex的版本是35</td>
+</tr>
+<tr>
+<td align="center">checksum</td>
+<td align="center">4</td>
+<td><code>checksum</code> 是对去除 <code>magic</code> 、 <code>checksum</code> 以外的文件部分作 <code>adler32</code> 算法得到的校验值，用于判断 DEX 文件是否被篡改。这里的值是<code>0e34 5d55</code>(为啥不是<code>555d 340e</code>？因为是小端存储，关于大小端参见 <a target="_blank" rel="noopener" href="http://blog.heshipeng.com/%E5%A4%A7%E7%AB%AF%E8%BF%98%E6%98%AF%E5%B0%8F%E7%AB%AF/">大端还是小端</a>)</td>
+</tr>
+<tr>
+<td align="center">signature</td>
+<td align="center">20</td>
+<td>SHA1签名，除magic，checksum和它本身，作为文件的唯一标识。这里的值是<code>86 e9 52 1c b1 0d 57 08 b4 48 3f b8 fe ba cd 1c 22 d3 0f 65</code></td>
+</tr>
+<tr>
+<td align="center">fileSize</td>
+<td align="center">4</td>
+<td>dex文件的大小，包括头文件，这里是<code>0000 02e0</code></td>
+</tr>
+<tr>
+<td align="center">headerSize</td>
+<td align="center">4</td>
+<td>dex头文件的大小，这里是<code>0000 0070</code></td>
+</tr>
+<tr>
+<td align="center">endianTag</td>
+<td align="center">4</td>
+<td>端存储标记，主要是用来判断大端存储还是小端存储。默认值是<code>1234 5678</code>，即小端存储，这里是<code>1234 5678</code></td>
+</tr>
+<tr>
+<td align="center">linkSize</td>
+<td align="center">4</td>
+<td>文件链接段大小，为0则表示静态链接，这里是<code>0000 0000</code></td>
+</tr>
+<tr>
+<td align="center">linkOff</td>
+<td align="center">4</td>
+<td>文件链接段的偏移位置，如果链接段大小为0，则偏移位置也为0，这里是<code>0000 0000</code></td>
+</tr>
+<tr>
+<td align="center">mapOff</td>
+<td align="center">4</td>
+<td>DexMapList的文件偏移，这里是<code>0000 0240</code>，也即DexMapList的基址是<code>0000 0240</code></td>
+</tr>
+<tr>
+<td align="center">stringIdsSize</td>
+<td align="center">4</td>
+<td>dex文件包含的字符串数量，这里是<code>0000 000e</code></td>
+</tr>
+<tr>
+<td align="center">stringIdsOff</td>
+<td align="center">4</td>
+<td>dex文件字符串偏移位置，这里是<code>0000 0070</code></td>
+</tr>
+<tr>
+<td align="center">typeIdsSize</td>
+<td align="center">4</td>
+<td>dex文件类型信息的数量，这里是<code>0000 0007</code></td>
+</tr>
+<tr>
+<td align="center">typeIdsOff</td>
+<td align="center">4</td>
+<td>dex文件类型信息的偏移位置，这里是<code>0000 00a8</code></td>
+</tr>
+<tr>
+<td align="center">protoIdsSize</td>
+<td align="center">4</td>
+<td>dex文件方法声明的数量，这里是<code>0000 0003</code></td>
+</tr>
+<tr>
+<td align="center">protoIdsOff</td>
+<td align="center">4</td>
+<td>dex文件方法声明偏移位置，这里是<code>0000 00c4</code></td>
+</tr>
+<tr>
+<td align="center">fieldIdsSize</td>
+<td align="center">4</td>
+<td>dex文件字段信息的数量，这里是<code>0000 0001</code></td>
+</tr>
+<tr>
+<td align="center">fieldIdsOff</td>
+<td align="center">4</td>
+<td>dex文件字段信息的偏移位置，这里是<code>0000 00e8</code></td>
+</tr>
+<tr>
+<td align="center">methodIdsSize</td>
+<td align="center">4</td>
+<td>dex文件方法的数量，这里是<code>0000 0004</code></td>
+</tr>
+<tr>
+<td align="center">methodIdsOff</td>
+<td align="center">4</td>
+<td>dex文件方法的偏移位置，这里是<code>0000 00f0</code></td>
+</tr>
+<tr>
+<td align="center">classDefsSize</td>
+<td align="center">4</td>
+<td>dex文件类的数量，这里是<code>0000 0001</code></td>
+</tr>
+<tr>
+<td align="center">classDefsOff</td>
+<td align="center">4</td>
+<td>dex文件类信息的偏移位置，这里是<code>0000 0110</code></td>
+</tr>
+<tr>
+<td align="center">dataSize</td>
+<td align="center">4</td>
+<td>dex文件数据区的大小，这里是<code>0000 01b0</code></td>
+</tr>
+<tr>
+<td align="center">dataOff</td>
+<td align="center">4</td>
+<td>dex文件数据区的偏移位置，这里是<code>0000 0130</code></td>
+</tr>
+</tbody></table>
+<p>下面针对部分字段，进一步理解：</p>
+<h5 id="1-验证checksum"><a href="#1-验证checksum" class="headerlink" title="1. 验证checksum"></a>1. 验证checksum</h5><p>通过前面表格，了解到<code>checksum</code> 是对去除 <code>magic</code> 、 <code>checksum</code> 以外的文件部分作 alder32 算法得到的校验值，这里我们先备份一下<code>Hello.dex</code>文件，然后用<code>UE(UltraEdit)</code>打开<code>Hello.dex</code>，删除<code>magic</code>，<code>checksum</code>信息，如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201201134897.png" alt="image-20220120113433764" title="">
+                </div>
+                <div class="image-caption">image-20220120113433764</div>
+            </figure>
+
+<p>保存之后，执行如下Python代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;Hello.dex&quot;</span>, <span class="string">&quot;rb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="built_in">print</span>(zlib.adler32(f.read()))</span><br></pre></td></tr></table></figure>
+
+<p>输出结果是238312789，转为十六进制为<code>0e34 5d55</code>，正好是该文件的<code>checksum</code>。</p>
+<h5 id="2-验证signature"><a href="#2-验证signature" class="headerlink" title="2. 验证signature"></a>2. 验证signature</h5><p>类似于在上面验证checksum文件，进一步删除<code>signature</code>，如图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201201435024.png" alt="image-20220120143546894" title="">
+                </div>
+                <div class="image-caption">image-20220120143546894</div>
+            </figure>
+
+<p>保存之后，执行如下Python代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;Hello.dex&quot;</span>, <span class="string">&quot;rb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="built_in">print</span>(hashlib.sha1(f.read()).hexdigest())</span><br></pre></td></tr></table></figure>
+
+<p>输出结果是86e9521cb10d5708b4483fb8febacd1c22d30f65，正好是删除的signature。</p>
+<h5 id="3-验证fileSize"><a href="#3-验证fileSize" class="headerlink" title="3. 验证fileSize"></a>3. 验证fileSize</h5><p>从备份的<code>Hello.dex</code>还原dex文件，然后前面表格得出整个dex文件的大小是<code>2e0</code>即736个字节，我们用<code>ll</code>命令验证下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201201502294.png" alt="image-20220120150229254" title="">
+                </div>
+                <div class="image-caption">image-20220120150229254</div>
+            </figure>
+
+
+
+<h5 id="4-验证headerSize"><a href="#4-验证headerSize" class="headerlink" title="4. 验证headerSize"></a>4. 验证headerSize</h5><p>headerSize占<code>0000 0070</code>也即112个字节。我们通过DexHeader这个结构体可以算出来：</p>
+<p>magic(8个字节)+checksum(4个字节)+signature(20个字节)+fileSize(4个字节)+ … + dataOff(4个字节)&#x3D;112字节。</p>
+<h4 id="string-ids"><a href="#string-ids" class="headerlink" title="string_ids"></a>string_ids</h4><p>字符串id区域，这个区域是一个偏移量列表，每个偏移量对应一个真正的字符串资源，每个偏移量占32位，即4个字节。我们可以通过偏移量找到对应的实际字符串数据。</p>
+<p>从<code>DexFile.h</code>中我们可以找到<code>DexStringId</code>的定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexStringId</span> &#123;</span></span><br><span class="line">    u4 stringDataOff;      <span class="comment">/* file offset to string_data_item */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>通过注释可以看到，这个区域存的并不是真正的字符串，只是存储了真正字符串的偏移位置，stringIdsSize为<code>0000 000e</code>即14，stringIdsOff为<code>0000 0070</code>。我们找到地址<code>0000 0070h</code>，然后取出后边的4*14个字节：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000070</span>: <span class="number">7601</span> <span class="number">0000</span> <span class="number">7e01</span> <span class="number">0000</span> 8d01 <span class="number">0000</span> <span class="number">9901</span> <span class="number">0000</span>  v...~...........</span><br><span class="line">00000080: a201 <span class="number">0000</span> b901 <span class="number">0000</span> cd01 <span class="number">0000</span> e101 <span class="number">0000</span>  ................</span><br><span class="line">00000090: f501 <span class="number">0000</span> f801 <span class="number">0000</span> fc01 <span class="number">0000</span> <span class="number">1102</span> <span class="number">0000</span>  ................</span><br><span class="line">000000a0: <span class="number">1702</span> <span class="number">0000</span> 1c02 <span class="number">0000</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>这里以第一个偏移为例，解释具体每个字符串偏移背后代表的真正字符串的，取出前4个字节，即<code>0000 0176</code>，然后找到<code>0000 0176h</code>这个地址：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201201647843.png" alt="image-20220120164703702" title="">
+                </div>
+                <div class="image-caption">image-20220120164703702</div>
+            </figure>
+
+<p>dex中的字符串采用了一种叫做MUTF-8这样的编码，它是经过传统的UTF-8编码修改的。在MTUF-8中，它的头部存放的是由uleb128编码的字符的个数。所以第一个字节<code>06</code>表示的含义是字符串的字节数是6个，然后我们往后推6个字节，即<code>3C 69 6E 69 74 3E</code>，对照ASCII码表含义如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">字符</th>
+<th>3C</th>
+<th>69</th>
+<th>6E</th>
+<th>69</th>
+<th>74</th>
+<th>3E</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">对应ASCII码</td>
+<td>&lt;</td>
+<td>i</td>
+<td>n</td>
+<td>i</td>
+<td>t</td>
+<td>&gt;</td>
+</tr>
+</tbody></table>
+<p>即&lt;init&gt;。</p>
+<p>其余的13个字符串可以按照这个步骤，依次分析出来，这里就不展开了，给出一个表格如下：</p>
+<table>
+<thead>
+<tr>
+<th>索引</th>
+<th>偏移值</th>
+<th>字符个数（十六进制）</th>
+<th>字符串十六进制内容</th>
+<th>对应ASCII内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0000 0176</td>
+<td>06</td>
+<td>3C 69 6E 69 74 3E</td>
+<td>&lt;init&gt;</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0000 017e</td>
+<td>0D</td>
+<td>48 65 6C 6C 6F 2C 20 77 6F 72 6C 64 21</td>
+<td>Hello, world!</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0000 018d</td>
+<td>0A</td>
+<td>48 65 6C 6C 6F 2E 6A 61 76 61</td>
+<td>Hello.java</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0000 0199</td>
+<td>07</td>
+<td>4C 48 65 6C 6C 6F 3B</td>
+<td>LHello;</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0000 01a2</td>
+<td>15</td>
+<td>4C 6A 61 76 61 2F 69 6F 2F 50 72 69 6E 74 53 74 72 65 61 6D 3B</td>
+<td>Ljava&#x2F;io&#x2F;PrintStream;</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0000 01b9</td>
+<td>12</td>
+<td>4C 6A 61 76 61 2F 6C 61 6E 67 2F 4F 62 6A 65 63 74 3B</td>
+<td>Ljava&#x2F;lang&#x2F;Object;</td>
+</tr>
+<tr>
+<td>6</td>
+<td>0000 01cd</td>
+<td>12</td>
+<td>4C 6A 61 76 61 2F 6C 61 6E 67 2F 53 74 72 69 7E 67 3B</td>
+<td>Ljava&#x2F;lang&#x2F;String;</td>
+</tr>
+<tr>
+<td>7</td>
+<td>0000 01e1</td>
+<td>12</td>
+<td>4C 6A 61 76 61 2F 6C 61 6E 67 2F 53 79 73 74 65 6D 3B</td>
+<td>Ljava&#x2F;lang&#x2F;System;</td>
+</tr>
+<tr>
+<td>8</td>
+<td>0000 01f5</td>
+<td>01</td>
+<td>56</td>
+<td>V</td>
+</tr>
+<tr>
+<td>9</td>
+<td>0000 01f8</td>
+<td>02</td>
+<td>56 4C</td>
+<td>VL</td>
+</tr>
+<tr>
+<td>a</td>
+<td>0000 01fc</td>
+<td>13</td>
+<td>5B 4C 6A 61 76 61 2F 6C 61 6E 67 2F 53 74 72 69 7E 67 3B</td>
+<td>[Ljava&#x2F;lang&#x2F;String;</td>
+</tr>
+<tr>
+<td>b</td>
+<td>0000 0211</td>
+<td>04</td>
+<td>6D 61 69 6E</td>
+<td>main</td>
+</tr>
+<tr>
+<td>c</td>
+<td>0000 0217</td>
+<td>03</td>
+<td>6F 75 74</td>
+<td>out</td>
+</tr>
+<tr>
+<td>d</td>
+<td>0000 021c</td>
+<td>07</td>
+<td>70 72 69 6E 74 6C 6E</td>
+<td>println</td>
+</tr>
+</tbody></table>
+<h4 id="type-ids"><a href="#type-ids" class="headerlink" title="type_ids"></a>type_ids</h4><p>类型id区域，索引的值对应字符串id区域偏移量列表中的某一项，每一个人偏移也是占4个字节。</p>
+<p>从<code>DexFile.h</code>中我们可以找到<code>DexTypeId</code>的定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Direct-mapped &quot;type_id_item&quot;.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeId</span> &#123;</span></span><br><span class="line">    u4  descriptorIdx;      <span class="comment">/* index into stringIds list for type descriptor */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>从注释可以看到如果我们要找到某个类型的值，需要先根据类型id列表中的索引值去字符串id列表中找到对应的项，这一项存储的偏移量对应的字符串资源就是这个类型的字符串描述。</p>
+<p><code>typeIdsSize</code>为<code>0000 0007</code>，<code>typeIdsOff</code>为<code>0000 00a8</code>，我们找到地址为<code>0000 00a8</code>然后取出后面7*4个字节。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0300</span> <span class="number">0000</span> <span class="number">0400</span> <span class="number">0000</span> <span class="number">0500</span> <span class="number">0000</span> <span class="number">0600</span> <span class="number">0000</span> <span class="number">0700</span> <span class="number">0000</span> 0800 <span class="number">0000</span> 0a00 <span class="number">0000</span></span><br></pre></td></tr></table></figure>
+
+<p>以第一个偏移<code>0000 0003</code>为例，即索引为3，查上面的string_ids得到的字符串列表，即为<code>LHello;</code>。类似地，可以分析出来其余6个：</p>
+<table>
+<thead>
+<tr>
+<th>索引</th>
+<th>对应string_idx的索引</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0000 0003</td>
+<td>LHello;</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0000 0004</td>
+<td>Ljava&#x2F;io&#x2F;PrintStream;</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0000 0005</td>
+<td>Ljava&#x2F;lang&#x2F;Object;</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0000 0006</td>
+<td>Ljava&#x2F;lang&#x2F;String;</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0000 0007</td>
+<td>Ljava&#x2F;lang&#x2F;System;</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0000 0008</td>
+<td>V</td>
+</tr>
+<tr>
+<td>6</td>
+<td>0000 000a</td>
+<td>[Ljava&#x2F;lang&#x2F;String;</td>
+</tr>
+</tbody></table>
+<h4 id="proto-ids"><a href="#proto-ids" class="headerlink" title="proto_ids"></a>proto_ids</h4><p>方法原型id区，这个区块是一个方法原型 id 列表。</p>
+<p>从<code>DexFile.h</code>中可以找到其定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Direct-mapped &quot;proto_id_item&quot;.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexProtoId</span> &#123;</span></span><br><span class="line">    u4  shortyIdx;          <span class="comment">/* index into stringIds for shorty descriptor */</span></span><br><span class="line">    u4  returnTypeIdx;      <span class="comment">/* index into typeIds list for return type */</span></span><br><span class="line">    u4  parametersOff;      <span class="comment">/* file offset to type_list for parameter types */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>各个字段的解释如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211414388.png" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+
+
+<p>可以看到，这个数据结构由三个变量组成。第一个shortyIdx它指向的是我们上面分析的DexStringId列表的索引，代表的是方法声明字符串。第二个returnTypeIdx它指向的是 我们上边分析的DexTypeId列表的索引，代表的是方法返回类型字符串。第三个parametersOff指向的是DexTypeList的位置索引，这又是一个新的数据结构了，先说一下这里面 存储的是方法的参数列表。可以看到这三个参数，有方法声明字符串，有返回类型，有方法的参数列表，这基本上就确定了我们一个方法的大体内容。</p>
+<p><code>parametersOff</code>指向<code>DexTypeList</code>，我们看下<code>DexTypeList</code>的数据结构：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeList</span> &#123;</span></span><br><span class="line">    u4  size;               <span class="comment">/* #of entries in list */</span></span><br><span class="line">    DexTypeItem <span class="built_in">list</span>[<span class="number">1</span>];    <span class="comment">/* entries */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>包含2个字段，第一个是大小说的是DexTypeItem的个数。</p>
+<p>那<code>DexTypeItem</code>又是什么呢？我们再看下其数据结构：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeItem</span> &#123;</span></span><br><span class="line">    u2  typeIdx;            <span class="comment">/* index into typeIds */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p> 包含一个指向DexTypeId列表的索引，也就是代表参数列表中某一个具体的参数的位置。</p>
+<p><code>protoIdsSize</code>为<code>0000 0003</code>，<code>protoIdsOff</code>为<code>0000 00c4</code>，找到地址为<code>0000 00c4</code>然后取出后边3*12个字节(为啥是12，因为每一个proto_id数据结构占12个字节)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0800 <span class="number">0000</span> <span class="number">0500</span> <span class="number">0000</span> <span class="number">0000</span> <span class="number">0000</span></span><br><span class="line">0900 <span class="number">0000</span> <span class="number">0500</span> <span class="number">0000</span> <span class="number">6801</span> <span class="number">0000</span></span><br><span class="line">0900 <span class="number">0000</span> <span class="number">0500</span> <span class="number">0000</span> <span class="number">7001</span> <span class="number">0000</span></span><br></pre></td></tr></table></figure>
+
+<p>先对第一个方法原型进行分析，前四个字节<code>0000 0008</code>为shorty_ids，对应string_ids的索引，查上面string_ids字符串的表格知其为<code>V</code>，即方法描述短格式为<code>void()</code>。中间四个字节<code>0000 0005</code>为return_type_idx，对应type_ids的索引，查上面的type_ids类型区域表格知其为<code>V</code>，即返回值类型为<code>void</code>。最后四个字节为<code>0000 0000</code>，即代表方法无参数。</p>
+<p>在看第二个方法原型。前四个字节<code>0000 0009</code>为short_ids，对应string_ids的索引，查上面string_ids字符串的表格知其为<code>VL</code>。中间四个字节为<code>0000 0005</code>为return_type_idx，对应type_idx的索引，查上面的type_ids类型区域表格知其为<code>V</code>，即返回值类型为<code>void</code>。最后四个字节为<code>0000 0168</code>，找到168h这个地址如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211501796.png" alt="image-20220121150146530" title="">
+                </div>
+                <div class="image-caption">image-20220121150146530</div>
+            </figure>
+
+<p>这里<code>DexTypeList</code>数据结构，我们先看前4个字节，代表<code>DexTypeItem</code>的个数，<code>0000 0001</code>也就是1，说明只有一个<code>DexTypeItem</code>，每一个占2个字节，就是<code>00 03</code>，查看type_ids表格，找到索引为3的，即<code>Ljava/lang/String;</code>，说明有一个<code>String</code>类型的参数。第三个方法原型类似，就不展开了。整理三个方法原型如下表格：</p>
+<table>
+<thead>
+<tr>
+<th>索引</th>
+<th>方法描述短格式</th>
+<th>返回值类型</th>
+<th>参数类型</th>
+<th>方法原型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>V</td>
+<td>V</td>
+<td>无参数</td>
+<td>void()</td>
+</tr>
+<tr>
+<td>1</td>
+<td>VL</td>
+<td>V</td>
+<td>Ljava&#x2F;lang&#x2F;String;</td>
+<td>void(java.lang.String)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>VL</td>
+<td>V</td>
+<td>[Ljava&#x2F;lang&#x2F;String;</td>
+<td>void(java.lang.String[])</td>
+</tr>
+</tbody></table>
+<h4 id="field-ids"><a href="#field-ids" class="headerlink" title="field_ids"></a>field_ids</h4><p>成员id区。这个区域是一个类成员id区域列表。定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Direct-mapped &quot;field_id_item&quot;.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexFieldId</span> &#123;</span></span><br><span class="line">    u2  classIdx;           <span class="comment">/* index into typeIds list for defining class */</span></span><br><span class="line">    u2  typeIdx;            <span class="comment">/* index into typeIds for field type */</span></span><br><span class="line">    u4  nameIdx;            <span class="comment">/* index into stringIds for field name */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>各字段的解释如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211552340.png" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+
+
+<p>这里我们<code>Hello.dex</code>的<code>fieldIdsSize</code>为<code>0000 0001</code>，说明只存在一个DexField，<code>fieldIdOff</code>为<code>0000 00e8</code>，找到地址为<code>e8h</code>然后取出后边8个字节，即<code>04 00 01 00 0c 00 00 00</code>，其中前2个字节<code>0004</code>，表示class_idx，表示成员所在的类在类型区域的索引，查表得<code>Ljava/lang/System;</code>。中间2个字节<code>0001</code>，表示type_idx，表示该成员自身的类型在类型区域的索引，查表得<code>Ljava/io/PrintStream;</code>。最后4个字节<code>0000 000c</code>，表示name_idx，表示该成员的名字在字符串区域的索引，查表得<code>out</code>。所以<code>Hello.dex</code>中仅包含一个成员为<code>java.io.PrintStream java.lang.System.out</code>。</p>
+<h4 id="method-ids"><a href="#method-ids" class="headerlink" title="method_ids"></a>method_ids</h4><p>方法id区，这个方法是存储方法id的列表。数据格式为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Direct-mapped &quot;method_id_item&quot;.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMethodId</span> &#123;</span></span><br><span class="line">    u2  classIdx;           <span class="comment">/* index into typeIds list for defining class */</span></span><br><span class="line">    u2  protoIdx;           <span class="comment">/* index into protoIds for method prototype */</span></span><br><span class="line">    u4  nameIdx;            <span class="comment">/* index into stringIds for method name */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>解释如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211612575.png" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+
+
+<p><code>methodIdsSize</code>和<code>methodIdsOff</code>分表为<code>0000 0004</code>和<code>0000 00f0</code>，即该dex文件一共包含4个方法，方法id区的偏移地址为<code>f0h</code>，我们找到这个地址，然后取出后边4*(2+2+4)个字节，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000</span> <span class="number">0000</span> <span class="number">0000</span> <span class="number">0000</span> </span><br><span class="line"><span class="number">0000</span> <span class="number">0200</span> <span class="number">0b00</span> <span class="number">0000</span></span><br><span class="line"><span class="number">0100</span> <span class="number">0100</span> 0d00 <span class="number">0000</span> </span><br><span class="line"><span class="number">0200</span> <span class="number">0000</span> <span class="number">0000</span> <span class="number">0000</span></span><br></pre></td></tr></table></figure>
+
+<p>然后根据<code>DexMethodId</code>数据结构，查上边的type_ids表格，proto_ids表格以及string_ids表格，这里就不一一展开了，结果整理如下：</p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>class_idx</th>
+<th>proto_idx</th>
+<th>name_idx</th>
+<th>方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>LHello;</td>
+<td>void()</td>
+<td>&lt;init&gt;</td>
+<td>void Hello.&lt;init&gt;()</td>
+</tr>
+<tr>
+<td>1</td>
+<td>LHello;</td>
+<td>void(java.lang.String[])</td>
+<td>main</td>
+<td>void Hello.main(java.lang.String[])</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Ljava&#x2F;io&#x2F;PrintStream;</td>
+<td>void(java.lang.String)</td>
+<td>println</td>
+<td>void java.io.PrintStream.println(java.lang.String)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Ljava&#x2F;lang&#x2F;Object;</td>
+<td>void()</td>
+<td>&lt;init&gt;</td>
+<td>void java.lang.Object.&lt;init&gt;()</td>
+</tr>
+</tbody></table>
+<h4 id="class-def"><a href="#class-def" class="headerlink" title="class_def"></a>class_def</h4><p>类定义区。这个区域存储的是类定义的列表，具体的数据结构如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Direct-mapped &quot;class_def_item&quot;.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassDef</span> &#123;</span></span><br><span class="line">    u4  classIdx;           <span class="comment">/* index into typeIds for this class */</span></span><br><span class="line">    u4  accessFlags;</span><br><span class="line">    u4  superclassIdx;      <span class="comment">/* index into typeIds for superclass */</span></span><br><span class="line">    u4  interfacesOff;      <span class="comment">/* file offset to DexTypeList */</span></span><br><span class="line">    u4  sourceFileIdx;      <span class="comment">/* index into stringIds for source file name */</span></span><br><span class="line">    u4  annotationsOff;     <span class="comment">/* file offset to annotations_directory_item */</span></span><br><span class="line">    u4  classDataOff;       <span class="comment">/* file offset to class_data_item */</span></span><br><span class="line">    u4  staticValuesOff;    <span class="comment">/* file offset to DexEncodedArray */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>各字段的含义如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211647542.png" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+
+
+<p>在开始分析这个类的结构之前，先看<code>DexFile.h</code>中定义的一组枚举值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> &#123;</span></span><br><span class="line">    ACC_PUBLIC       = <span class="number">0x00000001</span>,       <span class="comment">// class, field, method, ic</span></span><br><span class="line">    ACC_PRIVATE      = <span class="number">0x00000002</span>,       <span class="comment">// field, method, ic</span></span><br><span class="line">    ACC_PROTECTED    = <span class="number">0x00000004</span>,       <span class="comment">// field, method, ic</span></span><br><span class="line">    ACC_STATIC       = <span class="number">0x00000008</span>,       <span class="comment">// field, method, ic</span></span><br><span class="line">    ACC_FINAL        = <span class="number">0x00000010</span>,       <span class="comment">// class, field, method, ic</span></span><br><span class="line">    ACC_SYNCHRONIZED = <span class="number">0x00000020</span>,       <span class="comment">// method (only allowed on natives)</span></span><br><span class="line">    ACC_SUPER        = <span class="number">0x00000020</span>,       <span class="comment">// class (not used in Dalvik)</span></span><br><span class="line">    ACC_VOLATILE     = <span class="number">0x00000040</span>,       <span class="comment">// field</span></span><br><span class="line">    ACC_BRIDGE       = <span class="number">0x00000040</span>,       <span class="comment">// method (1.5)</span></span><br><span class="line">    ACC_TRANSIENT    = <span class="number">0x00000080</span>,       <span class="comment">// field</span></span><br><span class="line">    ACC_VARARGS      = <span class="number">0x00000080</span>,       <span class="comment">// method (1.5)</span></span><br><span class="line">    ACC_NATIVE       = <span class="number">0x00000100</span>,       <span class="comment">// method</span></span><br><span class="line">    ACC_INTERFACE    = <span class="number">0x00000200</span>,       <span class="comment">// class, ic</span></span><br><span class="line">    ACC_ABSTRACT     = <span class="number">0x00000400</span>,       <span class="comment">// class, method, ic</span></span><br><span class="line">    ACC_STRICT       = <span class="number">0x00000800</span>,       <span class="comment">// method</span></span><br><span class="line">    ACC_SYNTHETIC    = <span class="number">0x00001000</span>,       <span class="comment">// field, method, ic</span></span><br><span class="line">    ACC_ANNOTATION   = <span class="number">0x00002000</span>,       <span class="comment">// class, ic (1.5)</span></span><br><span class="line">    ACC_ENUM         = <span class="number">0x00004000</span>,       <span class="comment">// class, field, ic (1.5)</span></span><br><span class="line">    ACC_CONSTRUCTOR  = <span class="number">0x00010000</span>,       <span class="comment">// method (Dalvik only)</span></span><br><span class="line">    ACC_DECLARED_SYNCHRONIZED =</span><br><span class="line">   <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>classDefsSize</code>和<code>classDefsOff</code>分别为<code>0000 0001</code>和<code>0000 0110</code>。即只有一个类定义，其偏移地址为<code>110h</code>，我们找到该地址，并取出32个字节：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000</span> <span class="number">0000</span> <span class="number">0100</span> <span class="number">0000</span> <span class="number">0200</span> <span class="number">0000</span> <span class="number">0000</span> <span class="number">0000</span> <span class="number">0200</span> <span class="number">0000</span> <span class="number">0000</span> <span class="number">0000</span> <span class="number">3102</span> <span class="number">0000</span> <span class="number">0000</span> <span class="number">0000</span></span><br></pre></td></tr></table></figure>
+
+<p>前4个字节代表类的类型，为<code>0000 0000</code>查表知为<code>LHello;</code>。接下来4个字节为类的访问权限，为<code>0000 0001</code>，记得我们上边刚提到的那个枚举值定义吗，1代表ACC_PUBLIC即Public访问权限。接下来4个字节<code>0000 0002</code>为父类对应的类型，查表知为<code>Ljava/lang/Object;</code>。然后四个字节<code>0000 0000</code>为这个类实现的接口在dex文件中的偏移，因为我们这个类没有实现接口，所以这里为<code>0000 0000</code>。紧接着的四个字节<code>0000 0002</code>查表知为<code>Hello.java</code>为该类类源码所在的文件。然后4个字节为该类的注解在文件中的偏移，很显然这个类没有注解，所以为<code>0000 0000</code>。接下来的4个字节则是表示该类的具体数据在文件中的偏移，这里先不讨论，后边会针对类数据区专门讨论。最后4个字节表示静态成员初始值列表在文件中的偏移，很显然我们这个类没有静态成员。整理一下如下：</p>
+<table>
+<thead>
+<tr>
+<th>类的类型</th>
+<th>类的权限</th>
+<th>父类的类型</th>
+<th>实现的接口</th>
+<th>类定义所在的文件</th>
+<th>类注解</th>
+<th>类具体数据</th>
+<th>静态成员初始值列表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Hello</td>
+<td>ACC_PUBLIC</td>
+<td>java.lang.Object</td>
+<td>无</td>
+<td>Hello.java</td>
+<td>无</td>
+<td>偏移值<code>0000 0231</code></td>
+<td>无</td>
+</tr>
+</tbody></table>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文对dex文件结构进行了一个简单的剖析，让我们对dex文件结构有了一个基本的认识。最后附上一个dex文件结构图以及思维图帮助我们记忆dex文件结构。</p>
+<p>dex文件层次结构图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211830586.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+<p>dex文件结构思维导图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201211832915.awebp?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+
+
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903847647772686">Android逆向笔记 —— DEX 文件格式解析</a></p>
+<p><a target="_blank" rel="noopener" href="https://tech.youzan.com/qian-tan-android-dexwen-jian/">浅谈 Android Dex 文件</a></p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1663852">一文读懂 DEX 文件格式解析</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_18268881/article/details/55832757">一篇文章带你搞懂DEX文件的结构</a></p>
+<p><a target="_blank" rel="noopener" href="http://androidxref.com/9.0.0_r3/xref/dalvik/libdex/DexFile.h">DexFile.h</a></p>
+<p><a target="_blank" rel="noopener" href="https://book.douban.com/subject/20556210/">Android软件安全与逆向分析-非虫</a></p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:22.945Z" itemprop="dateUpdated">2023-05-09 18:16:22</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/" rel="tag">android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=《一文了解Dex文件格式》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=《一文了解Dex文件格式》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《一文了解Dex文件格式》 — 何仕鹏的个人博客&url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8B%E8%B0%83%E7%94%A8JS%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向之调用JS的两种方式</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">Android逆向之动态加载</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=《一文了解Dex文件格式》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=《一文了解Dex文件格式》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《一文了解Dex文件格式》 — 何仕鹏的个人博客&url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADOUlEQVR42u3ay07DMBAF0P7/T4PECkSb3jsOqHFPVhWKEx9nMczjdouvj6/r9+/vf/l+Hd95vDa5fq+9/cWFjY2NfRF2/oKW/Wht/pZHpOQgjneFjY2NvR87CVrH+JWwd3x/cgS5BRsbG/ud2cebbpONPI1ZCa7Y2NjY2G26km+9TWbyVAcbGxv7PdltmMmLR8mGZs+cfR5sbGzs/dgrjd5X+/1P/W1sbGzsl2GvD8q0RaI25ThrxOfH07CxsbE3Yucjknk60TZxW/ZpDWlsbGzsLdhtEMpDyKwUlbx9PWXCxsbG3o+dD+i0wWOGmR1lEsZ+ZGDY2NjYG7HzTbRJSLL2rOQkwUckbGxs7Muy2zJQG0LWR3Da43540NjY2Nhbs5PQNQtXK+y2afFkJ9jY2NgbsfMyTX5MeXu4bTmv7KpISLCxsbEvxT4OFe1x5GuT9541ynNnFTY2Nvam7DacrMSCc8Nn2xLGxsbG3ok9K+Xkj/6ftsFKkwMbGxt7D3YbPGYthDzYtA2AWXMCGxsbew/2XyQbSUsgCZBtQMqfiY2Njb0TO2/Hzo4jH5Rcb/EOhzKxsbGxL85uizL5aGN7TEWbNt7Jky+MjY2NvRG7WLDQWJ2lK7My1pO/YGNjY78BO0eut3vbUZ42Bt35jY2Njb0Re1aynwWYNtjMhnXqYImNjY29BXsWYPI27fqdK0fw8GNgY2Njb8FuG6izIZu29J8/ZzYShI2Njb0fOw8Ps8btynHkOymaGdjY2NjbsdumaZtU5A2G/GnHq57sHBsbG/sN2G3ZaOWevKDfNgYevh0bGxt7I3Yy/tKOyMwKPbN0pR3ivPPNsbGxsS/OzsPGsBAfh6uV0NgWmLCxsbH3Y88eWvzTXw4G5aWotul7m8VPbGxs7Jdnr7w4KeKvh726lXsc0rCxsbE3Ys/CwGxYp20J5AfaNo+xsbGx92OvJABte+DkZm054lNsCBsbG/uC7JWCfr62DXKzpkURwLCxsbHfjD0LfsnWZwWs2bgPNjY2NvZ66SdPIdp7ioPAxsbG3o6dPyjH5OWnswpYefMAGxsbeyd22+hNNpQf30obOIlHbSkKGxsb+1LsTyKYb1JDakTCAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

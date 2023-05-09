@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之常见代码混淆的处理 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="加密分析流程总结在开始介绍常见代码混淆之前，看下加密分析的流程。  查看关键包——分析哪些参数是加密的。 搜索参数。   参数名&#x3D; &#x2F; 参数名 &#x3D; &#x2F; 参数名: &#x2F; 参数名 :  查看网络面板的Initiator(发起) xhr断点调试 hook相关逻辑     分析加密。 补全加密逻辑。  颜文字网络表情编码解混淆将Javascript代码转换为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之常见代码混淆的处理">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="加密分析流程总结在开始介绍常见代码混淆之前，看下加密分析的流程。  查看关键包——分析哪些参数是加密的。 搜索参数。   参数名&#x3D; &#x2F; 参数名 &#x3D; &#x2F; 参数名: &#x2F; 参数名 :  查看网络面板的Initiator(发起) xhr断点调试 hook相关逻辑     分析加密。 补全加密逻辑。  颜文字网络表情编码解混淆将Javascript代码转换为">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-02-18T08:37:23.000Z">
+<meta property="article:modified_time" content="2022-07-04T11:51:03.000Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之常见代码混淆的处理</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之常见代码混淆的处理</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-02-18T08:37:23.000Z" itemprop="datePublished" class="page-time">
+  2022-02-18
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%8A%A0%E5%AF%86%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B%E6%80%BB%E7%BB%93"><span class="post-toc-number">1.</span> <span class="post-toc-text">加密分析流程总结</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%A2%9C%E6%96%87%E5%AD%97%E7%BD%91%E7%BB%9C%E8%A1%A8%E6%83%85%E7%BC%96%E7%A0%81%E8%A7%A3%E6%B7%B7%E6%B7%86"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">颜文字网络表情编码解混淆</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%AC%A6%E5%8F%B7%E7%BB%84%E6%88%90%E7%9A%84%E4%BB%A3%E7%A0%81%E5%8F%8D%E6%B7%B7%E6%B7%86"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">符号组成的代码反混淆</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Jsfuck%E5%8F%8D%E6%B7%B7%E6%B7%86"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">Jsfuck反混淆</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Packed%E6%B7%B7%E6%B7%86"><span class="post-toc-number">1.4.</span> <span class="post-toc-text">Packed混淆</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#AST%E6%B7%B7%E6%B7%86%E5%8F%8D%E6%B7%B7%E6%B7%86"><span class="post-toc-number">1.5.</span> <span class="post-toc-text">AST混淆反混淆</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">2.</span> <span class="post-toc-text">总结</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向之常见代码混淆的处理"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之常见代码混淆的处理</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-02-18 16:37:23" datetime="2022-02-18T08:37:23.000Z"  itemprop="datePublished">2022-02-18</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h4 id="加密分析流程总结"><a href="#加密分析流程总结" class="headerlink" title="加密分析流程总结"></a>加密分析流程总结</h4><p>在开始介绍常见代码混淆之前，看下加密分析的流程。</p>
+<ol>
+<li>查看关键包——分析哪些参数是加密的。</li>
+<li>搜索参数。</li>
+</ol>
+<ul>
+<li><p>参数名&#x3D; &#x2F; 参数名 &#x3D; &#x2F; 参数名: &#x2F; 参数名 :</p>
+<ul>
+<li>查看网络面板的Initiator(发起)</li>
+<li>xhr断点调试</li>
+<li>hook相关逻辑</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li>分析加密。</li>
+<li>补全加密逻辑。</li>
+</ol>
+<h5 id="颜文字网络表情编码解混淆"><a href="#颜文字网络表情编码解混淆" class="headerlink" title="颜文字网络表情编码解混淆"></a>颜文字网络表情编码解混淆</h5><p>将Javascript代码转换为颜文字网络表情的编码以达到混淆的目的。</p>
+<p>原理：这类混淆通常都是使用构造函数将字符串作为代码运行。</p>
+<p>例如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sum = <span class="keyword">new</span> <span class="title class_">Function</span>(<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;return a + b&#x27;</span>)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">sum</span>(<span class="number">2</span>, <span class="number">6</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+<p>解决办法：</p>
+<ol>
+<li>直接将混淆后的代码粘贴至控制台通过VM查看源代码。</li>
+<li>删除代码结尾的”(‘_’)”，替换为toString()或将修改后的代码粘贴至控制台执行。</li>
+</ol>
+<h5 id="符号组成的代码反混淆"><a href="#符号组成的代码反混淆" class="headerlink" title="符号组成的代码反混淆"></a>符号组成的代码反混淆</h5><p>将Javascript代码转换成仅由符号组成的代码以达到混淆的目的。</p>
+<p>原理：这类混淆同常使用构造函数将字符串作为代码运行。</p>
+<p>转换流程：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Function</span>(<span class="string">&quot;alert(1)&quot;</span>)();</span><br><span class="line">(<span class="number">0</span>)[<span class="string">&quot;constructor&quot;</span>][<span class="string">&quot;constructor&quot;</span>](<span class="string">&quot;alert(1)&quot;</span>)();</span><br><span class="line">$ = <span class="string">&quot;constructor&quot;</span>;</span><br><span class="line">$$ = <span class="string">&quot;alert(1)&quot;</span>;</span><br><span class="line">$_ = ~[];</span><br><span class="line">($_)[$][$]($$)();</span><br></pre></td></tr></table></figure>
+
+<p>解决办法：</p>
+<ol>
+<li>直接将混淆后的代码贴到控制台通过VM查看源代码。</li>
+<li>删除代码结尾的()，替换为toString()，将修改后的代码粘贴至控制台运行。</li>
+</ol>
+<h5 id="Jsfuck反混淆"><a href="#Jsfuck反混淆" class="headerlink" title="Jsfuck反混淆"></a>Jsfuck反混淆</h5><p>将JS代码转换成只有6种符号，()[]!+，的编码，以达到混淆的目的。</p>
+<p>解决办法：</p>
+<ol>
+<li><p>直接将混淆后的代码粘贴至控制台通过VM查看源码。</p>
+</li>
+<li><p>删除代码结尾的()替换为toString，修改后粘贴至控制台执行。</p>
+</li>
+<li><p>如果代码最后不是()，而是)，找到最后一对()包裹的代码，将其抽离出来单独执行。</p>
+</li>
+</ol>
+<h5 id="Packed混淆"><a href="#Packed混淆" class="headerlink" title="Packed混淆"></a>Packed混淆</h5><p>将JS代码打包成以eval开头，特征字符串是function(p, a, c, k, e, r)或者是function(p, a, c, k, e, d)的代码。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">eval</span>(<span class="keyword">function</span> (<span class="params">p, a, c, k, e, d</span>) &#123;</span><br><span class="line">    e = <span class="keyword">function</span> (<span class="params">c</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> (c &lt; a ? <span class="string">&quot;&quot;</span> : <span class="title function_">e</span>(<span class="built_in">parseInt</span>(c / a))) + ((c = c % a) &gt; <span class="number">35</span> ? <span class="title class_">String</span>.<span class="title function_">fromCharCode</span>(c + <span class="number">29</span>) : c.<span class="title function_">toString</span>(<span class="number">36</span>))</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="string">&#x27;&#x27;</span>.<span class="title function_">replace</span>(<span class="regexp">/^/</span>, <span class="title class_">String</span>)) &#123;</span><br><span class="line">        <span class="keyword">while</span> (c--) d[<span class="title function_">e</span>(c)] = k[c] || <span class="title function_">e</span>(c);</span><br><span class="line">        k = [<span class="keyword">function</span> (<span class="params">e</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> d[e]</span><br><span class="line">        &#125;];</span><br><span class="line">        e = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;\\w+&#x27;</span></span><br><span class="line">        &#125;;</span><br><span class="line">        c = <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ;</span><br><span class="line">    <span class="keyword">while</span> (c--) <span class="keyword">if</span> (k[c]) p = p.<span class="title function_">replace</span>(<span class="keyword">new</span> <span class="title class_">RegExp</span>(<span class="string">&#x27;\\b&#x27;</span> + <span class="title function_">e</span>(c) + <span class="string">&#x27;\\b&#x27;</span>, <span class="string">&#x27;g&#x27;</span>), k[c]);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;(<span class="string">&#x27;0&#x27;</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="string">&#x27;hello!||&#x27;</span>.<span class="title function_">split</span>(<span class="string">&#x27;|&#x27;</span>), <span class="number">0</span>, &#123;&#125;))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>反混淆方法：</p>
+<p>将eval改成console.log，在控制台上输出。</p>
+<h5 id="AST混淆反混淆"><a href="#AST混淆反混淆" class="headerlink" title="AST混淆反混淆"></a>AST混淆反混淆</h5><p>通过字符串编码，字符串常量编码，数值编码，数组混淆，数组乱序，花指令，流程平坦化，逗号表达式混淆等方式，对JS代码进行混淆。</p>
+<p>处理方式：（扣JS，补JS）</p>
+<ol>
+<li>找到入口方法</li>
+<li>整理主要逻辑</li>
+<li>修改逻辑代码补全缺失的逻辑</li>
+<li>完成代码的整理</li>
+</ol>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>以上几种混淆中常见的是AST混淆，后边会有专门的文章介绍AST混淆的原理，如何手动反混淆以及借助相关的工具实现反混淆。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2022-07-04T11:51:03.000Z" itemprop="dateUpdated">2022-07-04 19:51:03</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/&title=《JS逆向之常见代码混淆的处理》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/&title=《JS逆向之常见代码混淆的处理》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之常见代码混淆的处理》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E7%AE%80%E5%8D%95%E6%A1%88%E4%BE%8B%E4%B8%80%E4%BA%8C/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向简单案例一二</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向之代码混淆的原理</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/&title=《JS逆向之常见代码混淆的处理》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/&title=《JS逆向之常见代码混淆的处理》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之常见代码混淆的处理》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAAEmCAAAAADqr2IGAAAEg0lEQVR42u3aS27jMBAFwNz/0h5gVhNM4rzXLQOiU1oFsk2JxQBkfz4+4uvx90ruP/67vvt0Nn5y/99Pv7vz8YoLEyZMmDDdkunx9EqGbmmS0Z6ztjTJ+M9ngQkTJkyYTmdKhssnv9mYE5rnb5XfKQ4cmDBhwoTpFzC1r54HmfuofTYLTJgwYcKEKSdrvzPLrG4Cb0yYMGHC9JuZkuHy122xkvHzCmOSzH1hLhwTJkyYMN2MqQ0s3+nviy9MmDBhwnQzpsfoSrb/NrychbibA0cxX0yYMGHCdCxTW6rcJFVXIWXQgpMsyay0iQkTJkyYTme6KpGa0M8OCvuDxWzMAg4TJkyYMN2S6blW3tSyb6nZPP2qBf6h3osJEyZMmA5n2oSybbvPLJmbHyxyjuiggAkTJkyYjmWabb1Xbe2zZGubxm3D8m+fjgkTJkyYjmWa/Tjf1F9ROp0VTdtPvz0WYMKECROmt2BKXqvdN9tE8KZ4mcylXjxMmDBhwnQUUzuNfcCZT7UNs/PDQd3QgwkTJkyYDmdqi5rtcaGFSJjaJp62CPrpDiZMmDBheiOmPIW6KYLmYfNmm5+F08MSJiZMmDBhuiVT++NZs+ks7ExQcqw2rVzAYcKECROmGzO1G22Ou9m226LpLNVbHFYwYcKECdOxTJvXmvUH7ZchX+a21Bq172DChAkTpgOZ8s01+fSCrXdEMCuR1scgTJgwYcJ0INN+S54dEdoG2U0wvA/aMWHChAnTiUybLX/WKrppY90E220SGRMmTJgwvQdTvpW2U9rcaZtck783z8KECRMmTO/BlHNsNvJZdH7VnfZZ0f8UJkyYMGG6PVPRtjI6RuxD5VkS+SW5cEyYMGHCdBRTm+RtN/59iLuZ6mWFUkyYMGHC9BZMbcI0/+1+qm1gvFm8L+5jwoQJE6ZjmWYha9Lyko+QXJvSZnsHEyZMmDC9N1Obik1CzTzVey3K5mgyDIMxYcKECdPNmPLNe1PObH+bb+TtAg/T2ZgwYcKE6Vim/DF5u+pVx4vZcSRftrqtFhMmTJgwvRHTsNRXlhJnKJvAuJ31DwcCTJgwYcJ0INOmFbV+8ChN3JYt2yRvlAXHhAkTJkxHMc0I2jA4WZh25NlirygxYcKECdPhTLOgd4aVkO2D8Dbh+8MBBRMmTJgwHcvUEuTJ09nfyaFh9v0LSqqYMGHChOkQpjYxmr9EO0KyebcB8ybR/EUhExMmTJgwHc7UTqlN6W7SynnB8trE7hcHAkyYMGHCdBTTLD7eN9DkgWi0YV90FWNiwoQJE6ZDmB7llQeos++0W3We/J39K3w6N2HChAkTpgOZZptlPplZ883mwDFbtssOGZgwYcKE6ZZMm0aZ/E4Syg634bJc2h4+MGHChAnTezDlm3Sbfp0dHa5KRl+WDsaECRMmTL+YKS9D5vXB5FntAmxabDFhwoQJ029gmjWGbjbpWUA+a0L9gQ8TJkyYMB3OlEPMGk9n7TizpWrfKlo8TJgwYcJ0LNMsw5kHkPtmmhnHK1pXMWHChAnTUUx/AE0MdNaBAe9NAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

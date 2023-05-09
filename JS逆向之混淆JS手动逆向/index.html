@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之混淆JS手动逆向 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS,AST">
+    <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言写作目的：记录手动逆向一个JS高度混淆的网站的整个过程。 网址：aHR0cHM6Ly81NTI0OTY5Ni5jb206Nzc3Ny8&#x3D; 逆向过程话不多说，直接开始调试。输入用户名17777777777">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之混淆JS手动逆向">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言写作目的：记录手动逆向一个JS高度混淆的网站的整个过程。 网址：aHR0cHM6Ly81NTI0OTY5Ni5jb206Nzc3Ny8&#x3D; 逆向过程话不多说，直接开始调试。输入用户名17777777777">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081636681.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081638469.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081704604.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081705338.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081706000.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091058349.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091101267.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091102623.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091104606.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091106206.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091816525.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091817805.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091823518.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091824415.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091844956.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101006438.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101015210.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101017949.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101024724.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101026613.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101027076.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101028062.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101029626.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101059338.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101032240.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101041001.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101042436.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101042243.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101100041.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101114177.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101121754.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101405702.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203122207679.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203122208606.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203122210618.jpg">
+<meta property="article:published_time" content="2022-03-08T12:24:52.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:44.204Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta property="article:tag" content="AST">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081636681.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之混淆JS手动逆向</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之混淆JS手动逆向</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-03-08T12:24:52.000Z" itemprop="datePublished" class="page-time">
+  2022-03-08
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%89%8D%E8%A8%80"><span class="post-toc-number">1.</span> <span class="post-toc-text">前言</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E8%BF%87%E7%A8%8B"><span class="post-toc-number">2.</span> <span class="post-toc-text">逆向过程</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%80%86%E5%90%91URL%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">逆向URL生成规则</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%80%86%E5%90%91data%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">逆向data生成规则</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%80%86%E5%90%91clientid%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">逆向clientid生成规则</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%80%86%E5%90%91token%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">逆向token生成规则</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E9%AA%8C%E8%AF%81"><span class="post-toc-number">3.</span> <span class="post-toc-text">验证</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">4.</span> <span class="post-toc-text">总结</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向之混淆JS手动逆向"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之混淆JS手动逆向</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-03-08 20:24:52" datetime="2022-03-08T12:24:52.000Z"  itemprop="datePublished">2022-03-08</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p> 免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
+</blockquote>
+<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>写作目的：记录手动逆向一个JS高度混淆的网站的整个过程。</p>
+<p>网址：aHR0cHM6Ly81NTI0OTY5Ni5jb206Nzc3Ny8&#x3D;</p>
+<h4 id="逆向过程"><a href="#逆向过程" class="headerlink" title="逆向过程"></a>逆向过程</h4><p>话不多说，直接开始调试。输入用户名17777777777和密码123456点击登录，弹出验证码：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081636681.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220308163635586" title="">
+                </div>
+                <div class="image-caption">image-20220308163635586</div>
+            </figure>
+
+<p><strong>一般来说网站如果出现复杂验证码都会配合JS参数加密增加防护等级</strong>。我们抓包抓到2个XHR请求：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081638469.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220308163823432" title="">
+                </div>
+                <div class="image-caption">image-20220308163823432</div>
+            </figure>
+
+<p>初步推测第一个请求get是获取验证码，第二个请求check是校验验证码。今天的目标就是破解这两个请求的加密参数与返回值。</p>
+<p> 我们观察这2个接口，发现check请求的参数包含get请求的参数，所以只需要解决check请求的参数就行了。</p>
+<p>我们直接看check请求，在Source面板打上XHR断点，断住checkv3.php请求：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081704604.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220308170430516" title="">
+                </div>
+                <div class="image-caption">image-20220308170430516</div>
+            </figure>
+
+
+
+<p>在Call Stack中找到一个疑似加密点：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081705338.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220308170529279" title="">
+                </div>
+                <div class="image-caption">image-20220308170529279</div>
+            </figure>
+
+
+
+<p>点击进去，可以看到JS代码基本上是高度混淆的：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081706000.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220308170617796" title="">
+                </div>
+                <div class="image-caption">image-20220308170617796</div>
+            </figure>
+
+
+
+<p>我们把断点断到拼接请求参数的地方：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091058349.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220309105805200" title="">
+                </div>
+                <div class="image-caption">image-20220309105805200</div>
+            </figure>
+
+
+
+<h5 id="逆向URL生成规则"><a href="#逆向URL生成规则" class="headerlink" title="逆向URL生成规则"></a>逆向URL生成规则</h5><p>先看下URL的生成，扣出代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;url&#x27;</span>: _0x15a5d0[<span class="title function_">_0x59cb56</span>(<span class="number">0x8bc</span>, <span class="number">0x763</span>, <span class="number">0xba1</span>, <span class="string">&#x27;0jdF&#x27;</span>, <span class="number">0x6bd</span>)](_0x15a5d0[<span class="title function_">_0x59cb56</span>(<span class="number">0x8ea</span>, <span class="number">0x8b8</span>, <span class="number">0x9b2</span>, <span class="string">&#x27;m*3l&#x27;</span>, <span class="number">0xcfc</span>)], _0x36b61f),</span><br></pre></td></tr></table></figure>
+
+<p>我们再取出<code>_0x15a5d0[_0x59cb56(0x8bc, 0x763, 0xba1, &#39;0jdF&#39;, 0x6bd)]</code>放到console上输出，发现其是一个函数：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091101267.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220309110157210" title="">
+                </div>
+                <div class="image-caption">image-20220309110157210</div>
+            </figure>
+
+
+
+<p>点击进去，看到它是一个花指令，就是把两个参数相加：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091102623.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220309110253933" title="">
+                </div>
+                <div class="image-caption">image-20220309110253933</div>
+            </figure>
+
+
+
+<p>所以URL参数的生成实际上是调用一个加法，把两个参数相加。我们再看这个加法传入的2个参数。<code>_0x15a5d0[_0x59cb56(0x8ea, 0x8b8, 0x9b2, &#39;m*3l&#39;, 0xcfc)]</code>和<code>_0x36b61f</code>。</p>
+<p>&#96;&#96;_0x15a5d0[_0x59cb56(0x8ea, 0x8b8, 0x9b2, ‘m*3l’, 0xcfc)]&#96;是一个固定的地址。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091104606.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220309110445528" title="">
+                </div>
+                <div class="image-caption">image-20220309110445528</div>
+            </figure>
+
+<p><code>_0x36b61f</code>是一个13位数的时间戳。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091106206.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220309110602734" title="">
+                </div>
+                <div class="image-caption">image-20220309110602734</div>
+            </figure>
+
+<p>所以URL实际上就是一个固定的地址拼接一个13位的时间戳，即&#x2F;yzmtest&#x2F;checkv3.php?t&#x3D;{13位时间戳}。</p>
+<h5 id="逆向data生成规则"><a href="#逆向data生成规则" class="headerlink" title="逆向data生成规则"></a>逆向data生成规则</h5><p>先扣出data生成那一部分代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;data&#x27;</span>: _0xf828e5[<span class="title function_">_0x59cb56</span>(<span class="number">0x7c7</span>, <span class="number">0x4a1</span>, <span class="number">0x425</span>, <span class="string">&#x27;F^5Z&#x27;</span>, <span class="number">0x1f3</span>)](<span class="title class_">JSON</span>[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x9ff</span>, <span class="number">0x5fa</span>, <span class="number">0x813</span>, <span class="string">&#x27;Ra[M&#x27;</span>, <span class="number">0x821</span>) + <span class="title function_">_0x160f59</span>(<span class="number">0x921</span>, <span class="number">0x690</span>, <span class="number">0x2a4</span>, <span class="string">&#x27;ZP*j&#x27;</span>, <span class="number">0x657</span>)](</span><br><span class="line">    &#123;</span><br><span class="line">         <span class="string">&#x27;d&#x27;</span>: _0x15a5d0[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x2ce</span>, <span class="number">0x61d</span>, <span class="number">0xa5a</span>, <span class="string">&#x27;4[E4&#x27;</span>, <span class="number">0x33d</span>)](_0x15a5d0[<span class="title function_">_0x160f59</span>(<span class="number">0x4a2</span>, <span class="number">0x99e</span>, <span class="number">0xb7e</span>, <span class="string">&#x27;ZHhp&#x27;</span>, <span class="number">0xb6b</span>)](_0x15a5d0[<span class="title function_">_0x59cb56</span>(<span class="number">0x92b</span>, <span class="number">0x683</span>, <span class="number">0x968</span>, <span class="string">&#x27;F^5Z&#x27;</span>, <span class="number">0x9a7</span>)](_0x15a5d0[<span class="title function_">_0x160f59</span>(<span class="number">0x11f</span>, <span class="number">0x403</span>, <span class="number">0x29d</span>, <span class="string">&#x27;AVXK&#x27;</span>, <span class="number">0x518</span>)](_0x4fd69b[<span class="title function_">_0x8eb3</span>(<span class="number">0xc7a</span>, <span class="number">0x728</span>, <span class="number">0x704</span>, <span class="string">&#x27;OBf4&#x27;</span>, <span class="number">0xc4c</span>)](<span class="string">&#x27;&#x27;</span>), <span class="string">&#x27;&#x27;</span>), _0xf828e5[<span class="title function_">_0x8eb3</span>(<span class="number">0x136</span>, <span class="number">0x44f</span>, <span class="number">0x748</span>, <span class="string">&#x27;HZxj&#x27;</span>, <span class="number">0x2a3</span>) + <span class="string">&#x27;en&#x27;</span>]), _0x36b61f[<span class="title function_">_0x556be9</span>(<span class="number">0x5cf</span>, <span class="number">0x870</span>, <span class="number">0x50b</span>, <span class="string">&#x27;Ra[M&#x27;</span>, <span class="number">0x3af</span>) + <span class="string">&#x27;r&#x27;</span>](-(<span class="number">0x2670</span> + -<span class="number">0x77d</span> * -<span class="number">0x2</span> + -<span class="number">0x3568</span> * <span class="number">0x1</span>))), _0xf828e5[<span class="title function_">_0x160f59</span>(<span class="number">0xae3</span>, <span class="number">0x5f9</span>, <span class="number">0x92d</span>, <span class="string">&#x27;NUpf&#x27;</span>, <span class="number">0x8a5</span>)]),</span><br><span class="line">         <span class="string">&#x27;username&#x27;</span>: _0xf828e5[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x241</span>, <span class="number">0x70d</span>, <span class="number">0x75c</span>, <span class="string">&#x27;o4oN&#x27;</span>, <span class="number">0x1eb</span>) + <span class="title function_">_0x8eb3</span>(<span class="number">0xac</span>, <span class="number">0x90</span>, <span class="number">0x5c9</span>, <span class="string">&#x27;o4oN&#x27;</span>, <span class="number">0x3a8</span>)],</span><br><span class="line">         <span class="string">&#x27;password&#x27;</span>: _0xf828e5[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x4b3</span>, <span class="number">0x757</span>, <span class="number">0x5d1</span>, <span class="string">&#x27;*EQ3&#x27;</span>, <span class="number">0x86a</span>) + <span class="title function_">_0x2e7c5c</span>(<span class="number">0xb07</span>, <span class="number">0x6f1</span>, <span class="number">0xa86</span>, <span class="string">&#x27;ZP*j&#x27;</span>, <span class="number">0x2bd</span>)]</span><br><span class="line">    &#125;</span><br><span class="line">))</span><br></pre></td></tr></table></figure>
+
+<p>在console面板上，很容易看出，username是我们输入的账号17777777777前面拼接了e5。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091816525.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220309181634727" title="">
+                </div>
+                <div class="image-caption">image-20220309181634727</div>
+            </figure>
+
+<p>​		password则是明文：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091817805.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220309181714546" title="">
+                </div>
+                <div class="image-caption">image-20220309181714546</div>
+            </figure>
+
+<p>​        所以上面的代码可以加以简化为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;data&#x27;</span>: _0xf828e5[<span class="title function_">_0x59cb56</span>(<span class="number">0x7c7</span>, <span class="number">0x4a1</span>, <span class="number">0x425</span>, <span class="string">&#x27;F^5Z&#x27;</span>, <span class="number">0x1f3</span>)](<span class="title class_">JSON</span>[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x9ff</span>, <span class="number">0x5fa</span>, <span class="number">0x813</span>, <span class="string">&#x27;Ra[M&#x27;</span>, <span class="number">0x821</span>) + <span class="title function_">_0x160f59</span>(<span class="number">0x921</span>, <span class="number">0x690</span>, <span class="number">0x2a4</span>, <span class="string">&#x27;ZP*j&#x27;</span>, <span class="number">0x657</span>)](</span><br><span class="line">    &#123;</span><br><span class="line">         <span class="string">&#x27;d&#x27;</span>: _0x15a5d0[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x2ce</span>, <span class="number">0x61d</span>, <span class="number">0xa5a</span>, <span class="string">&#x27;4[E4&#x27;</span>, <span class="number">0x33d</span>)](_0x15a5d0[<span class="title function_">_0x160f59</span>(<span class="number">0x4a2</span>, <span class="number">0x99e</span>, <span class="number">0xb7e</span>, <span class="string">&#x27;ZHhp&#x27;</span>, <span class="number">0xb6b</span>)](_0x15a5d0[<span class="title function_">_0x59cb56</span>(<span class="number">0x92b</span>, <span class="number">0x683</span>, <span class="number">0x968</span>, <span class="string">&#x27;F^5Z&#x27;</span>, <span class="number">0x9a7</span>)](_0x15a5d0[<span class="title function_">_0x160f59</span>(<span class="number">0x11f</span>, <span class="number">0x403</span>, <span class="number">0x29d</span>, <span class="string">&#x27;AVXK&#x27;</span>, <span class="number">0x518</span>)](_0x4fd69b[<span class="title function_">_0x8eb3</span>(<span class="number">0xc7a</span>, <span class="number">0x728</span>, <span class="number">0x704</span>, <span class="string">&#x27;OBf4&#x27;</span>, <span class="number">0xc4c</span>)](<span class="string">&#x27;&#x27;</span>), <span class="string">&#x27;&#x27;</span>), _0xf828e5[<span class="title function_">_0x8eb3</span>(<span class="number">0x136</span>, <span class="number">0x44f</span>, <span class="number">0x748</span>, <span class="string">&#x27;HZxj&#x27;</span>, <span class="number">0x2a3</span>) + <span class="string">&#x27;en&#x27;</span>]), _0x36b61f[<span class="title function_">_0x556be9</span>(<span class="number">0x5cf</span>, <span class="number">0x870</span>, <span class="number">0x50b</span>, <span class="string">&#x27;Ra[M&#x27;</span>, <span class="number">0x3af</span>) + <span class="string">&#x27;r&#x27;</span>](-(<span class="number">0x2670</span> + -<span class="number">0x77d</span> * -<span class="number">0x2</span> + -<span class="number">0x3568</span> * <span class="number">0x1</span>))), _0xf828e5[<span class="title function_">_0x160f59</span>(<span class="number">0xae3</span>, <span class="number">0x5f9</span>, <span class="number">0x92d</span>, <span class="string">&#x27;NUpf&#x27;</span>, <span class="number">0x8a5</span>)]),</span><br><span class="line">         <span class="string">&#x27;username&#x27;</span>: <span class="string">&#x27;e517777777777&#x27;</span>,</span><br><span class="line">         <span class="string">&#x27;password&#x27;</span>: <span class="string">&#x27;123456&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">))</span><br></pre></td></tr></table></figure>
+
+<p>调试下<code>_0x59cb56(0x7c7, 0x4a1, 0x425, &#39;F^5Z&#39;, 0x1f3)</code></p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091823518.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220309182331379" title="">
+                </div>
+                <div class="image-caption">image-20220309182331379</div>
+            </figure>
+
+<p>再调试下<code>_0x2e7c5c(0x9ff, 0x5fa, 0x813, &#39;Ra[M&#39;, 0x821) + _0x160f59(0x921, 0x690, 0x2a4, &#39;ZP*j&#39;, 0x657)</code>：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091824415.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220309182359819" title="">
+                </div>
+                <div class="image-caption">image-20220309182359819</div>
+            </figure>
+
+<p>把上面的代码简化下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;data&#x27;</span>: _0xf828e5.<span class="property">enc</span>.<span class="property">JSON</span>.<span class="title function_">stringify</span>(</span><br><span class="line">    &#123;</span><br><span class="line">         <span class="string">&#x27;d&#x27;</span>: _0x15a5d0[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x2ce</span>, <span class="number">0x61d</span>, <span class="number">0xa5a</span>, <span class="string">&#x27;4[E4&#x27;</span>, <span class="number">0x33d</span>)](_0x15a5d0[<span class="title function_">_0x160f59</span>(<span class="number">0x4a2</span>, <span class="number">0x99e</span>, <span class="number">0xb7e</span>, <span class="string">&#x27;ZHhp&#x27;</span>, <span class="number">0xb6b</span>)](_0x15a5d0[<span class="title function_">_0x59cb56</span>(<span class="number">0x92b</span>, <span class="number">0x683</span>, <span class="number">0x968</span>, <span class="string">&#x27;F^5Z&#x27;</span>, <span class="number">0x9a7</span>)](_0x15a5d0[<span class="title function_">_0x160f59</span>(<span class="number">0x11f</span>, <span class="number">0x403</span>, <span class="number">0x29d</span>, <span class="string">&#x27;AVXK&#x27;</span>, <span class="number">0x518</span>)](_0x4fd69b[<span class="title function_">_0x8eb3</span>(<span class="number">0xc7a</span>, <span class="number">0x728</span>, <span class="number">0x704</span>, <span class="string">&#x27;OBf4&#x27;</span>, <span class="number">0xc4c</span>)](<span class="string">&#x27;&#x27;</span>), <span class="string">&#x27;&#x27;</span>), _0xf828e5[<span class="title function_">_0x8eb3</span>(<span class="number">0x136</span>, <span class="number">0x44f</span>, <span class="number">0x748</span>, <span class="string">&#x27;HZxj&#x27;</span>, <span class="number">0x2a3</span>) + <span class="string">&#x27;en&#x27;</span>]), _0x36b61f[<span class="title function_">_0x556be9</span>(<span class="number">0x5cf</span>, <span class="number">0x870</span>, <span class="number">0x50b</span>, <span class="string">&#x27;Ra[M&#x27;</span>, <span class="number">0x3af</span>) + <span class="string">&#x27;r&#x27;</span>](-(<span class="number">0x2670</span> + -<span class="number">0x77d</span> * -<span class="number">0x2</span> + -<span class="number">0x3568</span> * <span class="number">0x1</span>))), _0xf828e5[<span class="title function_">_0x160f59</span>(<span class="number">0xae3</span>, <span class="number">0x5f9</span>, <span class="number">0x92d</span>, <span class="string">&#x27;NUpf&#x27;</span>, <span class="number">0x8a5</span>)]),</span><br><span class="line">         <span class="string">&#x27;username&#x27;</span>: <span class="string">&#x27;e517777777777&#x27;</span>,</span><br><span class="line">         <span class="string">&#x27;password&#x27;</span>: <span class="string">&#x27;123456&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">))</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，这里是用了某种加密算法对{“d”: xxx, “username”: “xxx”,  “password”: “xxx”}进行加密从而得到data。这个加密算法到底是什么加密呢？我们console面板上输入_0xf828e5.enc然后点击进去：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203091844956.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220309184438821" title="">
+                </div>
+                <div class="image-caption">image-20220309184438821</div>
+            </figure>
+
+<p>看到了整个方法有2个分支，我们分别对2个分支打上断点，发现只进去else了。如果对JS常见的加密有过了解的话，这里看到iv，mode，padding这三个关键字立马会想到用的是AES加密算法。第一个参数_0x4d04a3是待加密的字符串：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101006438.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310100612354" title="">
+                </div>
+                <div class="image-caption">image-20220310100612354</div>
+            </figure>
+
+<p>第二个参数this[_0x19e2aa(0x93, 0x454, ‘cu5X’, 0x139, 0x43d) + ‘e’]是密钥。我们打印出其内容：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> key = &#123;</span><br><span class="line">    <span class="string">&quot;words&quot;</span>: [</span><br><span class="line">        <span class="number">1701066809</span>,</span><br><span class="line">        <span class="number">929182054</span>,</span><br><span class="line">        <span class="number">1698117986</span>,</span><br><span class="line">        <span class="number">1697659188</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;sigBytes&quot;</span>: <span class="number">16</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>第三个参数是AES加密的一些参数，mode一般是CBC，padding不重要可以不传。最后我们在console上输出iv的值：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> iv = &#123;</span><br><span class="line">    <span class="string">&quot;words&quot;</span>: [</span><br><span class="line">        <span class="number">1668053103</span>,</span><br><span class="line">        <span class="number">875983984</span>,</span><br><span class="line">        <span class="number">1731224932</span>,</span><br><span class="line">        <span class="number">943273826</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;sigBytes&quot;</span>: <span class="number">16</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>有了AES加密的这几个参数我们就可以很简单的还原出解密算法了。代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">CryptoJS</span> = <span class="built_in">require</span>(<span class="string">&quot;crypto-js&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> key = &#123;</span><br><span class="line">    <span class="string">&quot;words&quot;</span>: [</span><br><span class="line">        <span class="number">1701066809</span>,</span><br><span class="line">        <span class="number">929182054</span>,</span><br><span class="line">        <span class="number">1698117986</span>,</span><br><span class="line">        <span class="number">1697659188</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;sigBytes&quot;</span>: <span class="number">16</span></span><br><span class="line">&#125;; <span class="comment">// 密钥，已经转化为128bit的格式。</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iv = &#123;</span><br><span class="line">    <span class="string">&quot;words&quot;</span>: [</span><br><span class="line">        <span class="number">1668053103</span>,</span><br><span class="line">        <span class="number">875983984</span>,</span><br><span class="line">        <span class="number">1731224932</span>,</span><br><span class="line">        <span class="number">943273826</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;sigBytes&quot;</span>: <span class="number">16</span></span><br><span class="line">&#125;; <span class="comment">// IV，已经转化为128bit的格式。</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Decrypt</span>(<span class="params">word</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> a = <span class="title class_">CryptoJS</span>.<span class="property">AES</span>.<span class="title function_">decrypt</span>(word, key, &#123; <span class="attr">iv</span>: iv, <span class="attr">mode</span>: <span class="title class_">CryptoJS</span>.<span class="property">mode</span>.<span class="property">CBC</span> &#125;);</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">stringify</span>(a);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> data = <span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Decrypt</span>(data));</span><br></pre></td></tr></table></figure>
+
+<p>还记得前面我们提到过抓到2个XHR请求吗？一个是请求验证码的，一个是进行验证码验证的。我们看第一个请求验证码的请求。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101015210.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310101530093" title="">
+                </div>
+                <div class="image-caption">image-20220310101530093</div>
+            </figure>
+
+<p>这个返回值c是不是就是用的AES加密呢？我们用上边的解码程序试验一下。果不其然，可以正确反解出加密内容：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101017949.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310101738862" title="">
+                </div>
+                <div class="image-caption">image-20220310101738862</div>
+            </figure>
+
+<p>里面的一串JSON正好是我们刚才出现的验证码的内容：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;<span class="attr">id</span>: <span class="string">&#x27;90b389d8490d42a8&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;鸭子&#x27;</span>&#125;,</span><br><span class="line">	&#123;<span class="attr">id</span>: <span class="string">&#x27;a7985fb229d9e935&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;长颈鹿&#x27;</span>&#125;,</span><br><span class="line">	&#123;<span class="attr">id</span>: <span class="string">&#x27;c38548f7b6c0a3d8&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;小马&#x27;</span>&#125;,</span><br><span class="line">	&#123;<span class="attr">id</span>: <span class="string">&#x27;4c2c8bc886b8bf8d&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;海马&#x27;</span>&#125;,</span><br><span class="line">	&#123;<span class="attr">id</span>: <span class="string">&#x27;25897767b2ffc531&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;牛&#x27;</span>&#125;,</span><br><span class="line">	&#123;<span class="attr">id</span>: <span class="string">&#x27;24bafe8f4a1eac0e&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;斑马&#x27;</span>&#125;,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>记住这个JSON，我们待会还有用。我们接着回到data破解的思路上去。data的生成代码进一步简化：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;data&#x27;</span>: <span class="variable constant_">AES</span>.<span class="title function_">encode</span>(</span><br><span class="line">    &#123;</span><br><span class="line">         <span class="string">&#x27;d&#x27;</span>: _0x15a5d0[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x2ce</span>, <span class="number">0x61d</span>, <span class="number">0xa5a</span>, <span class="string">&#x27;4[E4&#x27;</span>, <span class="number">0x33d</span>)](_0x15a5d0[<span class="title function_">_0x160f59</span>(<span class="number">0x4a2</span>, <span class="number">0x99e</span>, <span class="number">0xb7e</span>, <span class="string">&#x27;ZHhp&#x27;</span>, <span class="number">0xb6b</span>)](_0x15a5d0[<span class="title function_">_0x59cb56</span>(<span class="number">0x92b</span>, <span class="number">0x683</span>, <span class="number">0x968</span>, <span class="string">&#x27;F^5Z&#x27;</span>, <span class="number">0x9a7</span>)](_0x15a5d0[<span class="title function_">_0x160f59</span>(<span class="number">0x11f</span>, <span class="number">0x403</span>, <span class="number">0x29d</span>, <span class="string">&#x27;AVXK&#x27;</span>, <span class="number">0x518</span>)](_0x4fd69b[<span class="title function_">_0x8eb3</span>(<span class="number">0xc7a</span>, <span class="number">0x728</span>, <span class="number">0x704</span>, <span class="string">&#x27;OBf4&#x27;</span>, <span class="number">0xc4c</span>)](<span class="string">&#x27;&#x27;</span>), <span class="string">&#x27;&#x27;</span>), _0xf828e5[<span class="title function_">_0x8eb3</span>(<span class="number">0x136</span>, <span class="number">0x44f</span>, <span class="number">0x748</span>, <span class="string">&#x27;HZxj&#x27;</span>, <span class="number">0x2a3</span>) + <span class="string">&#x27;en&#x27;</span>]), _0x36b61f[<span class="title function_">_0x556be9</span>(<span class="number">0x5cf</span>, <span class="number">0x870</span>, <span class="number">0x50b</span>, <span class="string">&#x27;Ra[M&#x27;</span>, <span class="number">0x3af</span>) + <span class="string">&#x27;r&#x27;</span>](-(<span class="number">0x2670</span> + -<span class="number">0x77d</span> * -<span class="number">0x2</span> + -<span class="number">0x3568</span> * <span class="number">0x1</span>))), _0xf828e5[<span class="title function_">_0x160f59</span>(<span class="number">0xae3</span>, <span class="number">0x5f9</span>, <span class="number">0x92d</span>, <span class="string">&#x27;NUpf&#x27;</span>, <span class="number">0x8a5</span>)]),</span><br><span class="line">         <span class="string">&#x27;username&#x27;</span>: <span class="string">&#x27;e517777777777&#x27;</span>,</span><br><span class="line">         <span class="string">&#x27;password&#x27;</span>: <span class="string">&#x27;123456&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">))</span><br></pre></td></tr></table></figure>
+
+<p>接下来看看最核心的d的生成规则。_0x15a5d0[_0x2e7c5c(0x2ce, 0x61d, 0xa5a, ‘4[E4’, 0x33d)]是一个加法的花指令。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101024724.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310102400570" title="">
+                </div>
+                <div class="image-caption">image-20220310102400570</div>
+            </figure>
+
+<p>_0x15a5d0[_0x59cb56(0x92b, 0x683, 0x968, ‘F^5Z’, 0x9a7)]也是一个加法的花指令：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101026613.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310102640758" title="">
+                </div>
+                <div class="image-caption">image-20220310102640758</div>
+            </figure>
+
+<p>_0x15a5d0[_0x59cb56(0x92b, 0x683, 0x968, ‘F^5Z’, 0x9a7)]也是加法花指令。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101027076.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310102715978" title="">
+                </div>
+                <div class="image-caption">image-20220310102715978</div>
+            </figure>
+
+<p>_0x15a5d0[_0x160f59(0x11f, 0x403, 0x29d, ‘AVXK’, 0x518)]依旧是一个加法花指令。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101028062.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310102811012" title="">
+                </div>
+                <div class="image-caption">image-20220310102811012</div>
+            </figure>
+
+<p>_0x4fd69b[_0x8eb3(0xc7a, 0x728, 0x704, ‘OBf4’, 0xc4c)]是内置的join方法。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101029626.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310102934544" title="">
+                </div>
+                <div class="image-caption">image-20220310102934544</div>
+            </figure>
+
+<p>_0x4fd69b是个字符串：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101059338.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310105915453" title="">
+                </div>
+                <div class="image-caption">image-20220310105915453</div>
+            </figure>
+
+
+
+<p>_0x8eb3(0x136, 0x44f, 0x748, ‘HZxj’, 0x2a3) + ‘en’是字符串$strlen</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101032240.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310103214178" title="">
+                </div>
+                <div class="image-caption">image-20220310103214178</div>
+            </figure>
+
+<p>_0xf828e5[_0x8eb3(0x136, 0x44f, 0x748, ‘HZxj’, 0x2a3) + ‘en’]则是取_0xf828e5这个object的$strlen属性，这里的值是3。</p>
+<p>_0x556be9(0x5cf, 0x870, 0x50b, ‘Ra[M’, 0x3af) + ‘r’这里是substr。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101041001.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310104111880" title="">
+                </div>
+                <div class="image-caption">image-20220310104111880</div>
+            </figure>
+
+<p>_0x36b61f是13位的时间戳。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101042436.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310104215390" title="">
+                </div>
+                <div class="image-caption">image-20220310104215390</div>
+            </figure>
+
+<p>-(0x2670 + -0x77d * -0x2 + -0x3568 * 0x1)是固定的常量，-2。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101042243.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310104254188" title="">
+                </div>
+                <div class="image-caption">image-20220310104254188</div>
+            </figure>
+
+<p>_0x160f59(0xae3, 0x5f9, 0x92d, ‘NUpf’, 0x8a5)是字符串$ver。这个ver其实在我们刚才解码第一个请求的返回值的里面就有了，值为3587，跟这里的吻合。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101100041.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310110046938" title="">
+                </div>
+                <div class="image-caption">image-20220310110046938</div>
+            </figure>
+
+<p>最终简化代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;data&#x27;</span>: <span class="variable constant_">AES</span>.<span class="title function_">encode</span>(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&#x27;d&#x27;</span>: <span class="title function_">add</span>(<span class="title function_">add</span>(<span class="title function_">add</span>(<span class="title function_">add</span>(<span class="string">&quot;4c2c8bc886b8bf8d&quot;</span>.<span class="title function_">join</span>(<span class="string">&#x27;&#x27;</span>), <span class="string">&#x27;&#x27;</span>), _0xf828e5.<span class="property">$strlen</span>), _0x36b61f.<span class="title function_">substr</span>(-<span class="number">2</span>)), _0xf828e5.<span class="property">$ver</span>),</span><br><span class="line">        <span class="comment">// &#x27;d&#x27;: &quot;4c2c8bc886b8bf8d&quot; +  _0xf828e5.$strlen + _0x36b61f.substr(-2)) + _0xf828e5.$ver</span></span><br><span class="line">        <span class="string">&#x27;username&#x27;</span>: <span class="string">&#x27;e517777777777&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;password&#x27;</span>: <span class="string">&#x27;123456&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">))</span><br></pre></td></tr></table></figure>
+
+<p>到这里d的生成算法基本上一目了然了。d&#x3D;字符串(这里是4c2c8bc886b8bf8d)+_0xf828e5.$strlen(这里是3)+13位时间戳的最后2位(这里是17)+版本号(第一个请求接口有返回为3587)&#x3D;4c2c8bc886b8bf8d3173587。扣出d的生成代码，在console上输出，验证下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101114177.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310111442039" title="">
+                </div>
+                <div class="image-caption">image-20220310111442039</div>
+            </figure>
+
+<p>完全吻合。现在唯一的问题是_0x4fd69b这个字符串怎么来的以及_0xf828e5.$strlen这个值怎么算出来的，解决了这两个问题，d的生成规则就破解了。</p>
+<p>我们手动搜索_0x4fd69b这个字符串，总共找到三处：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101121754.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310112140608" title="">
+                </div>
+                <div class="image-caption">image-20220310112140608</div>
+            </figure>
+
+<p>扣出第二处的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_0x4fd69b[<span class="title function_">_0x219591</span>(<span class="string">&#x27;FZa9&#x27;</span>, <span class="number">0x79c</span>, <span class="number">0x826</span>, <span class="number">0x6a9</span>, <span class="number">0x45f</span>)](_0xf828e5[<span class="title function_">_0x59b553</span>(<span class="string">&#x27;W]B)&#x27;</span>, <span class="number">0xd30</span>, <span class="number">0x809</span>, <span class="number">0x809</span>, <span class="number">0x2c4</span>)][_0x19f5d9[<span class="title function_">_0x3ebe03</span>(<span class="string">&#x27;nCyg&#x27;</span>, <span class="number">0xb6c</span>, <span class="number">0x868</span>, <span class="number">0x4ee</span>, <span class="number">0xd78</span>)](<span class="built_in">parseInt</span>, _0x1bf4a9[<span class="title function_">_0x59b553</span>(<span class="string">&#x27;#og4&#x27;</span>, <span class="number">0xbb9</span>, <span class="number">0x8a2</span>, <span class="number">0x953</span>, <span class="number">0x441</span>) + <span class="string">&#x27;ce&#x27;</span>](_0x19f5d9[<span class="title function_">_0x3ebe03</span>(<span class="string">&#x27;F^5Z&#x27;</span>, <span class="number">0x448</span>, <span class="number">0xc1</span>, -<span class="number">0x2ba</span>, <span class="number">0x8c</span>)], <span class="string">&#x27;&#x27;</span>))][<span class="string">&#x27;d&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>按照上边提供的方法，在console上分段调试代码含义，代码反混淆如下(<font style="color: red;">为节省篇幅，从这里开始，代码反混淆过程都不会写了，直接给出反混淆的结果</font>):</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_0x4fd69b.<span class="title function_">push</span>(_0xf828e5.<span class="property">$list</span>[<span class="built_in">parseInt</span>(<span class="string">&quot;btncanv_3&quot;</span>.<span class="title function_">replace</span>(<span class="string">&quot;btncanv_&quot;</span>, <span class="string">&quot;&quot;</span>))][<span class="string">&#x27;d&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>这个代码的意思就是取上边我们提到的验证码数组中索引为3的值，即4c2c8bc886b8bf8d，把这个值push到数组_0x4fd69b（这里虽然取得是d这个属性，但是实际上d属性跟id属性的值是一样的，_0x281004[‘d’] &#x3D; _0x3aa5c6[‘id’]）。这里的这个btncanv_3恰好是验证码的答案，即正确答案的元素的id。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203101405702.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220310140550569" title="">
+                </div>
+                <div class="image-caption">image-20220310140550569</div>
+            </figure>
+
+<p>那么这个<code>btncanv_3</code>是怎么确定的呢？是我们手动点选验证码图案的时候选中的，我们手动选中了验证码图案，JS代码会根据我们选中的图案，拿到它的id（如果有选中了多个，也只取第一个），然后进行JS加密，后端会根据相应的解密算法，拿到我们上传的那个验证码。我们开篇提到过“一般来说网站如果出现复杂验证码都会配合JS参数加密增加防护等级”，这里就验证了这句话。<strong>我们这里虽然破解了验证码验证接口表单数据的加密算法，但是验证码的点选，我们还需要辅助相应的验证码识别的算法，帮助我们完成验证码的识别与点选</strong>。这里主要是讲解手动反混淆方案，验证码后边会有专门的专题文章进行介绍，先埋一个坑后边补上。</p>
+<p>接下来看下另外一个_0xf828e5.$strlen的生成规则。我们文件中全局搜索’en’（为什么要搜索这个？因为前面$strlen的字符串混淆是_0x8eb3(0x136, 0x44f, 0x748, ‘HZxj’, 0x2a3) + ‘en’），果然被我们找到了。代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">this</span>[<span class="title function_">_0x2a85c2</span>(<span class="number">0x8a2</span>, <span class="number">0x60c</span>, <span class="number">0xa3d</span>, <span class="number">0x7b0</span>, <span class="string">&#x27;0NjW&#x27;</span>) + <span class="string">&#x27;en&#x27;</span>] = _0x15a5d0[<span class="title function_">_0x19b874</span>(<span class="number">0xc8f</span>, <span class="number">0xe5a</span>, <span class="number">0x13b9</span>, <span class="number">0xb8b</span>, <span class="string">&#x27;W]B)&#x27;</span>)](<span class="title class_">Math</span>[<span class="title function_">_0x26b2f7</span>(<span class="number">0xf44</span>, <span class="number">0xc7b</span>, <span class="number">0xbc1</span>, <span class="number">0x1077</span>, <span class="string">&#x27;o4oN&#x27;</span>)](_0x15a5d0[<span class="title function_">_0x26b578</span>(<span class="number">0xfa3</span>, <span class="number">0xcfb</span>, <span class="number">0x820</span>, <span class="number">0x11b8</span>, <span class="string">&#x27;m*3l&#x27;</span>)](-<span class="number">0x1bcd</span> + <span class="number">0x1</span> * <span class="number">0x1b23</span> + -<span class="number">0xaf</span> * -<span class="number">0x1</span>, <span class="title class_">Math</span>[<span class="title function_">_0x2a85c2</span>(<span class="number">0x11fb</span>, <span class="number">0xf8b</span>, <span class="number">0xd69</span>, <span class="number">0x137a</span>, <span class="string">&#x27;*EQ3&#x27;</span>) + <span class="string">&#x27;m&#x27;</span>]())), -<span class="number">0x727</span> * <span class="number">0x2</span> + <span class="number">0x24d7</span> + -<span class="number">0x1f</span> * <span class="number">0xba</span>)</span><br></pre></td></tr></table></figure>
+
+<p>代码反混淆之后整理如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">this</span>.<span class="property">$strlen</span> = <span class="title class_">Math</span>.<span class="title function_">floor</span>(<span class="number">5</span> * <span class="title class_">Math</span>.<span class="title function_">random</span>()) + <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p> 至此，整个data数据生成过程调试完了。最终的算法伪代码整理如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> _0xf828e5.<span class="property">$strlen</span> = <span class="title class_">Math</span>.<span class="title function_">floor</span>(<span class="number">5</span> * <span class="title class_">Math</span>.<span class="title function_">random</span>()) + <span class="number">3</span>;</span><br><span class="line"><span class="keyword">let</span> _0x36b61f = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>();</span><br><span class="line"><span class="keyword">let</span> _0xf828e5.<span class="property">$ver</span> = <span class="string">&quot;3587&quot;</span>;</span><br><span class="line"><span class="keyword">let</span> code = [</span><br><span class="line">    &#123;<span class="attr">id</span>: <span class="string">&#x27;90b389d8490d42a8&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;鸭子&#x27;</span>&#125;,</span><br><span class="line">	&#123;<span class="attr">id</span>: <span class="string">&#x27;a7985fb229d9e935&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;长颈鹿&#x27;</span>&#125;,</span><br><span class="line">	&#123;<span class="attr">id</span>: <span class="string">&#x27;c38548f7b6c0a3d8&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;小马&#x27;</span>&#125;,</span><br><span class="line">	&#123;<span class="attr">id</span>: <span class="string">&#x27;4c2c8bc886b8bf8d&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;海马&#x27;</span>&#125;,</span><br><span class="line">	&#123;<span class="attr">id</span>: <span class="string">&#x27;25897767b2ffc531&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;牛&#x27;</span>&#125;,</span><br><span class="line">	&#123;<span class="attr">id</span>: <span class="string">&#x27;24bafe8f4a1eac0e&#x27;</span>, <span class="attr">txt</span>: <span class="string">&#x27;斑马&#x27;</span>&#125;,</span><br><span class="line">]; <span class="comment">// 这个验证码的JSON从第一个接口中拿</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// AES的密钥以及IV值上边已经给出</span></span><br><span class="line"><span class="string">&#x27;data&#x27;</span>: <span class="variable constant_">AES</span>.<span class="title function_">encode</span>(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&#x27;d&#x27;</span>: code[<span class="comment">/*人工选中的第一个验证码的索引*/</span>].<span class="property">id</span> +  _0xf828e5.<span class="property">$strlen</span> + _0x36b61f.<span class="title function_">substr</span>(-<span class="number">2</span>) + _0xf828e5.<span class="property">$ver</span></span><br><span class="line">         <span class="string">&#x27;username&#x27;</span>: <span class="string">&#x27;e517777777777&#x27;</span>,</span><br><span class="line">         <span class="string">&#x27;password&#x27;</span>: <span class="string">&#x27;123456&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">))</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="逆向clientid生成规则"><a href="#逆向clientid生成规则" class="headerlink" title="逆向clientid生成规则"></a>逆向clientid生成规则</h5><p>扣出clientid生成相关的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">this</span>[<span class="title function_">_0x26b2f7</span>(<span class="number">0x9fc</span>, <span class="number">0xa9b</span>, <span class="number">0xe1c</span>, <span class="number">0x6b2</span>, <span class="string">&#x27;%jat&#x27;</span>) + <span class="title function_">_0x34ce5a</span>(<span class="number">0x1321</span>, <span class="number">0xfb2</span>, <span class="number">0x11d0</span>, <span class="number">0x109c</span>, <span class="string">&#x27;m*3l&#x27;</span>)] = _0x1c3499[<span class="title function_">_0x2a85c2</span>(<span class="number">0xf23</span>, <span class="number">0xc3d</span>, <span class="number">0x99d</span>, <span class="number">0xf50</span>, <span class="string">&#x27;OBf4&#x27;</span>)](<span class="string">&#x27;&#x27;</span>)[<span class="title function_">_0x26b2f7</span>(<span class="number">0xf47</span>, <span class="number">0xb49</span>, <span class="number">0xe76</span>, <span class="number">0xc02</span>, <span class="string">&#x27;W]B)&#x27;</span>) + <span class="string">&#x27;r&#x27;</span>](<span class="number">0x4f</span> * -<span class="number">0x1</span> + <span class="number">0x1779</span> + -<span class="number">0x172a</span>, -<span class="number">0x4ff</span> * <span class="number">0x3</span> + -<span class="number">0x3</span> * -<span class="number">0x75c</span> + <span class="number">0x1</span> * -<span class="number">0x70d</span>)</span><br></pre></td></tr></table></figure>
+
+<p>代码反混淆如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">this</span>.<span class="property">$clientid</span> = _0x1c3499.<span class="title function_">join</span>(<span class="string">&quot;&quot;</span>).<span class="title function_">substr</span>(<span class="number">0</span>, <span class="number">10</span>)</span><br><span class="line"><span class="comment">// _0x1c3499 = [&#x27;54mwjp6&#x27;, 8, &#x27;zvc&#x27;]</span></span><br></pre></td></tr></table></figure>
+
+<p>$clientid的生成规则依赖_0x1c3499，我继续往下看，扣出_0x1c3499的相关代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">_0x1c3499 = []</span><br><span class="line">_0x1c3499[<span class="title function_">_0x26b578</span>(<span class="number">0xc37</span>, <span class="number">0xd61</span>, <span class="number">0x122c</span>, <span class="number">0xeeb</span>, <span class="string">&#x27;g(lc&#x27;</span>)](_0x3e49dd[<span class="title function_">_0x2a85c2</span>(<span class="number">0x1ea</span>, <span class="number">0x608</span>, <span class="number">0x810</span>, <span class="number">0xf3</span>, <span class="string">&#x27;o4oN&#x27;</span>) + <span class="string">&#x27;r&#x27;</span>](-<span class="number">0x5f</span> * <span class="number">0x1b</span> + -<span class="number">0x1</span> * <span class="number">0x15c1</span> + <span class="number">0x1fc6</span>, _0x15a5d0[<span class="title function_">_0x26b578</span>(<span class="number">0xee3</span>, <span class="number">0xb7c</span>, <span class="number">0x893</span>, <span class="number">0xddb</span>, <span class="string">&#x27;HZxj&#x27;</span>)](_0x3badf1, -<span class="number">0x1</span> * -<span class="number">0x14e3</span> + <span class="number">0x26</span> * -<span class="number">0x56</span> + <span class="number">0x81e</span> * -<span class="number">0x1</span>))),</span><br><span class="line">_0x1c3499[<span class="title function_">_0x34ce5a</span>(<span class="number">0x10ca</span>, <span class="number">0xef3</span>, <span class="number">0xa62</span>, <span class="number">0x10c1</span>, <span class="string">&#x27;[tJe&#x27;</span>)](_0x3badf1),</span><br><span class="line">_0x1c3499[<span class="title function_">_0x19b874</span>(<span class="number">0x4bb</span>, <span class="number">0x55a</span>, <span class="number">0x35d</span>, <span class="number">0x7ce</span>, <span class="string">&#x27;R[NP&#x27;</span>)](_0x3e49dd[<span class="title function_">_0x2a85c2</span>(<span class="number">0x11c</span>, <span class="number">0x5da</span>, <span class="number">0xde</span>, <span class="number">0x229</span>, <span class="string">&#x27;FrGG&#x27;</span>) + <span class="string">&#x27;r&#x27;</span>](_0x3badf1, _0x3e49dd[<span class="title function_">_0x26b578</span>(<span class="number">0xf55</span>, <span class="number">0xbca</span>, <span class="number">0x95d</span>, <span class="number">0xd00</span>, <span class="string">&#x27;0jdF&#x27;</span>) + <span class="string">&#x27;t&#x27;</span>])),</span><br></pre></td></tr></table></figure>
+
+<p>代码反混淆如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">_0x1c3499 = [];</span><br><span class="line">_0x1c3499.<span class="title function_">push</span>(_0x3e49dd.<span class="title function_">substr</span>(<span class="number">0</span>, _0x3badf1 - <span class="number">1</span>));                <span class="comment">//_0x1c3499.push(54mwjp6)</span></span><br><span class="line">_0x1c3499.<span class="title function_">push</span>(_0x3badf1);										   <span class="comment">//_0x1c3499.push(8)</span></span><br><span class="line">_0x3e49dd.<span class="title function_">push</span>(_0x3e49dd.<span class="title function_">substr</span>(_0x3badf1, _0x3e49dd.<span class="property">length</span>));     <span class="comment">//_0x1c3499.push(zvc)</span></span><br><span class="line"><span class="comment">// _0x3e49dd = &quot;54mwjp6tzvc&quot;</span></span><br><span class="line"><span class="comment">// _0x3badf1 = 8</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到__0x1c3499的值又依赖_0x3e49dd和_0x3badf1。我们再扣出相应的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">_0x3e49dd = _0x15a5d0[<span class="title function_">_0x2a85c2</span>(<span class="number">0x240</span>, <span class="number">0x6a9</span>, <span class="number">0x570</span>, <span class="number">0x230</span>, <span class="string">&#x27;ZP*j&#x27;</span>)](<span class="title class_">Number</span>, _0x15a5d0[<span class="title function_">_0x26b578</span>(<span class="number">0x8cc</span>, <span class="number">0xaab</span>, <span class="number">0xa86</span>, <span class="number">0xf1d</span>, <span class="string">&#x27;NUpf&#x27;</span>)](<span class="title class_">Math</span>[<span class="title function_">_0x19b874</span>(<span class="number">0x12ba</span>, <span class="number">0xd7c</span>, <span class="number">0xb35</span>, <span class="number">0xe72</span>, <span class="string">&#x27;o4oN&#x27;</span>) + <span class="string">&#x27;m&#x27;</span>]()[<span class="title function_">_0x34ce5a</span>(<span class="number">0xffa</span>, <span class="number">0xa91</span>, <span class="number">0x802</span>, <span class="number">0xe92</span>, <span class="string">&#x27;uUCz&#x27;</span>) + <span class="title function_">_0x19b874</span>(<span class="number">0x174</span>, <span class="number">0x684</span>, <span class="number">0x9d7</span>, <span class="number">0x737</span>, <span class="string">&#x27;G0Im&#x27;</span>)]()[<span class="title function_">_0x26b2f7</span>(<span class="number">0xaa8</span>, <span class="number">0x6bd</span>, <span class="number">0x562</span>, <span class="number">0x35a</span>, <span class="string">&#x27;F^5Z&#x27;</span>) + <span class="string">&#x27;r&#x27;</span>](<span class="number">0x10</span> * <span class="number">0xc2</span> + <span class="number">0x6d</span> * -<span class="number">0x5</span> + -<span class="number">0x9</span> * <span class="number">0x11c</span>, <span class="number">0xb3</span> * <span class="number">0x35</span> + <span class="number">0x13</span> * <span class="number">0x1a5</span> + -<span class="number">0x444a</span> * <span class="number">0x1</span>), <span class="title class_">Date</span>[<span class="title function_">_0x26b2f7</span>(<span class="number">0xbf3</span>, <span class="number">0xd8c</span>, <span class="number">0xaf2</span>, <span class="number">0xacf</span>, <span class="string">&#x27;g(lc&#x27;</span>)]()))[<span class="title function_">_0x26b578</span>(<span class="number">0x326</span>, <span class="number">0x69f</span>, <span class="number">0xaa3</span>, <span class="number">0x78d</span>, <span class="string">&#x27;*EQ3&#x27;</span>) + <span class="title function_">_0x26b2f7</span>(<span class="number">0x8dc</span>, <span class="number">0x900</span>, <span class="number">0x8f0</span>, <span class="number">0xa3a</span>, <span class="string">&#x27;hROy&#x27;</span>)](<span class="number">0x143b</span> + <span class="number">0x53c</span> + -<span class="number">0x1953</span>)</span><br><span class="line">                      </span><br><span class="line"> _0x3badf1 = _0x15a5d0[<span class="title function_">_0x34ce5a</span>(<span class="number">0x11ce</span>, <span class="number">0xdf7</span>, <span class="number">0x9a2</span>, <span class="number">0xad1</span>, <span class="string">&#x27;!OnF&#x27;</span>)](<span class="built_in">parseInt</span>, _0x3577fe[<span class="title class_">Math</span>[<span class="title function_">_0x19b874</span>(<span class="number">0x871</span>, <span class="number">0xb0b</span>, <span class="number">0xf76</span>, <span class="number">0xb41</span>, <span class="string">&#x27;#og4&#x27;</span>)](_0x15a5d0[<span class="title function_">_0x2a85c2</span>(<span class="number">0x123a</span>, <span class="number">0xeb6</span>, <span class="number">0xbf1</span>, <span class="number">0x10d4</span>, <span class="string">&#x27;bsj&amp;&#x27;</span>)](<span class="title class_">Math</span>[<span class="title function_">_0x2a85c2</span>(<span class="number">0x7ca</span>, <span class="number">0x776</span>, <span class="number">0x9aa</span>, <span class="number">0x847</span>, <span class="string">&#x27;R[NP&#x27;</span>) + <span class="string">&#x27;m&#x27;</span>](), _0x3577fe[<span class="title function_">_0x26b2f7</span>(<span class="number">0x2ac</span>, <span class="number">0x73b</span>, <span class="number">0xbfc</span>, <span class="number">0x1ff</span>, <span class="string">&#x27;FrGG&#x27;</span>) + <span class="string">&#x27;h&#x27;</span>]))])</span><br></pre></td></tr></table></figure>
+
+<p>代码反混淆后结果如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">_0x3e49dd = <span class="title class_">Number</span>(<span class="title class_">Math</span>.<span class="title function_">random</span>().<span class="title function_">toString</span>().<span class="title function_">substr</span>(<span class="number">3</span>, <span class="number">4</span>) + <span class="title class_">Date</span>.<span class="title function_">now</span>().<span class="title function_">toString</span>()).<span class="title function_">toString</span>(<span class="number">36</span>)</span><br><span class="line">_0x3badf1 = <span class="built_in">parseInt</span>(_0x3577fe[<span class="title class_">Math</span>.<span class="title function_">floor</span>(<span class="title class_">Math</span>.<span class="title function_">random</span>() * _0x3577fe.<span class="property">length</span>)])</span><br></pre></td></tr></table></figure>
+
+<p>_0x3577fe的值是固定的三个元素的数组，如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_0x3577fe = [-<span class="number">0x2090</span> + -<span class="number">0x1b</span> * <span class="number">0x139</span> + <span class="number">0x4197</span>, <span class="number">0x959</span> + -<span class="number">0x248c</span> + <span class="number">0x45</span> * <span class="number">0x65</span>, <span class="number">0x2</span> * -<span class="number">0x1ea</span> + <span class="number">0x229f</span> + -<span class="number">0x1ec3</span>]; <span class="comment">// 4 6 8</span></span><br></pre></td></tr></table></figure>
+
+<p>到这里为止，$clientid的生成规则就全部反混淆出来了，最终的代码整理如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> _0x3577fe = [<span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span>];</span><br><span class="line"><span class="keyword">let</span> _0x3e49dd = <span class="title class_">Number</span>(<span class="title class_">Math</span>.<span class="title function_">random</span>().<span class="title function_">toString</span>().<span class="title function_">substr</span>(<span class="number">3</span>, <span class="number">4</span>) + <span class="title class_">Date</span>.<span class="title function_">now</span>().<span class="title function_">toString</span>()).<span class="title function_">toString</span>(<span class="number">36</span>);</span><br><span class="line"><span class="keyword">let</span> _0x3badf1 = <span class="built_in">parseInt</span>(_0x3577fe[<span class="title class_">Math</span>.<span class="title function_">floor</span>(<span class="title class_">Math</span>.<span class="title function_">random</span>() * _0x3577fe.<span class="property">length</span>)]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> _0x1c3499 = [];</span><br><span class="line">_0x1c3499.<span class="title function_">push</span>(_0x3e49dd.<span class="title function_">substr</span>(<span class="number">0</span>, _0x3badf1 - <span class="number">1</span>));</span><br><span class="line">_0x1c3499.<span class="title function_">push</span>(_0x3badf1);</span><br><span class="line">_0x1c3499.<span class="title function_">push</span>(_0x3e49dd.<span class="title function_">substr</span>(_0x3badf1, _0x3e49dd.<span class="property">length</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> clientid = _0x1c3499.<span class="title function_">join</span>(<span class="string">&quot;&quot;</span>).<span class="title function_">substr</span>(<span class="number">0</span>,<span class="number">10</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(clientid);</span><br></pre></td></tr></table></figure>
+
+<p>真是一层一层剥开你的心🥴</p>
+<h5 id="逆向token生成规则"><a href="#逆向token生成规则" class="headerlink" title="逆向token生成规则"></a>逆向token生成规则</h5><p>扣出token生成的相关代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;token&#x27;</span>: _0xf828e5[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x3c9</span>, <span class="number">0x4c</span>, -<span class="number">0x2fc</span>, <span class="string">&#x27;hROy&#x27;</span>, -<span class="number">0x1f8</span>)](_0x15a5d0[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x78e</span>, <span class="number">0x6f8</span>, <span class="number">0x927</span>, <span class="string">&#x27;(e@x&#x27;</span>, <span class="number">0x3d0</span>)](_0x15a5d0[<span class="title function_">_0x59cb56</span>(<span class="number">0x398</span>, <span class="number">0x6f8</span>, <span class="number">0x7eb</span>, <span class="string">&#x27;(e@x&#x27;</span>, <span class="number">0x571</span>)](_0x15a5d0[<span class="title function_">_0x160f59</span>(<span class="number">0xbca</span>, <span class="number">0xad5</span>, <span class="number">0x7c2</span>, <span class="string">&#x27;FZa9&#x27;</span>, <span class="number">0xa2c</span>)](_0xf828e5[<span class="title function_">_0x2e7c5c</span>(<span class="number">0x56b</span>, <span class="number">0x25a</span>, <span class="number">0x1e6</span>, <span class="string">&#x27;g(lc&#x27;</span>, -<span class="number">0x22c</span>) + <span class="title function_">_0x556be9</span>(<span class="number">0x527</span>, <span class="number">0x2b</span>, <span class="number">0x30c</span>, <span class="string">&#x27;su5h&#x27;</span>, <span class="number">0x58f</span>)], _0xf828e5[<span class="title function_">_0x8eb3</span>(<span class="number">0x1bf</span>, <span class="number">0x17c</span>, <span class="number">0x58</span>, <span class="string">&#x27;Ra[M&#x27;</span>, -<span class="number">0xec</span>) + <span class="title function_">_0x2e7c5c</span>(<span class="number">0x203</span>, <span class="number">0x237</span>, -<span class="number">0x41</span>, <span class="string">&#x27;Qm)6&#x27;</span>, <span class="number">0x40c</span>)]), _0xf828e5[<span class="title function_">_0x2e7c5c</span>(<span class="number">0xd48</span>, <span class="number">0x8de</span>, <span class="number">0x717</span>, <span class="string">&#x27;j[vi&#x27;</span>, <span class="number">0xd5e</span>) + <span class="title function_">_0x59cb56</span>(<span class="number">0x301</span>, <span class="number">0x4c3</span>, <span class="number">0x1e5</span>, <span class="string">&#x27;0jdF&#x27;</span>, <span class="number">0x8fb</span>)]), _0x15a5d0[<span class="title function_">_0x59cb56</span>(-<span class="number">0x1ee</span>, <span class="number">0xb3</span>, <span class="number">0x35</span>, <span class="string">&#x27;OBf4&#x27;</span>, <span class="number">0x524</span>)]))</span><br></pre></td></tr></table></figure>
+
+<p>反混淆之后的最终代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;token&#x27;</span>: _0xf828e5[<span class="string">&quot;sign&quot;</span>](_0xf828e5.<span class="property">$clientid</span> + _0xf828e5.<span class="property">$username</span> + _0x15a5d0.<span class="property">sGZgF</span>))</span><br></pre></td></tr></table></figure>
+
+<p>庆幸的是，这里的_0x15a5d0.sGZgF是一个固定的字符串，内容为”x045783”。所以重点在于破解这个加密方法sign。我们扣出相应的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">_0x58b6e0[<span class="title function_">_0x339e58</span>(<span class="number">0x61a</span>, -<span class="number">0x24f</span>, <span class="number">0x94</span>, <span class="string">&#x27;nCyg&#x27;</span>, <span class="number">0x267</span>) + <span class="title function_">_0x18c3fa</span>(<span class="number">0x813</span>, <span class="number">0x825</span>, <span class="number">0x36f</span>, <span class="string">&#x27;TEE1&#x27;</span>, <span class="number">0x6be</span>)][<span class="title function_">_0x1d90d1</span>(<span class="number">0x18a</span>, <span class="number">0x8b2</span>, -<span class="number">0x158</span>, <span class="string">&#x27;Qm)6&#x27;</span>, <span class="number">0x348</span>)] = <span class="keyword">function</span>(<span class="params">_0x1c6621</span>) &#123;</span><br><span class="line">    <span class="comment">// ...此处省略若干行</span></span><br><span class="line">    <span class="keyword">var</span> _0x4f239d = []</span><br><span class="line">    , _0x4996c2 = cjs[<span class="title function_">_0x8a0b67</span>(<span class="string">&#x27;FrGG&#x27;</span>, <span class="number">0x9dc</span>, <span class="number">0x3fa</span>, <span class="number">0xaba</span>, <span class="number">0x868</span>)](_0x15a5d0[<span class="title function_">_0x343f8b</span>(<span class="string">&#x27;ZiBy&#x27;</span>, <span class="number">0x377</span>, <span class="number">0x152</span>, <span class="number">0x542</span>, <span class="number">0x4df</span>)](_0x1c6621, _0x46b6c3[<span class="title function_">_0x8a0b67</span>(<span class="string">&#x27;TEE1&#x27;</span>, <span class="number">0x3db</span>, <span class="number">0x7c8</span>, <span class="number">0x6a4</span>, <span class="number">0x347</span>) + <span class="title function_">_0x429176</span>(<span class="string">&#x27;NUpf&#x27;</span>, <span class="number">0x241</span>, -<span class="number">0x1c1</span>, <span class="number">0x4ab</span>, <span class="number">0x81</span>)][<span class="title function_">_0x343f8b</span>(<span class="string">&#x27;HZxj&#x27;</span>, <span class="number">0x49c</span>, <span class="number">0x718</span>, <span class="number">0xa22</span>, <span class="number">0x854</span>)][<span class="title function_">_0x429176</span>(<span class="string">&#x27;F^5Z&#x27;</span>, <span class="number">0x472</span>, <span class="number">0x2c9</span>, <span class="number">0x687</span>, <span class="number">0x272</span>) + <span class="title function_">_0x8a0b67</span>(<span class="string">&#x27;g(lc&#x27;</span>, <span class="number">0x39e</span>, <span class="number">0x19b</span>, <span class="number">0x616</span>, <span class="number">0x5b8</span>) + <span class="string">&#x27;e&#x27;</span>]()))[<span class="title function_">_0x4b55c2</span>(<span class="string">&#x27;OBf4&#x27;</span>, -<span class="number">0x22b</span>, -<span class="number">0x342</span>, <span class="number">0x13a</span>, <span class="number">0x2c</span>) + <span class="title function_">_0x8a0b67</span>(<span class="string">&#x27;xVxp&#x27;</span>, -<span class="number">0x78</span>, <span class="number">0x45c</span>, <span class="number">0x287</span>, <span class="number">0x16b</span>)]();</span><br><span class="line">    <span class="keyword">return</span> _0x4f239d[<span class="title function_">_0xafe698</span>(<span class="string">&#x27;Ra[M&#x27;</span>, <span class="number">0x1d0</span>, -<span class="number">0x66b</span>, <span class="number">0x2ad</span>, -<span class="number">0x177</span>)](_0x4996c2[<span class="title function_">_0xafe698</span>(<span class="string">&#x27;IF#P&#x27;</span>, <span class="number">0x2d0</span>, <span class="number">0x958</span>, <span class="number">0x506</span>, <span class="number">0x55e</span>) + <span class="string">&#x27;r&#x27;</span>](-<span class="number">0x15d</span> + -<span class="number">0x49</span> * -<span class="number">0x45</span> + -<span class="number">0x1246</span>, <span class="number">0x8c2</span> + <span class="number">0x25af</span> + -<span class="number">0x2e6c</span>)),</span><br><span class="line">        _0x4f239d[<span class="title function_">_0x8a0b67</span>(<span class="string">&#x27;g(lc&#x27;</span>, <span class="number">0x34a</span>, <span class="number">0x43e</span>, <span class="number">0x955</span>, <span class="number">0x683</span>)](_0x4996c2[<span class="title function_">_0x4b55c2</span>(<span class="string">&#x27;ZiBy&#x27;</span>, <span class="number">0x71</span>, <span class="number">0x10f</span>, <span class="number">0x9a7</span>, <span class="number">0x506</span>) + <span class="string">&#x27;r&#x27;</span>](<span class="number">0x142b</span> * -<span class="number">0x1</span> + <span class="number">0x21b7</span> + <span class="number">0xd85</span> * -<span class="number">0x1</span>, -<span class="number">0xb69</span> * -<span class="number">0x3</span> + -<span class="number">0x61</span> * <span class="number">0x58</span> + -<span class="number">0xde</span>)),</span><br><span class="line">        _0x4f239d[<span class="title function_">_0x429176</span>(<span class="string">&#x27;W]B)&#x27;</span>, <span class="number">0x82f</span>, <span class="number">0x119</span>, <span class="number">0x27e</span>, <span class="number">0x4fb</span>)](_0x4996c2[<span class="title function_">_0x4b55c2</span>(<span class="string">&#x27;AVXK&#x27;</span>, <span class="number">0x3e8</span>, <span class="number">0x4fc</span>, <span class="number">0x6f2</span>, <span class="number">0x79f</span>) + <span class="string">&#x27;r&#x27;</span>](<span class="number">0x61b</span> + <span class="number">0xc</span> * -<span class="number">0x11e</span> + <span class="number">0x75c</span>, -<span class="number">0x677</span> * <span class="number">0x1</span> + -<span class="number">0x2272</span> * <span class="number">0x1</span> + <span class="number">0x28ee</span>)),</span><br><span class="line">        _0x4f239d[<span class="title function_">_0xafe698</span>(<span class="string">&#x27;0NjW&#x27;</span>, <span class="number">0x3c5</span>, <span class="number">0x181</span>, -<span class="number">0x47</span>, <span class="number">0x125</span>)](_0x4996c2[<span class="title function_">_0x8a0b67</span>(<span class="string">&#x27;uUCz&#x27;</span>, <span class="number">0xcea</span>, <span class="number">0x99c</span>, <span class="number">0x405</span>, <span class="number">0x8c3</span>) + <span class="string">&#x27;r&#x27;</span>](-<span class="number">0x4ba</span> + -<span class="number">0x59d</span> * <span class="number">0x1</span> + <span class="number">0xa6b</span>, -<span class="number">0x2</span> * <span class="number">0xe80</span> + <span class="number">0x1c01</span> + <span class="number">0x104</span>)),</span><br><span class="line">        _0x4f239d[<span class="title function_">_0x429176</span>(<span class="string">&#x27;IF#P&#x27;</span>, <span class="number">0x2b</span>, -<span class="number">0x2cb</span>, <span class="number">0x33e</span>, <span class="number">0x20d</span>)](_0x4996c2[<span class="title function_">_0xafe698</span>(<span class="string">&#x27;TEE1&#x27;</span>, <span class="number">0xcb6</span>, <span class="number">0x668</span>, <span class="number">0x5fa</span>, <span class="number">0x833</span>) + <span class="string">&#x27;r&#x27;</span>](-<span class="number">0x4b</span> * -<span class="number">0x4</span> + -<span class="number">0x2a</span> * <span class="number">0x86</span> + <span class="number">0x5</span> * <span class="number">0x42e</span>, -<span class="number">0xd</span> * -<span class="number">0x119</span> + -<span class="number">0x1791</span> + <span class="number">0x951</span>)),</span><br><span class="line">        _0x4f239d[<span class="title function_">_0x429176</span>(<span class="string">&#x27;j[vi&#x27;</span>, <span class="number">0x5e6</span>, <span class="number">0x2bd</span>, <span class="number">0x5e2</span>, <span class="number">0x648</span>)](_0x4996c2[<span class="title function_">_0x429176</span>(<span class="string">&#x27;#og4&#x27;</span>, <span class="number">0xd5</span>, <span class="number">0x68e</span>, <span class="number">0x54b</span>, <span class="number">0x516</span>) + <span class="string">&#x27;r&#x27;</span>](-<span class="number">0x193d</span> + <span class="number">0x399</span> * -<span class="number">0x5</span> + -<span class="number">0x1</span> * -<span class="number">0x2b55</span>, -<span class="number">0x8a8</span> * -<span class="number">0x4</span> + <span class="number">0xd6</span> * <span class="number">0x6</span> + <span class="number">0x3</span> * -<span class="number">0xd35</span>)),</span><br><span class="line">        _0x4f239d[<span class="title function_">_0x8a0b67</span>(<span class="string">&#x27;Cy2U&#x27;</span>, <span class="number">0x689</span>, <span class="number">0x578</span>, <span class="number">0x485</span>, <span class="number">0x71e</span>)](_0x4996c2[<span class="title function_">_0x4b55c2</span>(<span class="string">&#x27;4[E4&#x27;</span>, <span class="number">0x272</span>, <span class="number">0x5ce</span>, <span class="number">0x4e1</span>, <span class="number">0x668</span>) + <span class="string">&#x27;r&#x27;</span>](-<span class="number">0x97</span> * <span class="number">0x17</span> + -<span class="number">0xe</span> * <span class="number">0x46</span> + <span class="number">0x1166</span>, -<span class="number">0x18f4</span> * -<span class="number">0x1</span> + -<span class="number">0x93</span> * <span class="number">0x3b</span> + <span class="number">0x8ef</span> * <span class="number">0x1</span>)),</span><br><span class="line">        _0x4f239d[<span class="title function_">_0x343f8b</span>(<span class="string">&#x27;&amp;zHf&#x27;</span>, -<span class="number">0xb</span>, -<span class="number">0x5bc</span>, -<span class="number">0x16b</span>, -<span class="number">0x108</span>)](<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看到这么大一段代码不要慌！！！我们慢慢开始剥洋葱。🙃，剥到最后，很简单。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">_0x58b6e0.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">sign</span> = <span class="keyword">function</span>(<span class="params">_0x1c6621</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> _0x4f239d = [], _0x4996c2 = <span class="title class_">MD5</span>(_0x1c6621 + <span class="variable language_">document</span>.<span class="property">location</span>.<span class="property">href</span>.<span class="title function_">toLowerCase</span>()).<span class="title function_">toString</span>();</span><br><span class="line">    <span class="keyword">return</span> _0x4f239d.<span class="title function_">push</span>(_0x4996c2.<span class="title function_">substr</span>(<span class="number">10</span>, <span class="number">5</span>)), _0x4f239d.<span class="title function_">push</span>(_0x4996c2.<span class="title function_">substr</span>(<span class="number">7</span>, <span class="number">5</span>)), _0x4f239d.<span class="title function_">push</span>(_0x4996c2.<span class="title function_">substr</span>(<span class="number">15</span>, <span class="number">5</span>)), _0x4f239d.<span class="title function_">push</span>(_0x4996c2.<span class="title function_">substr</span>(<span class="number">20</span>, <span class="number">5</span>)), _0x4f239d.<span class="title function_">push</span>(_0x4996c2.<span class="title function_">substr</span>(<span class="number">22</span>, <span class="number">5</span>)), _0x4f239d.<span class="title function_">push</span>(_0x4996c2.<span class="title function_">substr</span>(<span class="number">27</span>, <span class="number">5</span>)), _0x4f239d.<span class="title function_">push</span>(_0x4996c2.<span class="title function_">substr</span>(<span class="number">1</span>, <span class="number">2</span>)), _0x4f239d.<span class="title function_">join</span>(<span class="string">&quot;&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其实就是对传入的参数做了一个md5的加密，然后进行乱序处理。</p>
+<p>到这里我们两个接口的所有请求参数加密算法，以及接口的返回值的解密算法都已经破解了。我们接下来简单验证下是否正确。</p>
+<h4 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h4><p>由于check接口需要机器学习对验证码进行识别，所以这里只验证get接口的参数。用NodeJS的Express框架搭建好获取token的服务，供Python调用。</p>
+<p>运行结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203122207679.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220312220733810" title="">
+                </div>
+                <div class="image-caption">image-20220312220733810</div>
+            </figure>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203122208606.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220312220820149" title="">
+                </div>
+                <div class="image-caption">image-20220312220820149</div>
+            </figure>
+
+
+
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>本文通过一个网站，手动对AST混淆代码进行了一个反混淆。在<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/">JS代码安全防护原理——AST混淆原理</a>中提到的几种混淆原理基本都出现过了。比如数组混淆，数组逆向，花指令，流程平坦化，逗号表达式混淆，字符串加密，常量加密等。可以看到，手动混淆的过程是极其容易出错，工作量非常大且十分痛苦的。接下来会写相关文章，介绍如何通过工具对AST混淆代码进行自动反混淆，不过，手动混淆这种能力也是必须要掌握的，万一你使用的工具失效了，或者说遇到一些更加特殊的网站，只能通过手动混淆呢？如果想获取本文的完整代码，扫码关注公众号，然后公众号内回复关键字<code>02</code>即可获取。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203122210618.jpg" alt="qrcode_for_gh_509fdefd3c81_258" title="">
+                </div>
+                <div class="image-caption">qrcode_for_gh_509fdefd3c81_258</div>
+            </figure>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:44.204Z" itemprop="dateUpdated">2023-05-09 18:16:44</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AST/" rel="tag">AST</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/&title=《JS逆向之混淆JS手动逆向》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/&title=《JS逆向之混淆JS手动逆向》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之混淆JS手动逆向》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/%E4%BD%A0%E4%B8%8D%E5%8F%AF%E4%B8%8D%E7%9F%A5%E7%9A%84CSS%E5%8F%8D%E7%88%AC/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">你不可不知的CSS反爬</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS代码安全防护原理——AST混淆原理</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/&title=《JS逆向之混淆JS手动逆向》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/&title=《JS逆向之混淆JS手动逆向》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之混淆JS手动逆向》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADKUlEQVR42u3aQXLbMAwF0N7/0u62ndTq/6AyYyFPq4ztIfmgBQKAv37Fz+uP5+vn+d/Jml+/vV7t3Qo3PNjY2NgPYb8un5x9/XnLyMPx7pzvfoONjY29lX199HybPL21q12v074GbGxsbOzrLfPkl+/SBhcbGxsbOzlQ0reZNYDaNIaNjY2NnSenpFWUlxx5gPJ1bu6lYWNjY388O08nn//3t8y3sbGxsT+Y/Ro9eWmRp6X2YtDJg42Njb2JfVIY5Ox23JsXHifDDGxsbOx97POGURK4/JpOHo728hA2Njb2Jnbesj9p/ed7taPlfADwjwoMGxsbex27PeKs6z5rNuWhicKKjY2NvYjdXtnJt8yP3o6Z893/0/bCxsbGXsTOW0WzQmI2rG0Hw7PXgI2Njf109mzsWo9UR+PkNjTFOAEbGxt7EfveMiMvOfJ12icfV2BjY2PvY7eHyENzktjqIW7ecsLGxsZexz4f+uYJ7zoELW92iQcbGxt7Ezv5/zxPKudBydNSHrjozWNjY2M/kN1eykkSTLL9+b7tmKHOydjY2NgPZN/bQsr/8z8pe/IQv01g2NjY2CvYd13QmRUb+crtCesuGjY2NvYKdptaWsysBBqWHO8U2NjY2OvYbbvnZGBwXlTM0thfn2BjY2OvZs/Sw73pLae2KRMbGxt7Hztv2c9GsyeFSluQDAcJ2NjY2A9nnzT67z3c+W+KAQM2Njb2Ovbs0kx+0Se/DDS7XlnjsbGxsZey2xC0R0xWa385TMPY2NjYP4A9G8TOruDkIWvT2NvAYWNjYy9itwXGXWOA2YDh/FtsbGzsfeyThU5aSO0n7SWhqBTBxsbGXsH+jsZNUn7ko4LZOtErwcbGxl7BfpVPEqxZI+kkfdbnxMbGxl7EbhNAMh5IWv93tZDaMXONx8bGxn4Iu23H5MkpudYzK4Rm7xMbGxt7N7ttwZ+kq9mln7uG09jY2Ng/mX2SNmZDgrzkqMOHjY2N/SPZJ0loVq7MmlNRqsPGxsZex26b9XlJkDeeintGZSF01EvDxsbG/nj2bOO2OEku3MyGyicFFTY2NvbD2b8BqAzA5PdZ9lgAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

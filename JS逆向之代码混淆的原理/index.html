@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之代码混淆的原理 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="对JS代码保护的方式 代码压缩：去除空格，换行等。 加密代码：eval，emscripten，WebAssembly等。 代码混淆：变量混淆，常量混淆，控制流扁平化，调试保护等。  Javascript加密实现 eval加密  利用Javascript中的eval方法执行一些不太可读的JS代码。  eval方法就是JS的一个执行器，它可以把其中的参数按照JS的语法进行解释并执行。所以这个加密只是把">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之代码混淆的原理">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="对JS代码保护的方式 代码压缩：去除空格，换行等。 加密代码：eval，emscripten，WebAssembly等。 代码混淆：变量混淆，常量混淆，控制流扁平化，调试保护等。  Javascript加密实现 eval加密  利用Javascript中的eval方法执行一些不太可读的JS代码。  eval方法就是JS的一个执行器，它可以把其中的参数按照JS的语法进行解释并执行。所以这个加密只是把">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://img.heshipeng.com/202202181441490.png">
+<meta property="article:published_time" content="2022-02-18T05:54:47.000Z">
+<meta property="article:modified_time" content="2022-07-04T11:51:03.000Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.heshipeng.com/202202181441490.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之代码混淆的原理</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之代码混淆的原理</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-02-18T05:54:47.000Z" itemprop="datePublished" class="page-time">
+  2022-02-18
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%AF%B9JS%E4%BB%A3%E7%A0%81%E4%BF%9D%E6%8A%A4%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="post-toc-number">1.</span> <span class="post-toc-text">对JS代码保护的方式</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Javascript%E5%8A%A0%E5%AF%86%E5%AE%9E%E7%8E%B0"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">Javascript加密实现</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Javascript%E6%B7%B7%E6%B7%86%E6%8A%80%E6%9C%AF"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">Javascript混淆技术</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Javascript%E6%B7%B7%E6%B7%86%E7%9A%84%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">Javascript混淆的开源项目</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Javascript%E6%B7%B7%E6%B7%86%E7%9A%84%E5%9C%A8%E7%BA%BF%E5%B7%A5%E5%85%B7"><span class="post-toc-number">1.4.</span> <span class="post-toc-text">Javascript混淆的在线工具</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Javascript%E6%B7%B7%E6%B7%86%E7%9A%84%E5%95%86%E4%B8%9A%E6%9C%8D%E5%8A%A1"><span class="post-toc-number">1.5.</span> <span class="post-toc-text">Javascript混淆的商业服务</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Javascript%E6%B7%B7%E6%B7%86%E5%AE%9E%E7%8E%B0"><span class="post-toc-number">2.</span> <span class="post-toc-text">Javascript混淆实现</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向之代码混淆的原理"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之代码混淆的原理</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-02-18 13:54:47" datetime="2022-02-18T05:54:47.000Z"  itemprop="datePublished">2022-02-18</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h4 id="对JS代码保护的方式"><a href="#对JS代码保护的方式" class="headerlink" title="对JS代码保护的方式"></a>对JS代码保护的方式</h4><ul>
+<li>代码压缩：去除空格，换行等。</li>
+<li>加密代码：eval，emscripten，WebAssembly等。</li>
+<li>代码混淆：变量混淆，常量混淆，控制流扁平化，调试保护等。</li>
+</ul>
+<h5 id="Javascript加密实现"><a href="#Javascript加密实现" class="headerlink" title="Javascript加密实现"></a>Javascript加密实现</h5><ol>
+<li>eval加密</li>
+</ol>
+<p>利用Javascript中的eval方法执行一些不太可读的JS代码。  eval方法就是JS的一个执行器，它可以把其中的参数按照JS的语法进行解释并执行。所以这个加密只是把JS的代码变成eval的参数，其中的一些字符都会被按照特定的格式编码。</p>
+<p>比如有一段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;hello, world&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>利用一些<a target="_blank" rel="noopener" href="https://www.w3cschool.cn/tools/index?name=evalencode">在线的eval加密网站</a>进行加密，结果如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">eval</span>(<span class="keyword">function</span>(<span class="params">p,a,c,k,e,d</span>)&#123;e=<span class="keyword">function</span>(<span class="params">c</span>)&#123;<span class="keyword">return</span>(c&lt;a?<span class="string">&#x27;&#x27;</span>:<span class="title function_">e</span>(<span class="built_in">parseInt</span>(c/a)))+((c=c%a)&gt;<span class="number">35</span>?<span class="title class_">String</span>.<span class="title function_">fromCharCode</span>(c+<span class="number">29</span>):c.<span class="title function_">toString</span>(<span class="number">36</span>))&#125;;<span class="keyword">if</span>(!<span class="string">&#x27;&#x27;</span>.<span class="title function_">replace</span>(<span class="regexp">/^/</span>,<span class="title class_">String</span>))&#123;<span class="keyword">while</span>(c--)d[<span class="title function_">e</span>(c)]=k[c]||<span class="title function_">e</span>(c);k=[<span class="keyword">function</span>(<span class="params">e</span>)&#123;<span class="keyword">return</span> d[e]&#125;];e=<span class="keyword">function</span>(<span class="params"></span>)&#123;<span class="keyword">return</span><span class="string">&#x27;\\w+&#x27;</span>&#125;;c=<span class="number">1</span>&#125;;<span class="keyword">while</span>(c--)<span class="keyword">if</span>(k[c])p=p.<span class="title function_">replace</span>(<span class="keyword">new</span> <span class="title class_">RegExp</span>(<span class="string">&#x27;\\b&#x27;</span>+<span class="title function_">e</span>(c)+<span class="string">&#x27;\\b&#x27;</span>,<span class="string">&#x27;g&#x27;</span>),k[c]);<span class="keyword">return</span> p&#125;(<span class="string">&#x27;0.2(&quot;1, 3&quot;)&#x27;</span>,<span class="number">62</span>,<span class="number">4</span>,<span class="string">&#x27;console|hello|log|world&#x27;</span>.<span class="title function_">split</span>(<span class="string">&#x27;|&#x27;</span>),<span class="number">0</span>,&#123;&#125;))</span><br></pre></td></tr></table></figure>
+
+<p>可以看到可读性很差，但是在console中可以正确执行：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202181441490.png" alt="image-20220218144118421" title="">
+                </div>
+                <div class="image-caption">image-20220218144118421</div>
+            </figure>
+
+<p>加密后的字符串可以解密得到原始的JS代码。</p>
+<ol start="2">
+<li>Emscripten</li>
+</ol>
+<p>将JS的核心逻辑用C&#x2F;C++来实现，然后通过Emscripten项目进行编译生成asm.js代码，最后被JS调用。</p>
+<ol start="3">
+<li>WebAssembly</li>
+</ol>
+<p>跟Emscripten类似，将核心代码用C&#x2F;C++来实现，然后生成wasm文件，最后用JS来调用。与前面不同的是，生成的中间文件格式不同，asm.js是文本文件，wasm是二进制格式。wasm运行速度更快，体积更小。</p>
+<h5 id="Javascript混淆技术"><a href="#Javascript混淆技术" class="headerlink" title="Javascript混淆技术"></a>Javascript混淆技术</h5><ul>
+<li>变量混淆</li>
+</ul>
+<p>把变量名或者常量名变成一些无意义的，或者看起来比较乱的字符串，比如说16进制的字符串，从而达到降低代码可读性的目的。</p>
+<ul>
+<li>字符串混淆</li>
+</ul>
+<p>把字符串进行md5，base64或者rc4加密或者编码，确保代码里面不会通过搜索的功能从而得到原始字符串。降低了通过字符串寻找入口的风险。</p>
+<ul>
+<li>属性加密</li>
+</ul>
+<p>把JS的Object的key-value的映射关系混淆，从而更加难以寻找里面的一些逻辑。</p>
+<ul>
+<li>控制流扁平化</li>
+</ul>
+<p>额外增加一些控制流，或者无意义的控制流，从而使代码流程看起来更加复杂，可读性更加差。</p>
+<ul>
+<li>僵尸代码注入</li>
+</ul>
+<p>不会被执行的代码或对上下文没有任何影响的代码注入到我们的代码，可以形成对现有JS代码的阅读干扰。</p>
+<ul>
+<li>代码压缩</li>
+</ul>
+<p>去除代码的一些空格，回车，调试语句等扽，可以使文件变得更小，可以将多行代码变成一行代码变得更加难读。</p>
+<ul>
+<li>反调试</li>
+</ul>
+<p>基于浏览器的特性，对当前环境进行一些检验，然后让它无限debug或者定时debug，通过一些断点进行干扰。</p>
+<ul>
+<li>多态变异</li>
+</ul>
+<p>JS代码被调用时，一旦被调用，代码立刻发生变化，变成和原来完全不同的代码，代码功能不变，只是代码形式发生变化，避免代码被动态的分析和调试。</p>
+<ul>
+<li>锁定域名</li>
+</ul>
+<p>有一个检测机制，使得我们的Javascript代码只能在特定的域名下执行。</p>
+<ul>
+<li>反格式化</li>
+</ul>
+<p>如果我们对JS代码格式化之后，会有一些机制使得我们无法顺利的运行。</p>
+<ul>
+<li>特殊编码</li>
+</ul>
+<p>将JS代码编码成一些特别难读的代码，比如说中括号，叹号等等。</p>
+<h5 id="Javascript混淆的开源项目"><a href="#Javascript混淆的开源项目" class="headerlink" title="Javascript混淆的开源项目"></a>Javascript混淆的开源项目</h5><ul>
+<li>UglifyJS <a target="_blank" rel="noopener" href="https://github.com/mishoo/UglifyJS2">https://github.com/mishoo/UglifyJS2</a></li>
+</ul>
+<p>解析JS的抽象语法树，然后根据抽象的语法树，对变量进行重命名，然后进行一些压缩或者变异。</p>
+<ul>
+<li>terser <a target="_blank" rel="noopener" href="https://github.com/terser/terser">https://github.com/terser/terser</a></li>
+</ul>
+<p>和UglifyJS功能类似，增加了对ES6的支持。</p>
+<ul>
+<li>javascript-obfuscator <a target="_blank" rel="noopener" href="https://github.com/javascript-obfuscator/javascript-obfuscator">https://github.com/javascript-obfuscator/javascript-obfuscator</a></li>
+</ul>
+<p>该项目可以用来实现几乎所有的混淆效果，比如字符串的混淆，属性的加密，平坦化控制流等等。</p>
+<ul>
+<li>Jsfuck <a target="_blank" rel="noopener" href="https://github.com/aemkeijsfuck">https://github.com/aemkeijsfuck</a></li>
+</ul>
+<p>将JS里面的一些变量或者定义替换成比如说{}的表示，体积会变得非常大。</p>
+<ul>
+<li>AAEncode <a target="_blank" rel="noopener" href="https://github.com/bprayudha/jquery.aaencode">https://github.com/bprayudha/jquery.aaencode</a></li>
+</ul>
+<p>把JS代码换成一些颜文字的形式。</p>
+<ul>
+<li>JJEncode <a target="_blank" rel="noopener" href="https://github.com/ay86/jEncrypt">https://github.com/ay86/jEncrypt</a></li>
+</ul>
+<p>把JS代码替换成一些$，加号，中括号等等，降低可读性。</p>
+<h5 id="Javascript混淆的在线工具"><a href="#Javascript混淆的在线工具" class="headerlink" title="Javascript混淆的在线工具"></a>Javascript混淆的在线工具</h5><ul>
+<li><a target="_blank" rel="noopener" href="https://obfuscator.io/">https://obfuscator.io</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.sojson.com/jscodeconfusion.html">https://www.sojson.com/jscodeconfusion.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jshaman.com/protect.html">https://www.jshaman.com/protect.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://freejsobfuscator.com/">https://freejsobfuscator.com</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.daftlogic.com/protects-online-javascript-obfuscator.html">https://www.daftlogic.com/protects-online-javascript-obfuscator.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://beautifytools.com/javascript-obfuscator.php">https://beautifytools.com/javascript-obfuscator.php</a></li>
+</ul>
+<h5 id="Javascript混淆的商业服务"><a href="#Javascript混淆的商业服务" class="headerlink" title="Javascript混淆的商业服务"></a>Javascript混淆的商业服务</h5><ul>
+<li><p><a target="_blank" rel="noopener" href="https://javascriptobfuscator.com/">https://javascriptobfuscator.com</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://jscrambler.com/">https://jscrambler.com</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://stunnix.com/">https://stunnix.com</a></p>
+</li>
+</ul>
+<h4 id="Javascript混淆实现"><a href="#Javascript混淆实现" class="headerlink" title="Javascript混淆实现"></a>Javascript混淆实现</h4><p>基于javascript-obfuscator开源项目，依赖Node.js，创建好工作空间，并安装好javascript-obfuscator包。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir workspace &amp;&amp; cd workspace</span><br><span class="line">npm init</span><br><span class="line">npm install --save-dev javascript-obfuscator</span><br></pre></td></tr></table></figure>
+
+<p>看下javascript-obfuscator的基本使用：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> code = <span class="string">`</span></span><br><span class="line"><span class="string">let x = &#x27;1&#x27; + 1</span></span><br><span class="line"><span class="string">console.log(&#x27;x&#x27;, x)</span></span><br><span class="line"><span class="string">`</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> options = &#123;</span><br><span class="line">    <span class="attr">compact</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">controlFlowFlattening</span>: <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> obfuscator = <span class="built_in">require</span>(<span class="string">&quot;javascript-obfuscator&quot;</span>)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(obfuscator.<span class="title function_">obfuscate</span>(code, options).<span class="title function_">getObfuscatedCode</span>())</span><br></pre></td></tr></table></figure>
+
+<p>首先定义一个变量code保存要混淆的代码，然后options是混淆时设置的一些参数，compact表示是否压缩成一行的形式，controlFlowFlattening表示控制流平坦化。执行结果如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_0x3636</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> _0x1b28ef = [</span><br><span class="line">        <span class="string">&#x27;10gXHWCI&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;log&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;1186QQlqFf&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;387777QhzDIE&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;4QPhAWc&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;7dmdYNq&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;3383712sHKpqN&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;3268150BmflmK&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;338QyRTUY&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;3280416bapPFy&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;2348556uvulWF&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;22yhcCAQ&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;2778200CXJHeV&#x27;</span></span><br><span class="line">    ];</span><br><span class="line">    _0x3636 = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> _0x1b28ef;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">_0x3636</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> _0x5f084d = _0x2680;</span><br><span class="line">(<span class="keyword">function</span> (<span class="params">_0x416f08, _0x4aca4c</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> _0x3bfda0 = _0x2680, _0x3eb696 = <span class="title function_">_0x416f08</span>();</span><br><span class="line">    <span class="keyword">while</span> (!![]) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">const</span> _0x2d197a = <span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1d1</span>)) / <span class="number">0x1</span> * (-<span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1ca</span>)) / <span class="number">0x2</span>) + <span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1d2</span>)) / <span class="number">0x3</span> * (<span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1d3</span>)) / <span class="number">0x4</span>) + <span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1c9</span>)) / <span class="number">0x5</span> + -<span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1cc</span>)) / <span class="number">0x6</span> * (<span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1d4</span>)) / <span class="number">0x7</span>) + <span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1ce</span>)) / <span class="number">0x8</span> + <span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1d5</span>)) / <span class="number">0x9</span> * (<span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1cf</span>)) / <span class="number">0xa</span>) + -<span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1cd</span>)) / <span class="number">0xb</span> * (<span class="built_in">parseInt</span>(<span class="title function_">_0x3bfda0</span>(<span class="number">0x1cb</span>)) / <span class="number">0xc</span>);</span><br><span class="line">            <span class="keyword">if</span> (_0x2d197a === _0x4aca4c)</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                _0x3eb696[<span class="string">&#x27;push&#x27;</span>](_0x3eb696[<span class="string">&#x27;shift&#x27;</span>]());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (_0x4e2954) &#123;</span><br><span class="line">            _0x3eb696[<span class="string">&#x27;push&#x27;</span>](_0x3eb696[<span class="string">&#x27;shift&#x27;</span>]());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;(_0x3636, <span class="number">0x59bb0</span>));</span><br><span class="line"><span class="keyword">let</span> x = <span class="string">&#x27;1&#x27;</span> + <span class="number">0x1</span>;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_0x2680</span>(<span class="params">_0x3f1f90, _0x4fb200</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> _0x36367e = <span class="title function_">_0x3636</span>();</span><br><span class="line">    <span class="keyword">return</span> _0x2680 = <span class="keyword">function</span> (<span class="params">_0x2680ac, _0x269526</span>) &#123;</span><br><span class="line">        _0x2680ac = _0x2680ac - <span class="number">0x1c9</span>;</span><br><span class="line">        <span class="keyword">let</span> _0x72d9ee = _0x36367e[_0x2680ac];</span><br><span class="line">        <span class="keyword">return</span> _0x72d9ee;</span><br><span class="line">    &#125;, <span class="title function_">_0x2680</span>(_0x3f1f90, _0x4fb200);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">console</span>[<span class="title function_">_0x5f084d</span>(<span class="number">0x1d0</span>)](<span class="string">&#x27;x&#x27;</span>, x);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>关于一些混淆参数的说明：</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>compact</td>
+<td>Boolean</td>
+<td>表示是否压缩，true为压缩，false为不压缩，压缩后会变为一行</td>
+</tr>
+<tr>
+<td>identifierNamesGenerator</td>
+<td>String</td>
+<td>变量名混淆的方式，默认为16进制混淆，设置为mangled为普通混淆</td>
+</tr>
+<tr>
+<td>stringArray</td>
+<td>Boolean</td>
+<td>字符串混淆，是否把字符串变量拼成一个数组的形式</td>
+</tr>
+<tr>
+<td>rotateStringArray</td>
+<td>Boolean</td>
+<td>字符串混淆，是否对上边提到的数组进行反转</td>
+</tr>
+<tr>
+<td>stringArrayEncoding</td>
+<td>Boolean或者String</td>
+<td>字符串混淆，是否对字符串编码，默认为base64，设置为false为不编码，设置为base64表示使用base64编码，设置为rc4表示使用rc4编码</td>
+</tr>
+<tr>
+<td>unicodeEscapeSequence</td>
+<td>Boolean</td>
+<td>字符串混淆，是否使用unicode编码</td>
+</tr>
+<tr>
+<td>selfDefending</td>
+<td>Boolean</td>
+<td>代码的自我保护，如果格式化后运行，会直接将浏览器卡死</td>
+</tr>
+<tr>
+<td>controlFlowFlattening</td>
+<td>Boolean</td>
+<td>控制流平坦化</td>
+</tr>
+<tr>
+<td>transformObjectKeys</td>
+<td>Boolean</td>
+<td>对象键名替换</td>
+</tr>
+<tr>
+<td>disableConsoleOutput</td>
+<td>Boolean</td>
+<td>禁用控制台输出，会把一些控制台方法置为空</td>
+</tr>
+<tr>
+<td>debugProtection</td>
+<td>Boolean</td>
+<td>调试的保护，无限debug，定时debug，debugger关键字</td>
+</tr>
+<tr>
+<td>domainLock</td>
+<td>Array</td>
+<td>域名锁定，只允许在特定的域名下执行，降低被模拟风险</td>
+</tr>
+</tbody></table>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2022-07-04T11:51:03.000Z" itemprop="dateUpdated">2022-07-04 19:51:03</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/&title=《JS逆向之代码混淆的原理》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/&title=《JS逆向之代码混淆的原理》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之代码混淆的原理》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%A4%84%E7%90%86/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向之常见代码混淆的处理</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8BToggle-Javascript%E5%B7%A5%E5%85%B7%E7%AF%87/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向之Toggle Javascript工具篇</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/&title=《JS逆向之代码混淆的原理》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/&title=《JS逆向之代码混淆的原理》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之代码混淆的原理》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD5klEQVR42u3dQW7jQAwEQP//097rAoalbnKU5FA6LRxlrCkdOuQQ2Ncrvt7/Xdeff97zeWd7fVv586fJkxy4cODAgQNHvNXrR8kf9NtDt6u1T3VNc70aDhw4cOA4y3G9jeSe60i+5kgor++fhS4OHDhw4PjLHEkEzmjaqN68Thw4cODA8fMceTuvpWnLrTakceDAgQPHT3JsGnZ5idWu81wb8UCvFAcOHDhwpEn3akP37//7kfkOHDhw4MBRFkubwiwJ4Hw8Ii/e3osLBw4cOHDsOfJAao+F2nGEDWU7xHCzLxw4cODAseBI4m0WsfuDqNkx1WyF6JwKBw4cOHCse2L56MAsAnOytpCbPTMOHDhw4Nhz5KXXrOjaFFqz4G+bj19LOBw4cODAseZoy7l8lK0N0Txi2yOlm2fDgQMHDhxrjjyu8sOndtSgPWpKor19YThw4MCB4yxH2xA82zpsBxpmA3bFnwI4cODAgWPB8UQjbx/Y+1Zg/vJw4MCBA8cTHLMRgbwMy4uxWUzmx2Y36+DAgQMHjkMcmwOnJCZnzbs2hvOm5GuzKA4cOHDgSLt2w/9mrMXab75tYrYvGwcOHDhwbDieDrNNebZ5VXmheFPR4sCBAweOkmM2lJAHbV04lVttVy4OwHDgwIEDx2j9WeHUDqi1ReCstXdNFpV5OHDgwIHjEMd+7GCz1aSoO/Uybn4LBw4cOHCsOTZBtf9kdnDVtjJnIY0DBw4cOJ7gONvIO/Utz7UgceDAgQPHnmM2cj0bXEu+5Xqrs/uL4g0HDhw4cDzAMWvebUIxod8XllGbEgcOHDhwrDmSZtxmw6fubI+m2pISBw4cOHCc5ZiFXDtSkK/Qth1nwxM3v4UDBw4cOBYcSftv9sUziP2BVvts9WQEDhw4cOBYjA60kxH7gGyLujxE8zIPBw4cOHBsOGaHT+1P2wG4WaOwXR8HDhw4cDzBsZ8Ty2PvurTbDMnNmo/Dvzhw4MCBA0eZKbNIa4cVWppZZB4o4XDgwIEDR8zRttL2g2gJ5QZ6Ne6AAwcOHDgOcbTL5QSzO/NwPYuOAwcOHDj2HLPI3G+1nVLLBxc26+PAgQMHjj3Hu7w2sTf7PNlSXv7dHLbhwIEDB441R35tyq3kUdom42aMb0aPAwcOHDhyjiRcNwTJOvnQw2YILwpaHDhw4MBxiCMPws3wQdu8S17S7G+Hm14pDhw4cOD4QY7Z5ts4nI0pbFqNOHDgwIHjtzg2gdoeaOVjDW2L8OYsDgcOHDhwrDk2xVIeh+1gXP6q2tGKA8dOOHDgwIFjPdBQN9ougzaJxpz4WHMQBw4cOHDMOf4BuSqHKe4iifcAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

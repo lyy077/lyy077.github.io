@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>Android逆向之动态加载 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,android">
+    <meta name="description" content="动态加载开始正题之前，在这里可以先给动态加载技术做一个简单的定义。真正的动态加载应该是  应用在运行的时候通过加载一些本地不存在的可执行文件实现一些特定的功能。 这些可执行文件是可以替换的。 更换静态资源(比如换启动图、换主题、或者用服务器参数开关控制广告的隐藏现实等)不属于动态加载。 Android中动态加载的核心思想是动态调用外部的 dex文件，极端的情况下，Android APK自身">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android逆向之动态加载">
+<meta property="og:url" content="http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="动态加载开始正题之前，在这里可以先给动态加载技术做一个简单的定义。真正的动态加载应该是  应用在运行的时候通过加载一些本地不存在的可执行文件实现一些特定的功能。 这些可执行文件是可以替换的。 更换静态资源(比如换启动图、换主题、或者用服务器参数开关控制广告的隐藏现实等)不属于动态加载。 Android中动态加载的核心思想是动态调用外部的 dex文件，极端的情况下，Android APK自身">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131046618.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131057328.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131124371.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131142562.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131058935.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131409909.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131612910.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201152137281.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201152139770.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201152147745.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201152315708.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-01-15T15:40:22.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:40.395Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131046618.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Android逆向之动态加载</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">Android逆向之动态加载</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-01-15T15:40:22.000Z" itemprop="datePublished" class="page-time">
+  2022-01-15
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Android/">Android</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD"><span class="post-toc-number">1.</span> <span class="post-toc-text">动态加载</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E4%B8%A4%E4%B8%AA%E7%96%91%E9%97%AE%F0%9F%A4%94"><span class="post-toc-number">2.</span> <span class="post-toc-text">两个疑问🤔</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E4%B8%8E%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE"><span class="post-toc-number">3.</span> <span class="post-toc-text">类加载器与双亲委派</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">类加载器</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#JVM%E7%9A%84%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="post-toc-number">3.1.1.</span> <span class="post-toc-text">JVM的类加载器</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Android%E4%B8%AD%E7%9A%84%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="post-toc-number">3.1.2.</span> <span class="post-toc-text">Android中的类加载器</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E6%97%B6%E6%9C%BA"><span class="post-toc-number">3.1.3.</span> <span class="post-toc-text">类加载的时机</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="post-toc-number">3.1.4.</span> <span class="post-toc-text">类加载的步骤</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%BC%96%E5%86%99%E4%BB%A3%E7%A0%81%E6%B5%8B%E8%AF%95Android-ClassLoader%E7%9A%84%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB"><span class="post-toc-number">3.1.5.</span> <span class="post-toc-text">编写代码测试Android ClassLoader的继承关系</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">双亲委派</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="post-toc-number">3.2.1.</span> <span class="post-toc-text">双亲委派的工作原理</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%9C%89%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE"><span class="post-toc-number">3.2.2.</span> <span class="post-toc-text">为什么会有双亲委派</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E8%A7%A3%E5%86%B3%E7%AC%AC%E4%B8%80%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="post-toc-number">4.</span> <span class="post-toc-text">解决第一个问题</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E8%A7%A3%E5%86%B3%E7%AC%AC%E4%BA%8C%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="post-toc-number">5.</span> <span class="post-toc-text">解决第二个问题</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9A%E6%9B%BF%E6%8D%A2mClassLoader%E4%B8%BADexClassLoader"><span class="post-toc-number">5.1.</span> <span class="post-toc-text">方案一：替换mClassLoader为DexClassLoader</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9A%E5%9C%A8mClassLoader%E5%92%8CBootClassLoader%E4%B9%8B%E9%97%B4%E6%8F%92%E5%85%A5DexClassLoader"><span class="post-toc-number">5.2.</span> <span class="post-toc-text">方案二：在mClassLoader和BootClassLoader之间插入DexClassLoader</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">6.</span> <span class="post-toc-text">总结</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="post-toc-number">7.</span> <span class="post-toc-text">参考链接</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-Android逆向之动态加载"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">Android逆向之动态加载</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-01-15 23:40:22" datetime="2022-01-15T15:40:22.000Z"  itemprop="datePublished">2022-01-15</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/Android/">Android</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <div align="middle"><iframe width="560" height="315" src="https://www.youtube.com/embed/k7akz2hdToY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+
+
+
+<h3 id="动态加载"><a href="#动态加载" class="headerlink" title="动态加载"></a>动态加载</h3><p>开始正题之前，在这里可以先给动态加载技术做一个简单的定义。真正的动态加载应该是</p>
+<ol>
+<li>应用在运行的时候通过加载一些<strong>本地不存在</strong>的可执行文件实现一些特定的功能。</li>
+<li>这些可执行文件是<strong>可以替换</strong>的。</li>
+<li>更换静态资源(比如换启动图、换主题、或者用服务器参数开关控制广告的隐藏现实等)<strong>不属于</strong>动态加载。</li>
+<li><code>Android</code>中动态加载的核心思想是动态调用外部的 <strong><code>dex</code>文件</strong>，极端的情况下，<code>Android APK</code>自身带有的<code>Dex</code>文件只是一个程序的入口(或者说空壳)，所有的功能都通过从服务器下载最新的<code>Dex</code>文件完成。</li>
+</ol>
+<h3 id="两个疑问🤔"><a href="#两个疑问🤔" class="headerlink" title="两个疑问🤔"></a>两个疑问🤔</h3><p>提出两个问题，第一，如何在<code>Android</code>程序中加载外部<code>dex</code>的<code>class</code>；第二，对于有生命周期的组件(比如Activity这种类)该如何加载？本文的目的就是通过解决这2个问题从而对<code>Android</code>的动态加载技术有一定的了解。</p>
+<h3 id="类加载器与双亲委派"><a href="#类加载器与双亲委派" class="headerlink" title="类加载器与双亲委派"></a>类加载器与双亲委派</h3><p>要解决这俩问题，首先要了解几个概念。</p>
+<h4 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h4><p>类加载器顾名思义是用来进行类的加载。分别看下JVM的类加载器和Android的类加载器。</p>
+<h5 id="JVM的类加载器"><a href="#JVM的类加载器" class="headerlink" title="JVM的类加载器"></a>JVM的类加载器</h5><p>JVM的类加载器包括3种：</p>
+<ol>
+<li>Bootstrap ClassLoader(引导类加载器)</li>
+</ol>
+<p>C&#x2F;C++代码实现的加载器，用于加载指定的JDK的核心类库，比如java.lang，java.util等这些系统类。Java虚拟机的启动就是通过Bootstrap，该Classloader在java里无法获取，负责加载&#x2F;lib下的类。</p>
+<ol start="2">
+<li>Extensions ClassLoader(拓展类加载器)</li>
+</ol>
+<p>Java中的实现类为ExtClassLoader，提供了除了系统类之外的额外功能，可以在Java里获取，负责加载&#x2F;lib&#x2F;ext下的类。</p>
+<ol start="3">
+<li>Application ClassLoader(应用程序类加载器)</li>
+</ol>
+<p>Java中的实现类为AppClassLoader，是与我们接触最多的类加载器，开发人员写的代码默认就是由它来加载，ClassLoader.getSystemCLassLoader返回的就是它。</p>
+<p>同时，我们也可以自定义类加载器，只需要通过继承java.lang.ClassLoader类的方式来实现自己的类加载器即可。</p>
+<h5 id="Android中的类加载器"><a href="#Android中的类加载器" class="headerlink" title="Android中的类加载器"></a>Android中的类加载器</h5><p>首先通过一张图，了解各个加载器之间的继承关系。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131046618.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image" title="">
+                </div>
+                <div class="image-caption">image</div>
+            </figure>
+
+
+
+<p>详细看下各个类加载器的作用：</p>
+<ol>
+<li><p>ClassLoader为抽象类；</p>
+</li>
+<li><p>BootClassLoader预加载常用类，单例模式。与Java中的BootClassLoader不同，它并不是由C&#x2F;C++代码实现，而是由Java实现的；</p>
+</li>
+<li><p>BaseDexClassLoader是PathClassLoader, DexClassLoader, InMemoryDexClassLoader的父类，类加载的主要逻辑都是在BaseDexClassLoader完成的；</p>
+</li>
+<li><p>SecureClassLoader继承了抽象类ClassLoader，拓展了ClassLoader类加入了权限方面的功能，加强了安全性，其子类URLClassLoader是用URL路径从jar文件中加载类和资源。</p>
+</li>
+<li><p>PathClassLoader是Android默认使用的类加载器，一个apk中的Activity等类便是在其中加载。</p>
+</li>
+<li><p>DexClassLoader可以加载任意目录下的dex&#x2F;jar&#x2F;apk&#x2F;zip文件，比PathClassLoader更灵活，是实现插件化，热修复以及dex加壳的重点。</p>
+</li>
+<li><p>InMemoryDexClassLoader是8.0引入的，是用于直接从内存中加载dex。</p>
+</li>
+</ol>
+<p>其中重点关注的是：PathClassLoader和DexClassLoader，因为这2个类加载器是我们解决上面2个问题的关键，也是这个动态加载中非常重要的的类加载器。</p>
+<h5 id="类加载的时机"><a href="#类加载的时机" class="headerlink" title="类加载的时机"></a>类加载的时机</h5><ol>
+<li>隐式加载。</li>
+</ol>
+<ul>
+<li>创建类的实例。</li>
+<li>访问类的静态变量，或者为静态变量赋值。</li>
+<li>调用类的静态方法。</li>
+<li>使用反射方式来强制创建某个类或者接口对应的java.lang.Class对象。</li>
+</ul>
+<ol start="2">
+<li>显式加载。</li>
+</ol>
+<ul>
+<li>使用LoadClass()加载。</li>
+<li>使用forName()加载。</li>
+</ul>
+<h5 id="类加载的步骤"><a href="#类加载的步骤" class="headerlink" title="类加载的步骤"></a>类加载的步骤</h5><ol>
+<li><p>装载。查找和导入Class文件。</p>
+</li>
+<li><p>链接。其中解析步骤是可以选择的。</p>
+</li>
+<li><ul>
+<li>检查：检查载入的class文件数据的正确性。</li>
+<li>准备：给类的静态变量分配存储空间。</li>
+<li>解析：将符号引用转换成直接引用。</li>
+</ul>
+</li>
+<li><p>初始化：即调用<clinit>函数，对静态变量，静态代码块执行初始化工作。</p>
+</li>
+</ol>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131057328.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image" title="">
+                </div>
+                <div class="image-caption">image</div>
+            </figure>
+
+
+
+<h5 id="编写代码测试Android-ClassLoader的继承关系"><a href="#编写代码测试Android-ClassLoader的继承关系" class="headerlink" title="编写代码测试Android ClassLoader的继承关系"></a>编写代码测试Android ClassLoader的继承关系</h5><p>动手之前先通过<a target="_blank" rel="noopener" href="http://androidxref.com/">Android源码阅读网站</a>，看下ClassLoader的源码：</p>
+<p><img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131124371.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="android ClassLoader类源码"></p>
+<p>打开AndroidXRef，Definition填写<code>ClassLoader</code>，搜索包位置<code>libcore</code>，如果不确定位置，可以选中全部，只不过搜索出来的结果不比较多，筛选起来麻烦一些。搜索出来一个ClassLoader.java文件，点击进入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">ClassLoader</span> &#123;</span><br><span class="line">    <span class="comment">// 省略</span></span><br><span class="line">  </span><br><span class="line">    <span class="comment">// The parent class loader for delegation</span></span><br><span class="line">    <span class="comment">// Note: VM hardcoded the offset of this field, thus all new fields</span></span><br><span class="line">    <span class="comment">// must be added *after* it.</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ClassLoader parent;</span><br><span class="line">  </span><br><span class="line">  	<span class="meta">@CallerSensitive</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> ClassLoader <span class="title function_">getParent</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> parent;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 省略 </span></span><br><span class="line">&#125;    </span><br></pre></td></tr></table></figure>
+
+<p>这里关注一个属性和一个成员方法，通过组合关系parent来标识每一个ClassLoader的父亲，这个parent是实现双亲委派的关键，调用getParent成员方法则可以获取到parent属性。</p>
+<p>看了这么多理论，没有动手coding去实践，有一点枯燥，接下来编写一个demo去测试一下Android的ClassLoader之间的继承关系。</p>
+<p>新建一个项目ClassLoaderTest，然后编码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.classloadertest;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> androidx.appcompat.app.AppCompatActivity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.content.Context;</span><br><span class="line"><span class="keyword">import</span> android.os.Bundle;</span><br><span class="line"><span class="keyword">import</span> android.util.Log;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainActivity</span> <span class="keyword">extends</span> <span class="title class_">AppCompatActivity</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onCreate</span><span class="params">(Bundle savedInstanceState)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line"></span><br><span class="line">        testClassLoader();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testClassLoader</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 获取当前的ClassLoader</span></span><br><span class="line">        <span class="type">Context</span> <span class="variable">context</span> <span class="operator">=</span> getApplicationContext();</span><br><span class="line">        <span class="type">ClassLoader</span> <span class="variable">thisClassLoader</span> <span class="operator">=</span> context.getClassLoader();</span><br><span class="line">        <span class="comment">// 或者使用下面这种方式：</span></span><br><span class="line">        <span class="comment">// ClassLoader thisClassLoader = MainActivity.class.getClassLoader();</span></span><br><span class="line">        Log.i(<span class="string">&quot;kanxue&quot;</span>, <span class="string">&quot;thisClassLoader:&quot;</span> + thisClassLoader);</span><br><span class="line">        <span class="type">ClassLoader</span> <span class="variable">tmpClassLoader</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">        <span class="type">ClassLoader</span> <span class="variable">parentClassLoader</span> <span class="operator">=</span> thisClassLoader.getParent();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 向上遍历classLoader</span></span><br><span class="line">        <span class="keyword">while</span> (parentClassLoader != <span class="literal">null</span>) &#123;</span><br><span class="line">            Log.i(<span class="string">&quot;kanxue&quot;</span>, <span class="string">&quot;this:&quot;</span> + thisClassLoader + <span class="string">&quot;, parent:&quot;</span> + parentClassLoader);</span><br><span class="line">            tmpClassLoader = parentClassLoader.getParent();</span><br><span class="line">            thisClassLoader = parentClassLoader;</span><br><span class="line">            parentClassLoader = tmpClassLoader;</span><br><span class="line">        &#125;</span><br><span class="line">        Log.i(<span class="string">&quot;kanxue&quot;</span>, <span class="string">&quot;root:&quot;</span> + thisClassLoader);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码比较简单，这里也是直接用了上面源码分析的getParent方法，通过getParent方法拿到parent，然后一层层的向上遍历，从而测试出各个ClassLoader的继承关系。</p>
+<p>执行结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131142562.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image" title="">
+                </div>
+                <div class="image-caption">image</div>
+            </figure>
+
+
+
+<h4 id="双亲委派"><a href="#双亲委派" class="headerlink" title="双亲委派"></a>双亲委派</h4><h5 id="双亲委派的工作原理"><a href="#双亲委派的工作原理" class="headerlink" title="双亲委派的工作原理"></a>双亲委派的工作原理</h5><p>如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委派给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器，如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式，即每个儿子都不愿意干活，每次有活就丢给父亲去干，直到父亲说这件事也干不了时，儿子自己想办法去完成，这就是双亲委派。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131058935.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image" title="">
+                </div>
+                <div class="image-caption">image</div>
+            </figure>
+
+
+
+<h5 id="为什么会有双亲委派"><a href="#为什么会有双亲委派" class="headerlink" title="为什么会有双亲委派"></a>为什么会有双亲委派</h5><ol>
+<li>避免重复加载，如果已经加载过一次Class，可以直接读取已经加载的Class</li>
+<li>更加完全，无法自定义类来代替系统的类，可以防止核心API库被随意篡改。</li>
+</ol>
+<h3 id="解决第一个问题"><a href="#解决第一个问题" class="headerlink" title="解决第一个问题"></a>解决第一个问题</h3><p>通过前面的理论知识，我们知道了DexClassLoader可以加载任意目录下的dex&#x2F;jar&#x2F;apk&#x2F;zip文件，所以我们先来解决第一个问题。</p>
+<ol>
+<li>生成一个用来测试的dex文件。</li>
+</ol>
+<p>创建项目<code>DexLoaderTest</code>，然后新建Class：<code>TestCLass</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.dexloadertest;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.util.Log;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestClass</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testFunc</span><span class="params">()</span> &#123;</span><br><span class="line">        Log.i(<span class="string">&quot;kanxue&quot;</span>, <span class="string">&quot;call from DexLoaderTest.TestClass.testFunc&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码比较简单，只是简单的打印了一条日志。</p>
+<p>接着，打包该项目，将生成的apk解压，得到dex文件(如果解压得到多个classes.dex文件，查看下我们编写的TestClass类在哪个classes.dex文件)，然后将这个classes.dex放到手机的内存卡：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push classes.dex /sdcard/</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>加载sdcard上的dex</li>
+</ol>
+<p>修改<code>DexLoaderTest</code>，修改其<code>MainActivity</code>的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.dexloadertest;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> androidx.appcompat.app.AppCompatActivity;</span><br><span class="line"><span class="keyword">import</span> android.content.Context;</span><br><span class="line"><span class="keyword">import</span> android.os.Bundle;</span><br><span class="line"><span class="keyword">import</span> android.os.Environment;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationTargetException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> dalvik.system.DexClassLoader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainActivity</span> <span class="keyword">extends</span> <span class="title class_">AppCompatActivity</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onCreate</span><span class="params">(Bundle savedInstanceState)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        <span class="type">String</span> <span class="variable">sdcardPath</span> <span class="operator">=</span> Environment.getExternalStorageDirectory().getAbsolutePath();</span><br><span class="line">        dexClassLoaderTest(getApplicationContext(), sdcardPath + File.separator + <span class="string">&quot;classes.dex&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">dexClassLoaderTest</span><span class="params">(Context context, String dexFilePath)</span> &#123;</span><br><span class="line">        Class&lt;?&gt; clazz;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">DexClassLoader</span> <span class="variable">dexClassLoader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DexClassLoader</span>(dexFilePath, <span class="literal">null</span>, <span class="literal">null</span>, MainActivity.class.getClassLoader());</span><br><span class="line">            clazz = dexClassLoader.loadClass(<span class="string">&quot;com.example.dexclass.TestClass&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (clazz != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="type">Method</span> <span class="variable">testFuncMethod</span> <span class="operator">=</span> clazz.getDeclaredMethod(<span class="string">&quot;testFunc&quot;</span>);</span><br><span class="line">                <span class="type">Object</span> <span class="variable">obj</span> <span class="operator">=</span> clazz.newInstance();</span><br><span class="line">                testFuncMethod.invoke(obj);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException | NoSuchMethodException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InstantiationException | InvocationTargetException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码也不复杂，首先实例化一个DexClassLoader对象，然后通过这个对象加载TestClass类，然后拿到testFunc方法，最后通过反射调用这个方法。这里主要关注的是DexClassLoader这个类，我们查看下源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DexClassLoader</span> <span class="keyword">extends</span> <span class="title class_">BaseDexClassLoader</span> &#123;</span><br><span class="line"><span class="number">36</span>    <span class="comment">/**</span></span><br><span class="line"><span class="comment">37     * Creates a &#123;<span class="doctag">@code</span> DexClassLoader&#125; that finds interpreted and native</span></span><br><span class="line"><span class="comment">38     * code.  Interpreted classes are found in a set of DEX files contained</span></span><br><span class="line"><span class="comment">39     * in Jar or APK files.</span></span><br><span class="line"><span class="comment">40     *</span></span><br><span class="line"><span class="comment">41     * &lt;p&gt;The path lists are separated using the character specified by the</span></span><br><span class="line"><span class="comment">42     * &#123;<span class="doctag">@code</span> path.separator&#125; system property, which defaults to &#123;<span class="doctag">@code</span> :&#125;.</span></span><br><span class="line"><span class="comment">43     *</span></span><br><span class="line"><span class="comment">44     * <span class="doctag">@param</span> dexPath the list of jar/apk files containing classes and</span></span><br><span class="line"><span class="comment">45     *     resources, delimited by &#123;<span class="doctag">@code</span> File.pathSeparator&#125;, which</span></span><br><span class="line"><span class="comment">46     *     defaults to &#123;<span class="doctag">@code</span> &quot;:&quot;&#125; on Android</span></span><br><span class="line"><span class="comment">47     * <span class="doctag">@param</span> optimizedDirectory this parameter is deprecated and has no effect since API level 26.</span></span><br><span class="line"><span class="comment">48     * <span class="doctag">@param</span> librarySearchPath the list of directories containing native</span></span><br><span class="line"><span class="comment">49     *     libraries, delimited by &#123;<span class="doctag">@code</span> File.pathSeparator&#125;; may be</span></span><br><span class="line"><span class="comment">50     *     &#123;<span class="doctag">@code</span> null&#125;</span></span><br><span class="line"><span class="comment">51     * <span class="doctag">@param</span> parent the parent class loader</span></span><br><span class="line"><span class="comment">52     */</span></span><br><span class="line"><span class="number">53</span>    <span class="keyword">public</span> <span class="title function_">DexClassLoader</span><span class="params">(String dexPath, String optimizedDirectory,</span></span><br><span class="line"><span class="params"><span class="number">54</span>            String librarySearchPath, ClassLoader parent)</span> &#123;</span><br><span class="line"><span class="number">55</span>        <span class="built_in">super</span>(dexPath, <span class="literal">null</span>, librarySearchPath, parent);</span><br><span class="line"><span class="number">56</span>    &#125;</span><br><span class="line"><span class="number">57</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其构造函数需要四个参数，第一个参数是包含资源文件的jar&#x2F;apk&#x2F;dex等文件的路径，如果有多个路径，通过:分隔。第二个参数已经废弃。第三个参数为native库的路径，这里我们也是置为null。最后一个是parent类加载器，我们设置为当前类加载器即可。</p>
+<p>因为用到对sdcard的读写，所以需要在AndroidManifest.xml中添加相应的权限：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">&quot;android.permission.READ_EXTERNAL_STORAGE&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot;</span> <span class="attr">android:maxSdkVersion</span>=<span class="string">&quot;28&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>运行程序，结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131409909.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image" title="">
+                </div>
+                <div class="image-caption">image</div>
+            </figure>
+
+
+
+<h3 id="解决第二个问题"><a href="#解决第二个问题" class="headerlink" title="解决第二个问题"></a>解决第二个问题</h3><p>如果不考虑双亲委派以及Activity生命周期的问题，我们是不是可以用类似于第一个问题的解决方案，采用DexClassLoader加载Activity类，然后使用Intent直接访问这个Activity呢？说干就干。</p>
+<ol>
+<li>生成一个用来测试的dex</li>
+</ol>
+<p>新建一个TestActivity文件，然后让TestActivity继承AppCompatActivty，并重写onCreate方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestActivity</span> <span class="keyword">extends</span> <span class="title class_">AppCompatActivity</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onCreate</span><span class="params">(<span class="meta">@Nullable</span> Bundle savedInstanceState)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        Log.d(<span class="string">&quot;TestActivity&quot;</span>, <span class="string">&quot;i am from TestActivity.onCreate&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个方法比较简单，仅仅是打印一条日志。</p>
+<p>同样地，打包该项目，将生成的apk解压，得到dex文件，然后将这个classes.dex放到手机的内存卡。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push classes3.dex /sdcard/</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>加载并启动Activity</li>
+</ol>
+<p>编辑DexClassLoader，修改MainActivity代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainActivity</span> <span class="keyword">extends</span> <span class="title class_">AppCompatActivity</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onCreate</span><span class="params">(Bundle savedInstanceState)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        <span class="type">String</span> <span class="variable">sdcardPath</span> <span class="operator">=</span> Environment.getExternalStorageDirectory().getAbsolutePath();</span><br><span class="line">        startActivityTest(<span class="built_in">this</span>, sdcardPath + File.separator + <span class="string">&quot;classes3.dex&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">startActivityTest</span><span class="params">(Context context, String dexFilePath)</span> &#123;</span><br><span class="line">        Class&lt;?&gt; clazz = <span class="literal">null</span>;</span><br><span class="line">        <span class="type">DexClassLoader</span> <span class="variable">dexClassLoader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DexClassLoader</span>(dexFilePath, <span class="literal">null</span>, <span class="literal">null</span>, MainActivity.class.getClassLoader());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            clazz = dexClassLoader.loadClass(<span class="string">&quot;com.example.dexclass.TestActivity&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        context.startActivity(<span class="keyword">new</span> <span class="title class_">Intent</span>(context, clazz));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>因为有用到<code>TestActivity</code>，所以需要在AndroidManifest.xml中声明：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">&quot;com.example.dexclass.TestActivity&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>运行项目，在手机设置中给应用开启sdcard读写权限，然后重新执行，结果报错：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201131612910.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="执行结果" title="">
+                </div>
+                <div class="image-caption">执行结果</div>
+            </figure>
+
+<p>想想也不可能成功，要是能跟问题一一样解决，那还叫两个问题吗🤪</p>
+<p>那该如何解决第二个问题呢？此时就得从Activity的启动流程说起了，但是这篇文章的目的还是以动态加载为主，Activity以及App的启动流程会有专门的文章去介绍，本文最后给出的参考链接，也会有包含Activity启动流程的介绍。这里挑几个关键链路上的函数简单说下原理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**  Core implementation of activity launch. */</span></span><br><span class="line"><span class="keyword">private</span> Activity <span class="title function_">performLaunchActivity</span><span class="params">(ActivityClientRecord r, Intent customIntent)</span> &#123;</span><br><span class="line">    <span class="type">ActivityInfo</span> <span class="variable">aInfo</span> <span class="operator">=</span> r.activityInfo;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (r.packageInfo == <span class="literal">null</span>) &#123;</span><br><span class="line">        r.packageInfo = getPackageInfo(aInfo.applicationInfo, r.compatInfo,</span><br><span class="line">                Context.CONTEXT_INCLUDE_CODE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  </span><br><span class="line">    <span class="type">Activity</span> <span class="variable">activity</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        </span><br><span class="line">        java.lang.<span class="type">ClassLoader</span> <span class="variable">cl</span> <span class="operator">=</span> appContext.getClassLoader();</span><br><span class="line">        activity = mInstrumentation.newActivity(</span><br><span class="line">                cl, component.getClassName(), r.intent);</span><br><span class="line">        StrictMode.incrementExpectedActivityCount(activity.getClass());</span><br><span class="line">        r.intent.setExtrasClassLoader(cl);</span><br><span class="line">        r.intent.prepareToEnterProcess();</span><br><span class="line">        <span class="keyword">if</span> (r.state != <span class="literal">null</span>) &#123;</span><br><span class="line">            r.state.setClassLoader(cl);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!mInstrumentation.onException(activity, e)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(</span><br><span class="line">                <span class="string">&quot;Unable to instantiate activity &quot;</span> + component</span><br><span class="line">                + <span class="string">&quot;: &quot;</span> + e.toString(), e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">return</span> activity;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看注释就知道，这个方法是启动Activity的核心方法，在启动Activity之前会通过调用<code>getPackageInfo</code>方法来先获取并解析Activity信息，我们进到这个方法中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> LoadedApk <span class="title function_">getPackageInfo</span><span class="params">(ApplicationInfo ai, CompatibilityInfo compatInfo,</span></span><br><span class="line"><span class="params">                                      <span class="type">int</span> flags)</span> &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">return</span> getPackageInfo(ai, compatInfo, <span class="literal">null</span>, securityViolation, includeCode,</span><br><span class="line">                        registerPackage);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  这个三个参数的<code>getPackageInfo</code>调用了五个参数的<code>getPackageInfo</code>方法，注意第三个参数传的是<code>null</code>，我们继续进入五个参数的<code>getPackageInfo</code>方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> LoadedApk <span class="title function_">getPackageInfo</span><span class="params">(ApplicationInfo aInfo, CompatibilityInfo compatInfo,</span></span><br><span class="line"><span class="params">        ClassLoader baseLoader, <span class="type">boolean</span> securityViolation, <span class="type">boolean</span> includeCode,</span></span><br><span class="line"><span class="params">        <span class="type">boolean</span> registerPackage)</span> &#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="type">boolean</span> <span class="variable">differentUser</span> <span class="operator">=</span> (UserHandle.myUserId() != UserHandle.getUserId(aInfo.uid));</span><br><span class="line">    <span class="keyword">synchronized</span> (mResourcesManager) &#123;</span><br><span class="line">        WeakReference&lt;LoadedApk&gt; ref;</span><br><span class="line">        <span class="keyword">if</span> (differentUser) &#123;</span><br><span class="line">            <span class="comment">// Caching not supported across users</span></span><br><span class="line">            ref = <span class="literal">null</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (includeCode) &#123;</span><br><span class="line">            ref = mPackages.get(aInfo.packageName);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            ref = mResourcePackages.get(aInfo.packageName);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">LoadedApk</span> <span class="variable">packageInfo</span> <span class="operator">=</span> ref != <span class="literal">null</span> ? ref.get() : <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (packageInfo == <span class="literal">null</span> || (packageInfo.mResources != <span class="literal">null</span></span><br><span class="line">                &amp;&amp; !packageInfo.mResources.getAssets().isUpToDate())) &#123;</span><br><span class="line">            <span class="keyword">if</span> (localLOGV) Slog.v(TAG, (includeCode ? <span class="string">&quot;Loading code package &quot;</span></span><br><span class="line">                    : <span class="string">&quot;Loading resource-only package &quot;</span>) + aInfo.packageName</span><br><span class="line">                    + <span class="string">&quot; (in &quot;</span> + (mBoundApplication != <span class="literal">null</span></span><br><span class="line">                            ? mBoundApplication.processName : <span class="literal">null</span>)</span><br><span class="line">                    + <span class="string">&quot;)&quot;</span>);</span><br><span class="line">            packageInfo =</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">LoadedApk</span>(<span class="built_in">this</span>, aInfo, compatInfo, baseLoader,</span><br><span class="line">                        securityViolation, includeCode &amp;&amp;</span><br><span class="line">                        (aInfo.flags&amp;ApplicationInfo.FLAG_HAS_CODE) != <span class="number">0</span>, registerPackage);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (mSystemThread &amp;&amp; <span class="string">&quot;android&quot;</span>.equals(aInfo.packageName)) &#123;</span><br><span class="line">                packageInfo.installSystemApplicationInfo(aInfo,</span><br><span class="line">                        getSystemContext().mPackageInfo.getClassLoader());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> packageInfo;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有一个HashMap即mPackages维护包名和LoadedApk的对应关系，即每一个应用有一个键值对对应，如果为null，就新创建一个LoadedApk对象，并将其添加到Map中。第一次执行Activity的时候，很显然是没有这个LoadedApk对象的，所以会生成一个新的LoadedApk对象，然后注意到传入了一个baseLoader，正是上面传的<code>null</code>。</p>
+<p>我们再回头看下<code>performLaunchActivity</code>，当调用完<code>getPackageInfo</code>之后，会调用<code>java.lang.ClassLoader cl = appContext.getClassLoader();</code>去获取<code>classLoader</code>，我们进到<code>ContextImpl.getClassLoader</code>方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> ClassLoader <span class="title function_">getClassLoader</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> mClassLoader != <span class="literal">null</span> ? mClassLoader : (mPackageInfo != <span class="literal">null</span> ? mPackageInfo.getClassLoader() : ClassLoader.getSystemClassLoader());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>mClassLoader</code>正是上面传入的<code>null</code>，而<code>mPackageInfo</code>是上边生成的<code>LoadedApk</code>对象不为空，所以会调用<code>LoadedApk</code>的<code>getClassLoader</code>方法。这里就不在一层一层的剥开了，因为想节省点笔迹🤪，总之，翻源码到最后，你会发现最终是通过调用<code>ClassLoader.getSystemClassLoader</code>来获取一个<code>classLoader</code>，而这个<code>classLoader</code>正好是<code>PathClassLoader</code>。</p>
+<p>到这里一切真相大白了吧？前面**我们虽然用<code>DexClassLoader</code>通过对APK的动态加载成功加载了<code>TestActivity</code>到虚拟机，但是当系统启动该<code>Activity</code>的时候，依然会出现加载类失败的异常，因为<code>Activity</code>在启动时用到的是<code>PathClassLoader</code>**。前面在介绍<code>Android</code>的<code>ClassLoader</code>的时候提到过，<code>PathClassLoader</code>是<code>Android</code>默认使用的类加载器，一个<code>APK</code>中的<code>Activity</code>等类便是在其中加载，但是我们的<code>TestActivity</code>不存在于当前的<code>APK</code>，而是在外部的<code>dex</code>文件上，自然而然的就会出现上边找不到<code>Activity</code>的异常了。</p>
+<p>那我们是不是可以替换掉这个<code>PathClassLoader</code>为<code>DexClassLoader</code>不就好了吗？答案是肯定的。除了这个方案之外，我们还可以利用双亲委派的原理，给出另一种方案。两种解决方案如下：</p>
+<ul>
+<li>替换系统组件类加载器为我们的<code>DexClassLoader</code>，同时设置<code>DexClassLoader</code>的<code>parent</code>为系统组件的类加载器。</li>
+<li>打破原有的双亲关系，在系统组件类加载器和<code>BootClassLoader</code>中插入我们自己的<code>DexClassLoader</code>即可。</li>
+</ul>
+<h4 id="方案一：替换mClassLoader为DexClassLoader"><a href="#方案一：替换mClassLoader为DexClassLoader" class="headerlink" title="方案一：替换mClassLoader为DexClassLoader"></a>方案一：替换<code>mClassLoader</code>为<code>DexClassLoader</code></h4><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201152137281.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220115213655318" title="">
+                </div>
+                <div class="image-caption">image-20220115213655318</div>
+            </figure>修改`MainActivity`的代码如下：
+
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainActivity</span> <span class="keyword">extends</span> <span class="title class_">AppCompatActivity</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onCreate</span><span class="params">(Bundle savedInstanceState)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        <span class="type">String</span> <span class="variable">sdcardPath</span> <span class="operator">=</span> Environment.getExternalStorageDirectory().getAbsolutePath();</span><br><span class="line">        startActivityTest(<span class="built_in">this</span>, sdcardPath + File.separator + <span class="string">&quot;classes3.dex&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">replaceClassLoader</span><span class="params">(ClassLoader classLoader)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 加载ActivityThread类</span></span><br><span class="line">            Class&lt;?&gt; ActivityThreadClazz = classLoader.loadClass(<span class="string">&quot;android.app.ActivityThread&quot;</span>);</span><br><span class="line">            <span class="comment">// 获取currentActivityThread方法,从而获取ActivityThread实例</span></span><br><span class="line">            <span class="type">Method</span> <span class="variable">currentActivityThreadMethod</span> <span class="operator">=</span> ActivityThreadClazz.getDeclaredMethod(<span class="string">&quot;currentActivityThread&quot;</span>);</span><br><span class="line">            currentActivityThreadMethod.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            <span class="type">Object</span> <span class="variable">activityThreadObj</span> <span class="operator">=</span> currentActivityThreadMethod.invoke(<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 获取ActivityThread的mPackage属性</span></span><br><span class="line">            <span class="type">Field</span> <span class="variable">mPackageField</span> <span class="operator">=</span> ActivityThreadClazz.getDeclaredField(<span class="string">&quot;mPackages&quot;</span>);</span><br><span class="line">            mPackageField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            <span class="comment">// 获取loadedApk对象</span></span><br><span class="line">            <span class="type">ArrayMap</span> <span class="variable">mPackageObj</span> <span class="operator">=</span> (ArrayMap) mPackageField.get(activityThreadObj);</span><br><span class="line">            <span class="type">WeakReference</span> <span class="variable">wr</span> <span class="operator">=</span> (WeakReference) mPackageObj.get(<span class="built_in">this</span>.getPackageName());</span><br><span class="line">            <span class="type">Object</span> <span class="variable">loadedApkObj</span> <span class="operator">=</span> wr.get();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 替换mClassLoader</span></span><br><span class="line">            <span class="type">Class</span> <span class="variable">loadedApkClazz</span> <span class="operator">=</span> classLoader.loadClass(<span class="string">&quot;android.app.LoadedApk&quot;</span>);</span><br><span class="line">            <span class="type">Field</span> <span class="variable">mClassLoader</span> <span class="operator">=</span> loadedApkClazz.getDeclaredField(<span class="string">&quot;mClassLoader&quot;</span>);</span><br><span class="line">            mClassLoader.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            mClassLoader.set(loadedApkObj, classLoader);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException | NoSuchMethodException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InvocationTargetException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchFieldException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">startActivityTest</span><span class="params">(Context context, String dexFilePath)</span> &#123;</span><br><span class="line">        Class&lt;?&gt; clazz = <span class="literal">null</span>;</span><br><span class="line">        <span class="type">DexClassLoader</span> <span class="variable">dexClassLoader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DexClassLoader</span>(dexFilePath, <span class="literal">null</span>, <span class="literal">null</span>, MainActivity.class.getClassLoader());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            replaceClassLoader(dexClassLoader);</span><br><span class="line">            clazz = dexClassLoader.loadClass(<span class="string">&quot;com.example.dexclass.TestActivity&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        context.startActivity(<span class="keyword">new</span> <span class="title class_">Intent</span>(context, clazz));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行项目，结果如预期：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201152139770.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220115213932649" title="">
+                </div>
+                <div class="image-caption">image-20220115213932649</div>
+            </figure>
+
+
+
+<h4 id="方案二：在mClassLoader和BootClassLoader之间插入DexClassLoader"><a href="#方案二：在mClassLoader和BootClassLoader之间插入DexClassLoader" class="headerlink" title="方案二：在mClassLoader和BootClassLoader之间插入DexClassLoader"></a>方案二：在<code>mClassLoader</code>和<code>BootClassLoader</code>之间插入<code>DexClassLoader</code></h4><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201152147745.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220115214708638" title="">
+                </div>
+                <div class="image-caption">image-20220115214708638</div>
+            </figure>
+
+<p>修改<code>TestActivity</code>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestActivity</span> <span class="keyword">extends</span> <span class="title class_">Activity</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onCreate</span><span class="params">(<span class="meta">@Nullable</span> Bundle savedInstanceState)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        Log.d(<span class="string">&quot;TestActivity&quot;</span>, <span class="string">&quot;i am from TestActivity.onCreate&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>把<code>AppCompatActivity</code>改为了<code>Activity</code>，防止有一些类重复加载。</p>
+<p>再次修改<code>MainActivity</code>的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainActivity</span> <span class="keyword">extends</span> <span class="title class_">Activity</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onCreate</span><span class="params">(Bundle savedInstanceState)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        <span class="type">String</span> <span class="variable">sdcardPath</span> <span class="operator">=</span> Environment.getExternalStorageDirectory().getAbsolutePath();</span><br><span class="line">        startActivityTest(<span class="built_in">this</span>, sdcardPath + File.separator + <span class="string">&quot;classes3.dex&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">startActivityTest</span><span class="params">(Context context, String dexFilePath)</span> &#123;</span><br><span class="line">        Class&lt;?&gt; clazz = <span class="literal">null</span>;</span><br><span class="line">        <span class="type">ClassLoader</span> <span class="variable">pathClassLoader</span> <span class="operator">=</span> MainActivity.class.getClassLoader();</span><br><span class="line">        <span class="type">ClassLoader</span> <span class="variable">bootClassLoader</span> <span class="operator">=</span> MainActivity.class.getClassLoader().getParent();</span><br><span class="line">        <span class="comment">// dexClassLoader的parent为BootClassLoader</span></span><br><span class="line">        <span class="type">DexClassLoader</span> <span class="variable">dexClassLoader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DexClassLoader</span>(dexFilePath, <span class="literal">null</span>, <span class="literal">null</span>, bootClassLoader);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Field</span> <span class="variable">parentField</span> <span class="operator">=</span> ClassLoader.class.getDeclaredField(<span class="string">&quot;parent&quot;</span>);</span><br><span class="line">            parentField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            <span class="comment">// 当前组件的ClassLoader的parent为DexClassLoader</span></span><br><span class="line">            parentField.set(pathClassLoader, dexClassLoader);</span><br><span class="line">            clazz = dexClassLoader.loadClass(<span class="string">&quot;com.example.dexclass.TestActivity&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException | NoSuchFieldException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        context.startActivity(<span class="keyword">new</span> <span class="title class_">Intent</span>(context, clazz));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行项目，结果也如预期：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202201152315708.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220115231522507" title="">
+                </div>
+                <div class="image-caption">image-20220115231522507</div>
+            </figure>
+
+
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>动态加载就是用到的时候再去加载，也叫懒加载，也就意味着用不到的时候是不会去加载的。动态加载是dex加壳，插件化，热更新的基础。动态加载的dex不具有生命周期特征，App中的Activity, Service等组件无法正常工作，只能完成一般函数的调用；需要对ClassLoader进行修正，App才能正常运行，两种修正方案：</p>
+<ol>
+<li>替换系统组件类加载器为我们的<code>DexClassLoader</code>，同时设置<code>DexClassLoader</code>的<code>parent</code>为系统组件的类加载器。</li>
+<li>打破原有的双亲关系，在系统组件类加载器和<code>BootClassLoader</code>中插入我们自己的<code>DexClassLoader</code>即可。</li>
+</ol>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/cauchyweierstrass/article/details/51087198">Android动态加载Activity原理</a></p>
+<p><a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-252630.htm#msg_header_h2_6">FART：ART环境下基于主动调用的自动化脱壳方案</a></p>
+<p><a target="_blank" rel="noopener" href="http://androidxref.com/9.0.0_r3/xref/frameworks/base/core/java/android/app/ActivityThread.java">ActivityThread源码</a></p>
+<p><a target="_blank" rel="noopener" href="https://samiu.top/2020/04/16/Activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E6%8E%A2%E7%A9%B6/">Activity的启动流程探究</a></p>
+<p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000004062880">Android动态加载基础 ClassLoader工作机制</a></p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:40.395Z" itemprop="dateUpdated">2023-05-09 18:16:40</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/" rel="tag">android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/&title=《Android逆向之动态加载》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/&title=《Android逆向之动态加载》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Android逆向之动态加载》 — 何仕鹏的个人博客&url=http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">一文了解Dex文件格式</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/%E5%A4%A7%E7%AB%AF%E8%BF%98%E6%98%AF%E5%B0%8F%E7%AB%AF/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">大端还是小端？</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/&title=《Android逆向之动态加载》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/&title=《Android逆向之动态加载》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Android逆向之动态加载》 — 何仕鹏的个人博客&url=http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/Android%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADIElEQVR42u3aQW4bQQwEQP//0845MLzuJleAdlQ6GbG0mmIO7SH59RW/vi9fP9/z27+0z//5nt8++/WKFzY2NvZD2HeRrg+aFyUpVnLO6yJiY2Njn8e+DoY/HhGEUPuE5Gzt+7GxsbGxZ6F1/fMs8LCxsbGxN+xr8DX1+lN5mTYFxcbGxj6VvQmG2SFyWFK4F/bSsLGxsd+enU9F3//nl8y3sbGxsd+Y/b14tReGTXTlz4xOjo2NjX0Q+3VHaRdrZrzVhQQbGxv7OHb7BUUjfjEeaFtLxdmwsbGxD2LnMdbG1Sxykmcmv8XGxsbGzldw8qO0pUwuJ/kYAxsbG/tUdrvmkofTXc2p/LJRjIGxsbGxD2InAdZeFdqmfxKKSUsLGxsb+9PYm4WbPE4215i74hYbGxv7bHbbgm/b97OrSI5Pyv3f+7GxsbEPYm/GpZv3bwbMmyDExsbGPpWdN/TzuEp+28LaYIviExsbG/vh7PzasFmXaReAXrESNOylYWNjYz+KPWvB33vQPPBWS0XY2NjYR7Pz9n27Fpl/V3LxqENrdhRsbGzst2cnsZGHRx5d7TLQXYNnbGxs7PPYsz/x25LNLjybAfAfp8XGxsY+iL2JhH3bKC/3bDwcXUWwsbGxH85OkO2nNoPbG2IpiVJsbGzsg9jtSDWPsU04bS4kxcAYGxsb+wh2HmD5sfIS5LE3a3vVKzvY2NjYD2Tn4OGf+6OW0GzdZzhgwMbGxj6CnddmdvR2YDC7eNSrQtjY2NhHsJPYSMJsdl2ZBeRsUBFlKTY2NvYD2au7yxowWxKanTC6e2FjY2M/kN2OAfJW0SYU8xLPRtHY2NjYJ7GLgegCkzeJ8nLMShPNQ7CxsbEfxb73j/67rhntf0k7osbGxsY+iT2LqDyu2oWbdkh8HVQ3lAAbGxv7IexZaOVD1jbG8s+2VylsbGzss9ltCz4PjDxU9uOKZPCMjY2N/cnsu1Z27i1T+13Y2NjYn8xuBwNtO2lTiHo8gI2NjX0ce/OIdoFmE5NtsA0Xd7CxsbEfxd58Tb5wsxkqt+XblxUbGxv7Iex/28BkF9VJKpcAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

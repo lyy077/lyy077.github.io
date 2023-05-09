@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之Chrome浏览器工具你知多少？ | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="Network面板Network面板介绍网络面板分为5个部分：控制器面板，过滤器面板，概览部分，请求列表以及概要部分。 Controls（控制器）：使用这些选项可以控制Network面板的外观和功能。 Filter（过滤器）：使用这些选项可以控制在Requests Table中显示哪些资源。按住Command&#x2F;Ctrl键可以点选多个过滤器。 Overview（概览）：此图表显示了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之Chrome浏览器工具你知多少？">
+<meta property="og:url" content="http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="Network面板Network面板介绍网络面板分为5个部分：控制器面板，过滤器面板，概览部分，请求列表以及概要部分。 Controls（控制器）：使用这些选项可以控制Network面板的外观和功能。 Filter（过滤器）：使用这些选项可以控制在Requests Table中显示哪些资源。按住Command&#x2F;Ctrl键可以点选多个过滤器。 Overview（概览）：此图表显示了">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://img.heshipeng.com/202202111457134.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202111525047.png">
+<meta property="og:image" content="http://img.heshipeng.com/202202111538766.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202111549405.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202111551191.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202111556685.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202111608727.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202111608906.png">
+<meta property="og:image" content="http://img.heshipeng.com/202202111658856.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141036679.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141045585.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141046182.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141047198.png">
+<meta property="og:image" content="http://img.heshipeng.com/202202141053302.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141126711.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141132844.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141133043.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141138509.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141140600.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141158016.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141406960.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141408998.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141509714.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141453523.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141454079.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141456576.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141511114.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141542127.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141544801.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141546839.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141552746.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141554612.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141600745.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141602842.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141603925.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203031119009.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141626994.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141630189.png">
+<meta property="og:image" content="http://img.heshipeng.com/202202141639033.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="http://img.heshipeng.com/202202141656805.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-02-11T06:46:51.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:45.919Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.heshipeng.com/202202111457134.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之Chrome浏览器工具你知多少？</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之Chrome浏览器工具你知多少？</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-02-11T06:46:51.000Z" itemprop="datePublished" class="page-time">
+  2022-02-11
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Network%E9%9D%A2%E6%9D%BF"><span class="post-toc-number">1.</span> <span class="post-toc-text">Network面板</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Network%E9%9D%A2%E6%9D%BF%E4%BB%8B%E7%BB%8D"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">Network面板介绍</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%8E%A7%E5%88%B6%E5%99%A8%E9%9D%A2%E6%9D%BF"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">控制器面板</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">过滤器</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E8%AF%B7%E6%B1%82%E5%88%97%E8%A1%A8"><span class="post-toc-number">1.4.</span> <span class="post-toc-text">请求列表</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Source%E9%9D%A2%E6%9D%BF"><span class="post-toc-number">2.</span> <span class="post-toc-text">Source面板</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%96%87%E4%BB%B6%E5%AF%BC%E8%88%AA%E7%AA%97%E6%A0%BC"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">文件导航窗格</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E5%99%A8%E7%AA%97%E6%A0%BC"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">代码编辑器窗格</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E8%B0%83%E8%AF%95%E7%AA%97%E6%A0%BC"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">调试窗格</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Console%E9%9D%A2%E6%9D%BF"><span class="post-toc-number">3.</span> <span class="post-toc-text">Console面板</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">4.</span> <span class="post-toc-text">总结</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%8F%82%E8%80%83"><span class="post-toc-number">5.</span> <span class="post-toc-text">参考</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-Chrome浏览器工具你知多少"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之Chrome浏览器工具你知多少？</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-02-11 14:46:51" datetime="2022-02-11T06:46:51.000Z"  itemprop="datePublished">2022-02-11</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <div align="center"><iframe width="560" height="315" src="https://www.youtube.com/embed/AIhtECdAGFA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+
+
+
+<h4 id="Network面板"><a href="#Network面板" class="headerlink" title="Network面板"></a>Network面板</h4><h5 id="Network面板介绍"><a href="#Network面板介绍" class="headerlink" title="Network面板介绍"></a>Network面板介绍</h5><p>网络面板分为5个部分：控制器面板，过滤器面板，概览部分，请求列表以及概要部分。</p>
+<p><strong>Controls（控制器）</strong>：使用这些选项可以控制Network面板的外观和功能。</p>
+<p><strong>Filter（过滤器）</strong>：使用这些选项可以控制在Requests Table中显示哪些资源。按住Command&#x2F;Ctrl键可以点选多个过滤器。</p>
+<p><strong>Overview（概览）</strong>：此图表显示了资源检索时间的时间线。如果看到多条竖线堆叠在一起，说明这些资源同时被检索。</p>
+<p><strong>Requests Table（请求列表）</strong>：此表格列出了检索的每一个资源。默认情况下，此表格按照时间顺序排序，最早的资源在顶部。点击资源的名称可以显示更多信息，右键点击Timeline以外的任何一个表格标题可以添加或者移除信息列。</p>
+<p><strong>Summary（概要）</strong>：此窗格可以一目了然地知道请求总数，传输的数据量和加载时间。</p>
+<h5 id="控制器面板"><a href="#控制器面板" class="headerlink" title="控制器面板"></a>控制器面板</h5><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202111457134.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220211145738994" title="">
+                </div>
+                <div class="image-caption">image-20220211145738994</div>
+            </figure>
+
+<ul>
+<li>第一个按钮控制浏览器是否抓包，如果为红色表示正在抓包，点击之后变灰色表示停止抓包。</li>
+<li>第二个按钮表示清除按钮，点击之后会清除请求列表。</li>
+<li>第三个按钮表示过滤器的打开与关闭按钮，点击这个按钮控制下方过滤器打开还是关闭。</li>
+<li>第四个按钮表示打开一个检索，用得不多。</li>
+<li>第五个按钮表示是否要跨页面保存请求列表。☑️上表示保留跨页面请求信息，什么意思呢？就是我打开一个A页面，得到了一个请求列表，我再次访问B页面，C页面…无论是什么页面，只要是同一个窗口，所有的请求列表都会保存。</li>
+<li>第六个按钮表示是否禁用浏览器缓存。一般来说☑️上，然后每一个请求都会去请求新的资源。</li>
+<li>第七个按钮表示慢速网络模拟。可以使用slow 3G或offline，可以看到浏览器页面在不同网络环境下的样子。</li>
+</ul>
+<h5 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h5><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202111525047.png" alt="image-20220211152552978" title="">
+                </div>
+                <div class="image-caption">image-20220211152552978</div>
+            </figure>
+
+<p>通过点选不同类型比如Ajax，JS，CSS等来过滤不同的请求，同时支持点选多个类型的按钮来在请求列表展示多个类型的请求。</p>
+<p>前面Filter过滤框还提供了定制化筛选的功能，可以通过输入一些路由的关键词去搜索，也可以通过类似于正则的方式去搜索。比如：</p>
+<p>domain:*.nightteam.cn：表示domain为*.nightteam.cn的请求。</p>
+<p>status-code:301：表示状态码为301的请求。</p>
+<p>set-cookie-domain:bbs.nightteam.cn：表示进行set-cookie的操作的domain。</p>
+<h5 id="请求列表"><a href="#请求列表" class="headerlink" title="请求列表"></a>请求列表</h5><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202111538766.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220211153842703" title="">
+                </div>
+                <div class="image-caption">image-20220211153842703</div>
+            </figure>
+
+<p>标题栏里面比较关键的是Initiator这一栏，表示请求是由哪里发起的。Other表示发起者通过动作发起，而不是某一个具体的JS发起。bbs.nightteam.cn是我们通过浏览器地址栏输入地址后回车发起的，所以这里显示other，而其它的请求都是可以找到具体调用的JS文件。通过定位到某一个请求的发起文件，我们可以在该文件中增加断点进行调试，所以这一栏比较重要。</p>
+<p>点击某一个具体的请求，可以看到它的请求头信息，响应头信息，预览页面，耗时，Cookie信息等。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202111549405.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220211154903286" title="">
+                </div>
+                <div class="image-caption">image-20220211154903286</div>
+            </figure>
+
+
+
+<p>选中某一个请求，然后右键选择Copy-&gt;Copy as cURL得到该请求的cURL命令。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202111551191.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220211155142085" title="">
+                </div>
+                <div class="image-caption">image-20220211155142085</div>
+            </figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">curl <span class="string">&#x27;https://bbs.nightteam.cn/&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;authority: bbs.nightteam.cn&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;cache-control: max-age=0&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;sec-ch-ua: &quot; Not A;Brand&quot;;v=&quot;99&quot;, &quot;Chromium&quot;;v=&quot;98&quot;, &quot;Google Chrome&quot;;v=&quot;98&quot;&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;sec-ch-ua-mobile: ?0&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;sec-ch-ua-platform: &quot;macOS&quot;&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;upgrade-insecure-requests: 1&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;sec-fetch-site: none&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;sec-fetch-mode: navigate&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;sec-fetch-user: ?1&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;sec-fetch-dest: document&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept-language: zh-CN,zh;q=0.9,en;q=0.8&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;cookie: __yjs_duid=1_4110af544673b8e7f7ad03205cd2f8dc1644394949170; WoQu_2132_saltkey=YrDr0Zud; WoQu_2132_lastvisit=1644391349; popnotice=ss10; __8qcehdE7ZaRq2q6M__=5df749990f6140450200d728b907dcbe500b; WoQu_2132_sid=uh3oVX; WoQu_2132_st_p=0%7C1644476217%7C06bfc6a3958129a26420eb3777962f3c; WoQu_2132_visitedfid=39D38D37; WoQu_2132_viewid=tid_2275; WoQu_2132_lastact=1644476217%09home.php%09misc&#x27;</span> \</span><br><span class="line">  --compressed</span><br></pre></td></tr></table></figure>
+
+<p>可以直接在类Unix系统的控制台中去执行这个cURL命令，也可以把这个命令导入到PostMan中去执行。具体步骤是：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202111556685.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220211155646608" title="">
+                </div>
+                <div class="image-caption">image-20220211155646608</div>
+            </figure>
+
+
+
+<p>点击Shift键，然后鼠标悬停在某一个请求上，如果展示绿色背景，表示绿色背景的请求依赖你当前悬停的请求。如果展示红色背景，表示当前悬停的请求依赖红色背景的请求。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202111608727.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220211160819614" title="">
+                </div>
+                <div class="image-caption">image-20220211160819614</div>
+            </figure>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202111608906.png" alt="image-20220211160845852" title="">
+                </div>
+                <div class="image-caption">image-20220211160845852</div>
+            </figure>
+
+
+
+<h4 id="Source面板"><a href="#Source面板" class="headerlink" title="Source面板"></a>Source面板</h4><p>source面板分为三个部分：文件导航窗口，代码编辑器窗格， 调试窗格。</p>
+<p>文件导航窗口：可以对文件目录进行浏览；</p>
+<p>编辑器窗格：代码编辑，设置断点；</p>
+<p>调试窗格：包含调试所用的常用选项。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202111658856.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220211165847739" title="">
+                </div>
+                <div class="image-caption">image-20220211165847739</div>
+            </figure>
+
+
+
+<h5 id="文件导航窗格"><a href="#文件导航窗格" class="headerlink" title="文件导航窗格"></a>文件导航窗格</h5><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141036679.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214103607974" title="">
+                </div>
+                <div class="image-caption">image-20220214103607974</div>
+            </figure>
+
+<ul>
+<li>page面板</li>
+</ul>
+<p>以文件目录形式展示当前页面。包含当前网站的页面，静态资源等。</p>
+<ul>
+<li>FileSystem面板</li>
+</ul>
+<p>可以让开发者工具加载本地的文件系统，并且能在编辑框口修改编辑，由此化身IDE。这里做一个示范：</p>
+<p>第一步：点击<code>Add folder to workspace</code></p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141045585.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214104511894" title="">
+                </div>
+                <div class="image-caption">image-20220214104511894</div>
+            </figure>
+
+<p>第二步：选择要上传的文件夹</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141046182.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214104624359" title="">
+                </div>
+                <div class="image-caption">image-20220214104624359</div>
+            </figure>
+
+<p>第三步：点击允许，让开发者工具具备读写该文件夹的权限</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141047198.png" alt="image-20220214104720311" title="">
+                </div>
+                <div class="image-caption">image-20220214104720311</div>
+            </figure>
+
+<p>然后就可以看到我们上传的文件夹以及相关的JS文件了：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141053302.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214105309274" title="">
+                </div>
+                <div class="image-caption">image-20220214105309274</div>
+            </figure>
+
+<p>我们可对其进行编辑修改，打上断点调试等。</p>
+<ul>
+<li>Overrides面板</li>
+</ul>
+<p>Overrides面板可以很容易的将远程资源下载一份在本地，然后可以在开发者工具下进行编辑，并且开发者工具会展示我们编辑后的文件。换句话说，就是直接将一些请求代理到本地的文件中。这里同样做一个演示：</p>
+<p>前三步跟FileSystem类似：点击<code>Select folder for overrides</code>，然后选择本地文件夹，之后点击允许赋予开发者工具读写该文件夹的权限。接着要点击选中<code>Enable Local Overrides</code>：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141126711.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214112558071" title="">
+                </div>
+                <div class="image-caption">image-20220214112558071</div>
+            </figure>
+
+<p>然后回到Network面板，点击浏览器刷新按钮刷新当前页面，选中一个我们需要代理到本地的请求，右键选择<code>Save for overrides</code>：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141132844.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214113204817" title="">
+                </div>
+                <div class="image-caption">image-20220214113204817</div>
+            </figure>
+
+<p>这时，我们刚才添加的文件夹里面就有了保存的代理请求：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141133043.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214113325024" title="">
+                </div>
+                <div class="image-caption">image-20220214113325024</div>
+            </figure>
+
+<p>然后我们修改本地的这个文件，比如将这个页面的<code>招聘求职</code>改为<code>MLGJ求职</code>：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141138509.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214113851477" title="">
+                </div>
+                <div class="image-caption">image-20220214113851477</div>
+            </figure>
+
+<p>然后，保存刷新这个页面，就成功的将该请求代理到本地文件：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141140600.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214113954313" title="">
+                </div>
+                <div class="image-caption">image-20220214113954313</div>
+            </figure>
+
+
+
+<ul>
+<li>Content scripts</li>
+</ul>
+<p>chrome插件加载的一些脚本，如果有过chrome浏览器插件开发的经验的话，对这个概念应该会很熟悉。在JS逆向中这个用的不多，后面会有专门的文章介绍chrome浏览器插件开发。</p>
+<ul>
+<li>Snippets</li>
+</ul>
+<p>我们都知道，有时候需要调试一行JS代码，会在浏览器的Console控制台上去调试，如果需要在浏览器中调试一个代码片段呢？在Console中一行行的输入执行就显得很麻烦了。这个Snippets就可以帮我们解决这个问题，可以通过点击<code>New snippet</code>按钮，添加一些代码片段，然后选中某一个代码片段文件，右键<code>Run</code>去执行该代码片段：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141158016.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214115844902" title="">
+                </div>
+                <div class="image-caption">image-20220214115844902</div>
+            </figure>
+
+
+
+<h5 id="代码编辑器窗格"><a href="#代码编辑器窗格" class="headerlink" title="代码编辑器窗格"></a>代码编辑器窗格</h5><p>可以在编辑器中打开文件，断点调试或者格式化等。下面演示一下各个功能。</p>
+<ol>
+<li>代码格式化</li>
+</ol>
+<p>打开Page面板下网站的一个JS文件，如果JS是展示在一行，可以点击下面的一对<code>&#123;&#125;</code>进行格式化：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141406960.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214140646923" title="">
+                </div>
+                <div class="image-caption">image-20220214140646923</div>
+            </figure>
+
+
+
+<ol start="2">
+<li>添加简单断点</li>
+</ol>
+<p>在我们上边格式化之后的JS文件，选中某一行，单击该行的行号，即可添加断点：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141408998.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214140844097" title="">
+                </div>
+                <div class="image-caption">image-20220214140844097</div>
+            </figure>
+
+
+
+<ol start="3">
+<li>添加条件断点</li>
+</ol>
+<p>在前面介绍的Snippets代码片段中添加一个片段文件，内容如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Script snippet #1 start&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> i = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">while</span> (<span class="number">5</span> &gt; i) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(i)</span><br><span class="line">    <span class="keyword">debugger</span>;</span><br><span class="line">    i++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Script snippet #1 end&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这段代码比较简单，当i小于5的时候进入循环，停在断点处。下面开始条件断点的设置：</p>
+<p>先单击要添加条件断点的那一行的行号，右键，选择<code>Add conditional breakpoint</code></p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141509714.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214150928211" title="">
+                </div>
+                <div class="image-caption">image-20220214150928211</div>
+            </figure>
+
+<p>然后在这个条件输入框中，输入一个条件，比如这里我们是<code>i = 10</code>:</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141453523.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214145305065" title="">
+                </div>
+                <div class="image-caption">image-20220214145305065</div>
+            </figure>
+
+<p>设置好条件断点之后，断点会变成黄色，区别于普通断点：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141454079.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214145448231" title="">
+                </div>
+                <div class="image-caption">image-20220214145448231</div>
+            </figure>
+
+<p>为了便于观察i的值，可以在最右边的调试窗格变量监控一栏添加观察i的值。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141456576.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214145615800" title="">
+                </div>
+                <div class="image-caption">image-20220214145615800</div>
+            </figure>
+
+<p>最后右键运行该文件，如果条件断点正确的打上的话，变量监控值会看到i的值为10：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141511114.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214151148079" title="">
+                </div>
+                <div class="image-caption">image-20220214151148079</div>
+            </figure>
+
+
+
+<h5 id="调试窗格"><a href="#调试窗格" class="headerlink" title="调试窗格"></a>调试窗格</h5><ol>
+<li>XHR&#x2F;fetch Breakpoints</li>
+</ol>
+<p>XHR断点触发需要满足2个条件：一个是基于XHR的生命周期发生改变，一个是XHR的URL与我们设置的字符串相匹配。常用的是第二种。我们现在以百度作为一个演示。</p>
+<p>打开百度网站首页，点击登录，然后打开Network面板，选择Fetch&#x2F;XHR，我们进行一个抓包，只抓XHR请求的包，结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141542127.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214154210085" title="">
+                </div>
+                <div class="image-caption">image-20220214154210085</div>
+            </figure>
+
+<p>我们选择其中任意一个，比如下面一个请求，回到调试窗格，然后点击新增一个XHR断点，填入该请求的URL或者一部分：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141544801.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214154422755" title="">
+                </div>
+                <div class="image-caption">image-20220214154422755</div>
+            </figure>
+
+<p>然后我们退出登录后重新点击登录百度，可以看到设置的断点生效了：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141546839.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214154605187" title="">
+                </div>
+                <div class="image-caption">image-20220214154605187</div>
+            </figure>
+
+
+
+<ol start="2">
+<li>DOM Breakpoint</li>
+</ol>
+<p>还是以百度为例，切换到元素面板，然后随便选择一个DOM元素，右键Break on：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141552746.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214155229706" title="">
+                </div>
+                <div class="image-caption">image-20220214155229706</div>
+            </figure>
+
+<p>有三种类型的断点，子元素改变&#x2F;属性改变&#x2F;节点删除。选择其中一个，即添加成功：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141554612.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214155406742" title="">
+                </div>
+                <div class="image-caption">image-20220214155406742</div>
+            </figure>
+
+<p>由于DOM Breakpoint在逆向中不是很常用，所以做一个了解即可。</p>
+<ol start="3">
+<li>Event Listener Breakpoint</li>
+</ol>
+<p>基于事件监听的断点。同样还是以百度为例，点击登录到登录页面，可以看到页面上是一个登录按钮的，这个登录按钮就是触发的submit事件。我们在调试窗格上找到Event Listener Breakpoints，然后打开Control，选中Submit：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141600745.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214160042544" title="">
+                </div>
+                <div class="image-caption">image-20220214160042544</div>
+            </figure>
+
+<p>然后我们点击登录页面的登录按钮，如无意外，断点成功打上：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141602842.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214160209183" title="">
+                </div>
+                <div class="image-caption">image-20220214160209183</div>
+            </figure>
+
+
+
+<ol start="4">
+<li>断点控制按钮</li>
+</ol>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141603925.png" alt="image-20220214160335416" title="">
+                </div>
+                <div class="image-caption">image-20220214160335416</div>
+            </figure>
+
+<p>第一个按钮：执行到下一个断点，如果没有下一个断点，则按照正常执行顺序执行到下一行代码。</p>
+<p>第二个按钮：执行到下一行代码。</p>
+<p>第三个按钮：点击进入下一个待执行的函数调用中去。</p>
+<p>第四个按钮：跳出当前的函数调用。</p>
+<p>第六个按钮：去除所有断点，恢复正常执行的方法。</p>
+<ol start="5">
+<li>Call Stack</li>
+</ol>
+<p>断点的调用栈列表。下面用一张图说一下调用栈顺序。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203031119009.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220303111929970" title="">
+                </div>
+                <div class="image-caption">image-20220303111929970</div>
+            </figure>
+
+<p>为了表述方便，把上边的几个方法分别重新命名，如上图。在栈顶的最后被调用，在栈底的最新被调用。调用顺序如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">C</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="title function_">B</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">B</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="title function_">A</span>()   </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">A</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="title class_">XMLHttpRequest</span>.<span class="title function_">send</span>()  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至于XMLHttpRequest.send接下来会调用哪一个方法，我们无从得知。此外，注意到那个蓝色箭头，表示当前调试执行的代码所在的方法，如果我们点开了很多文件，想快速回到我们正在调试的那一行代码可以通过鼠标点击调用栈栈顶的方法即可返回到调用处。</p>
+<ol start="6">
+<li>Scope</li>
+</ol>
+<p>断点所在作用域内容。</p>
+<h4 id="Console面板"><a href="#Console面板" class="headerlink" title="Console面板"></a>Console面板</h4><p>在逆向中，console这个交互环境，经常用来输出一些变量的值。有一个方法<code>console.count</code>提一下，经常用来统计某一个方法的调用次数。用法比较简单，如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141626994.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214162607942" title="">
+                </div>
+                <div class="image-caption">image-20220214162607942</div>
+            </figure>
+
+
+
+<p>console面板还有一些骚操作，如下：</p>
+<ul>
+<li>console.table</li>
+</ul>
+<p>我们可以在console中使用console.table，以表格形式展示数据。这里做一个示例：</p>
+<p>打开console控制台，定义一个变量，内容如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> data = [&#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;zhangsan&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">21</span>&#125;, &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;lisi&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">22</span>&#125;]</span><br></pre></td></tr></table></figure>
+
+<p>然后我们调用<code>console.table</code>输出这个变量：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141630189.png" alt="image-20220214163035142" title="">
+                </div>
+                <div class="image-caption">image-20220214163035142</div>
+            </figure>
+
+
+
+<ul>
+<li>copy</li>
+</ul>
+<p>可以在console中调用copy方法，将某一个变量的值复制到剪切板，比如上边的data，我们调用copy(data)就可以将data的内容复制到剪切板了。</p>
+<ul>
+<li>$</li>
+</ul>
+<p>$_ 表达的是上一次表达式计算的值。</p>
+<p>$可以当作document.querySelect使用。</p>
+<p>$$可以当作document.querySelectAll来使用。</p>
+<p>$x可以当作xpath选择器来使用。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141639033.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220214163953998" title="">
+                </div>
+                <div class="image-caption">image-20220214163953998</div>
+            </figure>
+
+
+
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>本文介绍了浏览器开发者工具的使用技巧，主要介绍了三个面板：Console面板，Network面板和Source面板，是JS逆向必须掌握的知识。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.heshipeng.com/202202141656805.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="开发者工具的使用介绍和技巧" title="">
+                </div>
+                <div class="image-caption">开发者工具的使用介绍和技巧</div>
+            </figure>
+
+
+
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6914551244270878733">Chrome Tools花式玩法（一）</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6917901400908005389">Chrome Tools花式玩法（二）</a></p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:45.919Z" itemprop="dateUpdated">2023-05-09 18:16:45</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/&title=《JS逆向之Chrome浏览器工具你知多少？》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/&title=《JS逆向之Chrome浏览器工具你知多少？》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之Chrome浏览器工具你知多少？》 — 何仕鹏的个人博客&url=http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8BCharles%E5%B7%A5%E5%85%B7%E7%AF%87/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向之Charles工具篇</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8B%E8%B0%83%E7%94%A8JS%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向之调用JS的两种方式</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/&title=《JS逆向之Chrome浏览器工具你知多少？》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/&title=《JS逆向之Chrome浏览器工具你知多少？》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之Chrome浏览器工具你知多少？》 — 何仕鹏的个人博客&url=http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/Chrome%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B7%A5%E5%85%B7%E4%BD%A0%E7%9F%A5%E5%A4%9A%E5%B0%91/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD+0lEQVR42u3aS47iQBAFwL7/pRlptgzFe5nVCGnCK2SMqxxeJPn5+YmPx9/j+fPzNc/fnn/7eDqSOz9/Pl9z+cCBAwcOHMGjvjrOGzqfObMmQOcdntGTO/xjtzhw4MCB4xJHElxzgmRzSZDOQ3K74svzOHDgwIHjgxx10IoTvPNaybpt6ogDBw4cOL6fI3/IvDrXkuHAgQMHju/hSIqDebqVXNkG6bxx9aFaKQ4cOHDgSJ/ipw263//5Q/MdOHDgwPHfczzKI0/tkmRv1sqahdLo6XDgwIEDx5oj2VYegPNN/0ZxsE3MiowWBw4cOHBMKnWrcmE7vjBrUCUjC0V7KUfBgQMHDhwxR27WXtm2fNoWVxuMo78UOHDgwIHjEscsRG1Sspw4T9vaobqoVooDBw4cOEqOPGi1adjmgdszt8qLOHDgwIHjFsd+SG4TIPNgX4fMxYvEgQMHDhx3OdphtfaR2sCcv542DOPAgQMHjrsc+RY3y7TDEPn4Qjvo8OYOOHDgwIHjKsdsmXYcIQmu+UhEPjYXvRIcOHDgwLHmyLfVhuFZa2o2VJEPXgxrojhw4MCBY8SxLwvm17chdrb/TRKIAwcOHDhmHJuEKkmcNgF731LKgzcOHDhw4LjF0S6WpEyrklxM3CaBRSMNBw4cOHCsOdpRgKQsmI8U7MPnrVEMHDhw4MCx55iV0vbDB5vhiZYjb6rhwIEDB45bHG2gTUqKm5xo1sTKU7WXK+LAgQMHjjVHkdvFy2zKfO2AxeyVFPvBgQMHDhwjjjbR2hcK88ZVe2ZT0MSBAwcOHLc4koJaW4BLFm6DerLiLFTjwIEDB45bHOfg9IiPhKO9vn1V7brRzCAOHDhw4Cg58lQtR8nv1obeBKv9c/ByXRw4cODAseDIQ2DS5snbS7NRiXPJry0XDrNGHDhw4MBRHrOxhs1AQ9u4av8WtK8BBw4cOHDMONqf5Y+Rl+025b92MKJuO+HAgQMHjhFHHlzbZW6NGuQp5aqsiQMHDhw4foEjbyxtEr/2fBvsZ6vgwIEDB45bHMko26Zl1Rb18mDfBtc33+LAgQMHjksc7ZLtAEH7q81QQj4e8aY4iAMHDhw4Rhx5kS4JrvlWZqF0f2WUHOLAgQMHjgXHozzy9lI+oLYZhps1ol7uCgcOHDhwrDnasDcbMpglVLP7R0naIjzjwIEDB46EIwmu+4LgPtBuAnZyHgcOHDhw3OXIWzhtOrcpDu6H8OrrceDAgQPHBzk25bl868l+2t0WNDhw4MCB48s4kgbP7MHyAt8qSOPAgQMHjkscs+LgpqXUtpGSl7cpa+LAgQMHjlscs1LarHQ4G7lLAnMeUFcQOHDgwIHjxPEHhDHYu4uBn8wAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

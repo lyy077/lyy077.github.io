@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>AST解JS混淆之去掉未被使用的变量 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS,AST">
+    <meta name="description" content="在JS混淆的过程中，加入很多无辜的变量，从头到尾都没有使用过，这样子可以冗余一部分代码，达到混淆视听的目的，这也是JS混淆的一种常见手段。那么如何去除这些“无辜”的变量呢？这就是本篇文章需要讨论的主题。 比如下面一段代码，显然变量n和全局变量c是可以删除的。 12345678910function a() &amp;#123;	var m, n;	m++;	return m;&amp;#125;function">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AST解JS混淆之去掉未被使用的变量">
+<meta property="og:url" content="http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="在JS混淆的过程中，加入很多无辜的变量，从头到尾都没有使用过，这样子可以冗余一部分代码，达到混淆视听的目的，这也是JS混淆的一种常见手段。那么如何去除这些“无辜”的变量呢？这就是本篇文章需要讨论的主题。 比如下面一段代码，显然变量n和全局变量c是可以删除的。 12345678910function a() &amp;#123;	var m, n;	m++;	return m;&amp;#125;function">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-05-28T12:32:08.000Z">
+<meta property="article:modified_time" content="2022-07-04T11:51:03.000Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta property="article:tag" content="AST">
+<meta name="twitter:card" content="summary">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">AST解JS混淆之去掉未被使用的变量</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">AST解JS混淆之去掉未被使用的变量</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-05-28T12:32:08.000Z" itemprop="datePublished" class="page-time">
+  2022-05-28
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/">AST反混淆</a></li></ul></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+
+<article id="post-AST解JS混淆之去掉未被使用的变量"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">AST解JS混淆之去掉未被使用的变量</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-05-28 20:32:08" datetime="2022-05-28T12:32:08.000Z"  itemprop="datePublished">2022-05-28</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/">AST反混淆</a></li></ul></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <p>在JS混淆的过程中，加入很多无辜的变量，从头到尾都没有使用过，这样子可以冗余一部分代码，达到混淆视听的目的，这也是JS混淆的一种常见手段。那么如何去除这些“无辜”的变量呢？这就是本篇文章需要讨论的主题。</p>
+<p>比如下面一段代码，显然变量n和全局变量c是可以删除的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">a</span>(<span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">var</span> m, n;</span><br><span class="line">	m++;</span><br><span class="line">	<span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">b</span>(<span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">let</span> c = <span class="title function_">a</span>() + <span class="number">1</span>; </span><br><span class="line">	<span class="keyword">return</span> c;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> c = <span class="string">&quot;Wow&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>删除没有使用的变量，核心代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> visitor = &#123;</span><br><span class="line">    <span class="title class_">VariableDeclarator</span>(path) &#123;</span><br><span class="line">        <span class="keyword">const</span> &#123;id&#125; = path.<span class="property">node</span>;</span><br><span class="line">        <span class="comment">// 获取binding信息</span></span><br><span class="line">        <span class="keyword">const</span> binding = path.<span class="property">scope</span>.<span class="title function_">getBinding</span>(id.<span class="property">name</span>);</span><br><span class="line">        <span class="comment">// 如果变量被修改，则不能删除</span></span><br><span class="line">        <span class="keyword">if</span> (!binding || binding.<span class="property">constantViolations</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果变量没有被引用，则可以删除</span></span><br><span class="line">        <span class="keyword">if</span> (binding.<span class="property">referencePaths</span>.<span class="property">length</span> === <span class="number">0</span>) &#123;</span><br><span class="line">          path.<span class="title function_">remove</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果有阅读前面写过的一篇文章 <a target="_blank" rel="noopener" href="https://blog.heshipeng.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8BAST%E5%9F%BA%E7%A1%80/">AST解JS混淆之AST基础</a>，了解了作用域与Binding，则上面的代码并不难理解。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2022-07-04T11:51:03.000Z" itemprop="dateUpdated">2022-07-04 19:51:03</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AST/" rel="tag">AST</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/&title=《AST解JS混淆之去掉未被使用的变量》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/&title=《AST解JS混淆之去掉未被使用的变量》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《AST解JS混淆之去掉未被使用的变量》 — 何仕鹏的个人博客&url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8BAST%E5%9F%BA%E7%A1%80/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">AST解JS混淆之AST基础</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">AST解JS混淆之删除所有注释</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/&title=《AST解JS混淆之去掉未被使用的变量》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/&title=《AST解JS混淆之去掉未被使用的变量》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《AST解JS混淆之去掉未被使用的变量》 — 何仕鹏的个人博客&url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAAEmCAAAAADqr2IGAAAEjUlEQVR42u3b0W7cOAwF0Pz/T2eBRR+6aDO5l1S2kXv8FHgmknUcgCKpvL3F1/u/188//3z9+p3XI7R3km/mI7x+ztWFCRMmTJi+JdP7yytZ0uuHTviSb+Zj5pTJ2jFhwoQJ0zOYkuGSoPt6slO4+01Gu7HAhAkTJkx/A1Nyp13qZsGnVoEJEyZMmDAlwXu/1K9IntuUHhMmTJgwPZUpGS7/tEXPS73tUyUt2MO1cEyYMGHC9M2Y2tT0ST8fvjBhwoQJ0zdjeh9d+WSb0H5qo7BZ6Y8RMGHChAnTtUyb1uMs0Z0VeZNEt52rfvGYMGHChOlypqT8mt/ftDNPpbKz+59sCDBhwoQJ04VMm2M6+bZg9ribo0J5C7Z4kZgwYcKE6Sqm5JdzjlMHaJKibX4///TDGTFhwoQJ0+VMpw7xnNo0bArH7bYmwsWECRMmTNcyteGzXV6ecOYN1ORlnCpMf3hwBxMmTJgwXcLUFkD36WtbCG6P8iRpc7tlwYQJEyZM9zIloX0T+PPxE/r22qTxnxzZwYQJEyZMlzDNGoGzYNym0DPo/bGk39zBhAkTJkyXM+WJ7uzT9iDO7MBQfpCoTr8xYcKECdPjmNoC7gauDeSztLnli/q9mDBhwoTp2zO1NczZIvMCbr4VyJ+8Rfmk94sJEyZMmK5l2oTnL3msuBk5O0hUC2DChAkTpguZ2mLrDGhzjGZW3j07CyZMmDBheh7TbJpN4zMJ+TnH5iUVGwJMmDBhwnQJU06QPOgmGU4O4mzS4zzV/03XFxMmTJgwXciUDHeqvPs6SOel2Dz8b0rMmDBhwoTpGUyzDcGpgL3ZfMzKu7N1YcKECROme5n20+Tpa7E3iYN9e4B1NhcmTJgwYbqdaZOUDkulcWDeHMRpZ//kNWDChAkTpmuZvi5Ib9qQp0bIC9n1QJgwYcKE6SqmZJF5sfX/+ReOZDPRtlqjIi8mTJgwYbqKqX3QNmnM09phizEoPR9ImzFhwoQJ07VMeYDPl51M2W4v9gXi/dYBEyZMmDDdxTQLrrl6nsrOjqvmDcukJP3h+JgwYcKE6UFMbUuyLdRujpm2L6NF/PBTTJgwYcL0CKZZGJ6VhjdHc9o25+bFHNutYMKECROmP8TUtgnzZPhUQ7R9PbODQflLwoQJEyZMdzHlITM/oFOklKOm4+ZvYdgcxYQJEyZMlzOd2ijMkt5NM7JuTI6atZgwYcKE6RlMeZF3VlTdJLr75mW7HfnPfUyYMGHC9AimWWF3drwmD9izZLV9JZ9AY8KECROma5lmQO2y82R4E8hnR3xmz48JEyZMmG5hei+vdsp8tNlcs9HquTBhwoQJ07VMm2CZLz7ZBMzalnmiO5sLEyZMmDA9gylvOrYE+ZhtUzPfgmzSe0yYMGHC9CSmtjYcHXk5VH5tlzorJb/NHhoTJkyYMD2aKS+Y5uG/bYvmL2C23cGECRMmTH8PU56+7jcNp0rPr2cvnh8TJkyYMF3ONGsN7oN027bMy8otTX16FxMmTJgwXcK0Cb0tUJskJ6l48v1NYowJEyZMmK5l+gd9LEwNme1oNgAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

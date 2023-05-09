@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向案例——问财网补环境 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言本篇文章通过一个案例介绍JS逆向过程中抠JS之后的补环境工作。 逆向过程目标网址：aHR0cDovL3d3dy5pd2VuY2FpLmNvbS91bmlmaWVkd2FwL3Jlc3VsdD93PSVFNyVCQi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向案例——问财网补环境">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言本篇文章通过一个案例介绍JS逆向过程中抠JS之后的补环境工作。 逆向过程目标网址：aHR0cDovL3d3dy5pd2VuY2FpLmNvbS91bmlmaWVkd2FwL3Jlc3VsdD93PSVFNyVCQi">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204122034420.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204122135603.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204122136727.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204122144363.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131330275.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131335310.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131523915.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131532338.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131543170.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131559743.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131613967.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131640444.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131657365.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131853457.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132028023.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132038930.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132042064.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132121104.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132136268.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132144716.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132145038.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204142359764.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150009814.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150011590.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150019132.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150024912.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150032994.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150034401.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150037277.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150040672.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150042850.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150045114.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150048255.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150050421.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150052689.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150057282.jpg">
+<meta property="article:published_time" content="2022-04-10T04:43:49.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:34.504Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204122034420.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向案例——问财网补环境</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向案例——问财网补环境</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-04-10T04:43:49.000Z" itemprop="datePublished" class="page-time">
+  2022-04-10
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%89%8D%E8%A8%80"><span class="post-toc-number">1.</span> <span class="post-toc-text">前言</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E8%BF%87%E7%A8%8B"><span class="post-toc-number">2.</span> <span class="post-toc-text">逆向过程</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Hook-Cookie"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">Hook Cookie</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E5%88%86%E6%9E%90"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">逆向分析</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E8%A1%A5%E7%8E%AF%E5%A2%83"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">补环境</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">3.</span> <span class="post-toc-text">总结</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%85%B3%E4%BA%8E%E4%BB%A3%E7%A0%81%E7%9A%84%E8%8E%B7%E5%8F%96"><span class="post-toc-number">4.</span> <span class="post-toc-text">关于代码的获取</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向案例——问财网补环境"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向案例——问财网补环境</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-04-10 12:43:49" datetime="2022-04-10T04:43:49.000Z"  itemprop="datePublished">2022-04-10</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p>免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
+</blockquote>
+<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>本篇文章通过一个案例介绍JS逆向过程中抠JS之后的补环境工作。</p>
+<h4 id="逆向过程"><a href="#逆向过程" class="headerlink" title="逆向过程"></a>逆向过程</h4><p>目标网址：aHR0cDovL3d3dy5pd2VuY2FpLmNvbS91bmlmaWVkd2FwL3Jlc3VsdD93PSVFNyVCQiVCRiVFOCU4OSVCMiVFNyU5NCVCNSVFNSU4QSU5QiVFNiVBNiU4MiVFNSVCRiVCNSZxdWVyeXR5cGU9c3RvY2s&#x3D;</p>
+<p>逆向目标：cookie中的v值</p>
+<h5 id="Hook-Cookie"><a href="#Hook-Cookie" class="headerlink" title="Hook Cookie"></a>Hook Cookie</h5><p>对于处理Cookie种某一个键值对生成这类问题第一反应应该是想到采用Hook的方式。这里介绍2种Hook的方式，一种是通过FD编程猫插件，一种是通过油猴插件。</p>
+<ol>
+<li>使用油猴插件</li>
+</ol>
+<p>油猴插件的使用参照：<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E4%B9%8BTampermonkey%E5%B7%A5%E5%85%B7%E7%AF%87/">JS逆向之Tampermonkey工具篇</a></p>
+<p>插件内容为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ==UserScript==</span></span><br><span class="line"><span class="comment">// @name         hook iwencai</span></span><br><span class="line"><span class="comment">// @namespace    http://tampermonkey.net/</span></span><br><span class="line"><span class="comment">// @version      0.1</span></span><br><span class="line"><span class="comment">// @description  try to take over the world!</span></span><br><span class="line"><span class="comment">// @author       You</span></span><br><span class="line"><span class="comment">// @include      *</span></span><br><span class="line"><span class="comment">// @icon         https://www.google.com/s2/favicons?sz=64&amp;domain=aqistudy.cn</span></span><br><span class="line"><span class="comment">// @grant        none</span></span><br><span class="line"><span class="comment">// ==/UserScript==</span></span><br><span class="line"></span><br><span class="line">(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="string">&#x27;use strict&#x27;</span>;</span><br><span class="line">    <span class="comment">//endebug = function(off, code) &#123;&#125;;</span></span><br><span class="line">    <span class="keyword">var</span> cookie_cache = <span class="variable language_">document</span>.<span class="property">cookie</span>;</span><br><span class="line">    <span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(<span class="variable language_">document</span>, <span class="string">&#x27;cookie&#x27;</span>, &#123;</span><br><span class="line">        <span class="attr">get</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Getting cookie&#x27;</span>);</span><br><span class="line">            <span class="keyword">return</span> cookie_cache;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">set</span>: <span class="keyword">function</span>(<span class="params">val</span>) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Setting cookie&#x27;</span>, val);</span><br><span class="line">            <span class="keyword">if</span> (val.<span class="title function_">indexOf</span>(<span class="string">&quot;v=&quot;</span>) != -<span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">debugger</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">var</span> cookie = val.<span class="title function_">split</span>(<span class="string">&quot;;&quot;</span>)[<span class="number">0</span>];</span><br><span class="line">            <span class="keyword">var</span> ncookie = cookie.<span class="title function_">split</span>(<span class="string">&quot;=&quot;</span>);</span><br><span class="line">            <span class="keyword">var</span> flag = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">var</span> cache = cookie_cache.<span class="title function_">split</span>(<span class="string">&quot;; &quot;</span>);</span><br><span class="line">            cache = cache.<span class="title function_">map</span>(<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span> (a.<span class="title function_">split</span>(<span class="string">&quot;=&quot;</span>)[<span class="number">0</span>] === ncookie[<span class="number">0</span>]) &#123;</span><br><span class="line">                    flag = <span class="literal">true</span>;</span><br><span class="line">                    <span class="keyword">return</span> cookie;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> a;</span><br><span class="line">            &#125;);</span><br><span class="line">            cookie_cache = cache.<span class="title function_">join</span>(<span class="string">&quot;; &quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (!flag) &#123;</span><br><span class="line">                cookie_cache += cookie + <span class="string">&quot;; &quot;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">_value</span> = val;</span><br><span class="line">            <span class="keyword">return</span> cookie_cache;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="comment">// Your code here...</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>使用FD编程猫插件</li>
+</ol>
+<p>FD编程猫插件用法参照：<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/">JS逆向之Fiddler编程猫插件使用</a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//当前版本hook工具只支持Content-Type为html的自动hook</span></span><br><span class="line"><span class="comment">//下面是一个示例:这个示例演示了hook全局的cookie设置点</span></span><br><span class="line">(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="comment">//严谨模式 检查所有错误</span></span><br><span class="line">    <span class="string">&#x27;use strict&#x27;</span>;</span><br><span class="line">    <span class="comment">//document 为要hook的对象   这里是hook的cookie</span></span><br><span class="line">	<span class="keyword">var</span> cookieTemp = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(<span class="variable language_">document</span>, <span class="string">&#x27;cookie&#x27;</span>, &#123;</span><br><span class="line">		<span class="comment">//hook set方法也就是赋值的方法 </span></span><br><span class="line">		<span class="attr">set</span>: <span class="keyword">function</span>(<span class="params">val</span>) &#123;</span><br><span class="line">            	<span class="keyword">if</span> (val.<span class="title function_">indexOf</span>(<span class="string">&quot;v=&quot;</span>)) &#123;</span><br><span class="line">                    <span class="keyword">debugger</span>;</span><br><span class="line">                &#125;</span><br><span class="line">				<span class="comment">//这样就可以快速给下面这个代码行下断点</span></span><br><span class="line">				<span class="comment">//从而快速定位设置cookie的代码</span></span><br><span class="line">				<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Hook捕获到cookie设置-&gt;&#x27;</span>, val);</span><br><span class="line">				cookieTemp = val;</span><br><span class="line">				<span class="keyword">return</span> val;</span><br><span class="line">		&#125;,</span><br><span class="line">		<span class="comment">//hook get方法也就是取值的方法 </span></span><br><span class="line">		<span class="attr">get</span>: <span class="keyword">function</span>(<span class="params"></span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> cookieTemp;</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="逆向分析"><a href="#逆向分析" class="headerlink" title="逆向分析"></a>逆向分析</h5><p>无论是采用哪一种方式，都可以成功断住，如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204122034420.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220412203406372" title="">
+                </div>
+                <div class="image-caption">image-20220412203406372</div>
+            </figure>
+
+
+
+<p> 跟栈，进到o方法，发现第二个参数t就是需要的v的值。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204122135603.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220412213516531" title="">
+                </div>
+                <div class="image-caption">image-20220412213516531</div>
+            </figure>
+
+
+
+<p>继续跟栈，进到D方法，setCookie就是上边的o方法，第二个参数n就是上边的t也就是Cookie v的值。而且n是由rt.update生成的。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204122136727.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220412213620698" title="">
+                </div>
+                <div class="image-caption">image-20220412213620698</div>
+            </figure>
+
+
+
+<p>我们看下rt对象：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204122144363.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220412214401314" title="">
+                </div>
+                <div class="image-caption">image-20220412214401314</div>
+            </figure>
+
+<p>一个Init方法应该是对算法进行初始化，一个update方法则是生成v。</p>
+<p>我们断进去update方法，update方法就是这个D方法，D方法又调用了O方法，我们跟进去。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131330275.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413133045178" title="">
+                </div>
+                <div class="image-caption">image-20220413133045178</div>
+            </figure>
+
+
+
+<p>我们单步执行到S.toBuffer()；可以看到S是一个l对象，并且包含一个base_fields属性。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131335310.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413133536272" title="">
+                </div>
+                <div class="image-caption">image-20220413133536272</div>
+            </figure>
+
+
+
+<p>那我们点进去S.toBuffer看看能不能找到l对象的原型，qn返回了l也就是前面的S，我们住需要抠出qn就可以得到l了，注意的是qn本来就执行了，返回一个逗号表达式，逗号表达式的最后是l，所以生成l对象的正确写法是<code>new qn(xxx)</code>。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131523915.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413152301870" title="">
+                </div>
+                <div class="image-caption">image-20220413152301870</div>
+            </figure>
+
+
+
+<p>l对象在初始化的时候需要传一个r参数，我们全局搜索一下new qn看看是否能找到一个实例，看看这个r传的是啥。搜索结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131532338.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413153204291" title="">
+                </div>
+                <div class="image-caption">image-20220413153204291</div>
+            </figure>
+
+
+
+<p>我们断住这个地方，调试发现a固定为4，n固定为1，e固定为3，t固定为2。知道了如何抠出S，也知道了如果初始化S，下面我们进行检验。我们新建一个snippet然后拷贝全部的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> _qn;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="variable constant_">TOKEN_SERVER_TIME</span> = <span class="number">1649765993.630</span>;</span><br><span class="line">!<span class="keyword">function</span>(<span class="params">n, t</span>) &#123;</span><br><span class="line">    !<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> r, e, a;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 省略若干行</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">var</span> qn = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">var</span> n, t, r;</span><br><span class="line">            n = t = r = a;</span><br><span class="line">            <span class="keyword">var</span> e, o, i;</span><br><span class="line">            e = o = i = s;</span><br><span class="line">            <span class="keyword">var</span> u = o[<span class="number">15</span>]</span><br><span class="line">              , c = o[<span class="number">102</span>]</span><br><span class="line">              , f = e[<span class="number">103</span>];</span><br><span class="line">            <span class="keyword">function</span> <span class="title function_">l</span>(<span class="params">r</span>) &#123;</span><br><span class="line">                <span class="keyword">var</span> a = o[<span class="number">102</span>]</span><br><span class="line">                  , i = e[<span class="number">103</span>];</span><br><span class="line">                <span class="variable language_">this</span>[n[<span class="number">76</span>]] = r;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">var</span> u = t[<span class="number">52</span>], c = r[a + g + i]; u &lt; c; u++)</span><br><span class="line">                    <span class="variable language_">this</span>[u] = t[<span class="number">52</span>]</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> l[e[<span class="number">104</span>]][w + m + I + u] = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">var</span> a = e[<span class="number">105</span>], u = <span class="variable language_">this</span>[a + y], c = [], s = -e[<span class="number">0</span>], v = o[<span class="number">2</span>], f = u[r[<span class="number">56</span>]]; v &lt; f; v++)</span><br><span class="line">                    <span class="keyword">for</span> (<span class="keyword">var</span> l = <span class="variable language_">this</span>[v], p = u[v], d = s += p; c[d] = l &amp; <span class="built_in">parseInt</span>(t[<span class="number">77</span>], n[<span class="number">78</span>]),</span><br><span class="line">                    --p != r[<span class="number">52</span>]; )</span><br><span class="line">                        --d,</span><br><span class="line">                        l &gt;&gt;= <span class="built_in">parseInt</span>(n[<span class="number">79</span>], i[<span class="number">106</span>]);</span><br><span class="line">                <span class="keyword">return</span> c</span><br><span class="line">            &#125;</span><br><span class="line">            ,</span><br><span class="line">            l[<span class="title function_">v</span>(t[<span class="number">80</span>], t[<span class="number">81</span>], b)][<span class="title function_">ot</span>(i[<span class="number">107</span>])] = <span class="keyword">function</span>(<span class="params">n</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">var</span> r = e[<span class="number">8</span>], a = <span class="variable language_">this</span>[<span class="title function_">ot</span>(e[<span class="number">108</span>], e[<span class="number">109</span>])], o = t[<span class="number">52</span>], u = e[<span class="number">2</span>], s = a[c + r + f]; u &lt; s; u++) &#123;</span><br><span class="line">                    <span class="keyword">var</span> v = a[u]</span><br><span class="line">                      , l = i[<span class="number">2</span>];</span><br><span class="line">                    <span class="keyword">do</span> &#123;</span><br><span class="line">                        l = (l &lt;&lt; t[<span class="number">82</span>]) + n[o++]</span><br><span class="line">                    &#125; <span class="keyword">while</span> (--v &gt; t[<span class="number">52</span>]);</span><br><span class="line">                    <span class="variable language_">this</span>[u] = l &gt;&gt;&gt; i[<span class="number">2</span>]</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ,</span><br><span class="line">            l</span><br><span class="line">        &#125;(), zn;</span><br><span class="line">        _qn = qn;  </span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 省略若干行</span></span><br><span class="line">    &#125;()</span><br><span class="line">&#125;([<span class="string">&quot;&quot;</span>, <span class="number">9527</span>, <span class="comment">/* 省略若干行 */</span> <span class="string">&quot;V587&quot;</span>]);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>定一个全局变量_qn，导出qn。运行文件，没有报错，然后我们生成一个S对象：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131543170.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413154327048" title="">
+                </div>
+                <div class="image-caption">image-20220413154327048</div>
+            </figure>
+
+
+
+<p>这里我们就成功的生成了S，并且可以看到decodeBuffer方法和mm.toBuffer方法也都有。别忘了我们的最终目标是得到Cookie中的v，我们回到前面的O方法，看初始化并得到S之后，后续生成v的逻辑。我们看到<code>Jn.serverTimeNow()</code>这一行代码，发现每次取出来的都是一个定值。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131559743.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413155910667" title="">
+                </div>
+                <div class="image-caption">image-20220413155910667</div>
+            </figure>
+
+
+
+<p>其实这个获取的就是该JS文件最前面定义的TOKEN_SERVER_TIME，这个值可能会随着JS文件更新而发生变化，所以我们采取局部扣JS的方法可能会很麻烦，因为可能需要定期更新TOKEN_SERVER_TIME的这个值。那只能全扣了啊，问题是抠下来全部的JS，放在本地执行之后，去哪里拿这个Cookie呢？答案是从document中拿，但是本地没有document呀，所以接下来就是补环境了。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131613967.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413161327925" title="">
+                </div>
+                <div class="image-caption">image-20220413161327925</div>
+            </figure>
+
+
+
+<h5 id="补环境"><a href="#补环境" class="headerlink" title="补环境"></a>补环境</h5><p>按照<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/">JS逆向之vscode无环境联调</a>介绍的，把整个JS代码粘贴到VS Code中，然后开启DevTools，运行之后报document不存在：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131640444.png" alt="image-20220413164041346" title="">
+                </div>
+                <div class="image-caption">image-20220413164041346</div>
+            </figure>
+
+
+
+<blockquote>
+<p><strong>像这种拷贝整个JS然后补环境，需要补头补尾，中间的整个JS文件不能动，这样做的好处是中间的文件可以用一个占位符表示，以后每次JS更新了，只需要更新这个占位符的内容，这样更加通用，维护起来更加容易</strong></p>
+</blockquote>
+<p>我们补好window和document之后，再次运行，接着报错：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131657365.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413165734237" title="">
+                </div>
+                <div class="image-caption">image-20220413165734237</div>
+            </figure>
+
+<p>这里r[51]是document，报错的一句r[51].getElementsByTagName(p + d)[r[52]]实际上是document.getElementsByTagName(‘head’)[0]；继续补代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="variable language_">window</span> = <span class="variable language_">this</span>;</span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Document</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;;</span><br><span class="line"><span class="title class_">Document</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">getElementsByTagName</span> = <span class="keyword">function</span>(<span class="params">x</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (x == <span class="string">&#x27;head&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> [&#123;&#125;]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> [&#123;&#125;]</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="variable language_">document</span> = <span class="keyword">new</span> <span class="title class_">Document</span>();</span><br></pre></td></tr></table></figure>
+
+<p>解释一下为什么这么补，补方法的时候关注3点，一是参数个数，二是返回值类型，三是对实际传入的参数进行特殊处理。因为getElementsByTagName只接受一个参数，所以只需要定义一个形参x。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204131853457.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413185332326" title="">
+                </div>
+                <div class="image-caption">image-20220413185332326</div>
+            </figure>
+
+<p>通过在原网站上调试知传入的实际参数为字符串head，且返回的是一个对象数组。所以上边也对head进行了特殊处理，而且方法的返回值是对象数组。</p>
+<p>补好getElementsByTagName方法后，接着运行，接着报错。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132028023.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413202853960" title="">
+                </div>
+                <div class="image-caption">image-20220413202853960</div>
+            </figure>
+
+
+
+<p>接着补createElement：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Document</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">createElement</span> = <span class="keyword">function</span>(<span class="params">x</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (x == <span class="string">&quot;div&quot;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">function</span> <span class="title function_">onwheel</span>(<span class="params"></span>) &#123;&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>为什么这么补？我们看下面一张图，作说明：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132038930.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413203850845" title="">
+                </div>
+                <div class="image-caption">image-20220413203850845</div>
+            </figure>
+
+<p>首先很显然createElement要补到Document对象下，然后s[171]为div，并且调用createElement后要返回一个onwheel方法。</p>
+<p>补好之后，运行接着报错，如图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132042064.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413204248014" title="">
+                </div>
+                <div class="image-caption">image-20220413204248014</div>
+            </figure>
+
+
+
+<p>n.attachElement没有定义，补一下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Document</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">attachEvent</span> = <span class="keyword">function</span>(<span class="params">x, y</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>补好之后，依旧报错，嗯！逆向分析就是需要耐心：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132121104.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413212157946" title="">
+                </div>
+                <div class="image-caption">image-20220413212157946</div>
+            </figure>
+
+
+
+<p>补navigator，可以看到navigator.plugins是一个对象数组，我们这里补一个空就行。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132136268.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413213604130" title="">
+                </div>
+                <div class="image-caption">image-20220413213604130</div>
+            </figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Navigator</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;;</span><br><span class="line"><span class="title class_">Navigator</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">plugins</span> = [];</span><br><span class="line">navigator = <span class="keyword">new</span> <span class="title class_">Navigator</span>();</span><br></pre></td></tr></table></figure>
+
+
+
+<p>补好之后，运行接着报错：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132144716.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413214446556" title="">
+                </div>
+                <div class="image-caption">image-20220413214446556</div>
+            </figure>
+
+
+
+<p>我们看看这个几个变量是什么，如图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204132145038.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220413214519986" title="">
+                </div>
+                <div class="image-caption">image-20220413214519986</div>
+            </figure>
+
+
+
+<p>我们找一下l的声明处，如图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204142359764.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220414235906611" title="">
+                </div>
+                <div class="image-caption">image-20220414235906611</div>
+            </figure>
+
+
+
+<p>可以看到l是取自window中的document，所以我们把document作为属性放到window对象下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span> = <span class="keyword">new</span> <span class="title class_">Document</span>();</span><br><span class="line"><span class="keyword">var</span> <span class="variable language_">window</span> = &#123;<span class="string">&quot;document&quot;</span>: <span class="variable language_">document</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>补好之后，再次运行，再次报错：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150009814.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415000927626" title="">
+                </div>
+                <div class="image-caption">image-20220415000927626</div>
+            </figure>
+
+
+
+<p>这里就很奇怪了，因为原始网站这里应该是直接进去上边的if分支，而不是进到这里的else if判断。我们跟进去这个方法m，看看这个m是什么？</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150011590.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415001131494" title="">
+                </div>
+                <div class="image-caption">image-20220415001131494</div>
+            </figure>
+
+
+
+<p>可以看到o是localStorage，s[83]是window对象，这里的意思是判断window对象下是否存在localStorage，并判断这个属性是否为空。我们自己定义一个localStorage给到window。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">LocalStorage</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;</span><br><span class="line"><span class="variable language_">localStorage</span> = <span class="keyword">new</span> <span class="title class_">LocalStorage</span>();</span><br><span class="line"><span class="variable language_">window</span> = &#123;<span class="string">&quot;document&quot;</span>: <span class="variable language_">document</span>, <span class="string">&quot;localStorage&quot;</span>: <span class="variable language_">localStorage</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>补好之后运行，接着报错：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150019132.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415001954038" title="">
+                </div>
+                <div class="image-caption">image-20220415001954038</div>
+            </figure>
+
+
+
+<p>这里的f是localStorage，缺少getItem，我们补一下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">LocalStorage</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">getItem</span> = <span class="keyword">function</span>(<span class="params">x</span>) &#123;</span><br><span class="line">	<span class="keyword">if</span> (x == <span class="string">&quot;hexin-v&quot;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们通过原网站，看到该方法接受一个参数，并且只调用了一次，传的参数是hexin-v，返回null，我们照着补就行。</p>
+<p>补好之后，接着运行：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150024912.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415002404829" title="">
+                </div>
+                <div class="image-caption">image-20220415002404829</div>
+            </figure>
+
+
+
+<p>通过调用栈我们看看这个n是啥？n实际是上层函数传入的参数，即navigator.userAgent，原始网站有值，我们没有定义。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150032994.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415003226879" title="">
+                </div>
+                <div class="image-caption">image-20220415003226879</div>
+            </figure>
+
+
+
+<p>我们补上userAgent：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Navigator</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">userAgent</span> = <span class="string">&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>补好之后，运行报错，如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150034401.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415003446318" title="">
+                </div>
+                <div class="image-caption">image-20220415003446318</div>
+            </figure>
+
+
+
+<p>通过原始网站知，javaEnabled方法返回false，那我们也给navigator对象加一个方法javaEnabled返回false即可：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Navigator</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">javaEnabled</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123; <span class="keyword">return</span> <span class="literal">false</span> &#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>补好之后运行报错：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150037277.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415003756208" title="">
+                </div>
+                <div class="image-caption">image-20220415003756208</div>
+            </figure>
+
+
+
+<p>这里a[65]是window对象，a[175]是navigator对象，上面报错是说window.navigator为undefine，我们把navigator作为window的属性即可，修改上面补环境的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="variable language_">window</span> = &#123;<span class="string">&quot;document&quot;</span>: <span class="variable language_">document</span>, <span class="string">&quot;localStorage&quot;</span>: <span class="variable language_">localStorage</span>, <span class="string">&quot;navigator&quot;</span>: navigator&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>改好之后运行：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150040672.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415004026612" title="">
+                </div>
+                <div class="image-caption">image-20220415004026612</div>
+            </figure>
+
+
+
+<p>提示location未定义，我们定义一个location对象：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Location</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;</span><br><span class="line">location = <span class="keyword">new</span> <span class="title class_">Location</span>();</span><br></pre></td></tr></table></figure>
+
+
+
+<p>接着运行，依然报错：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150042850.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415004230766" title="">
+                </div>
+                <div class="image-caption">image-20220415004230766</div>
+            </figure>
+
+
+
+<p>这里的c[140]是href，location.href为空，我们查看原始网站知，location.href就是当前的页面地址，我们补上即可：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Location</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">href</span> = <span class="string">&quot;http://www.iwencai.com/unifiedwap/result?w=%E7%BB%BF%E8%89%B2%E7%94%B5%E5%8A%9B%E6%A6%82%E5%BF%B5&amp;querytype=stock&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>接着运行：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150045114.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415004504041" title="">
+                </div>
+                <div class="image-caption">image-20220415004504041</div>
+            </figure>
+
+
+
+<p>提示location.hostname不存在，我们根据原网站取到location.hostname的值补上：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Location</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">hostname</span> = <span class="string">&quot;www.iwencai.com&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>补好运行，报错：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150048255.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415004845137" title="">
+                </div>
+                <div class="image-caption">image-20220415004845137</div>
+            </figure>
+
+
+
+<p>提示localStorage的setItem方法不存在，得嘞，补一个空方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">LocalStorage</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">setItem</span> = <span class="keyword">function</span>(<span class="params">x, y</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>补好之后运行，没有报错！！！</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150050421.gif" alt="此处应该有掌声表情包- 搜狗图片搜索" title="">
+                </div>
+                <div class="image-caption">此处应该有掌声表情包- 搜狗图片搜索</div>
+            </figure>
+
+
+
+<p>我们取一下cookie的值，也成功看到了v：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150052689.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220415005229606" title="">
+                </div>
+                <div class="image-caption">image-20220415005229606</div>
+            </figure>
+
+
+
+<p>上面补环境的代码比较零散，这里统一整理如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Document</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;;</span><br><span class="line"><span class="title class_">Document</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">getElementsByTagName</span> = <span class="keyword">function</span>(<span class="params">x</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (x == <span class="string">&#x27;head&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> [&#123;&#125;]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> [&#123;&#125;]</span><br><span class="line">&#125;;</span><br><span class="line"><span class="title class_">Document</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">createElement</span> = <span class="keyword">function</span>(<span class="params">x</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (x == <span class="string">&quot;div&quot;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">function</span> <span class="title function_">onwheel</span>(<span class="params"></span>) &#123;&#125;;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (x == <span class="string">&quot;canvas&quot;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="attr">getContext</span>: <span class="keyword">function</span>(<span class="params">y</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">undefined</span>;</span><br><span class="line">        &#125;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="title class_">Document</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">attachEvent</span> = <span class="keyword">function</span>(<span class="params">x, y</span>) &#123;&#125;;</span><br><span class="line"><span class="title class_">Document</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">documentElement</span> = &#123;</span><br><span class="line">    <span class="attr">addBehavior</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="variable language_">document</span> = <span class="keyword">new</span> <span class="title class_">Document</span>();</span><br><span class="line"></span><br><span class="line"><span class="title class_">Navigator</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;;</span><br><span class="line"><span class="title class_">Navigator</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">javaEnabled</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123; <span class="keyword">return</span> <span class="literal">false</span> &#125;;</span><br><span class="line"><span class="title class_">Navigator</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">plugins</span> = [];</span><br><span class="line"><span class="title class_">Navigator</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">userAgent</span> = <span class="string">&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36&quot;</span>;</span><br><span class="line">navigator = <span class="keyword">new</span> <span class="title class_">Navigator</span>();</span><br><span class="line"></span><br><span class="line"><span class="title class_">Location</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;;</span><br><span class="line"><span class="title class_">Location</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">href</span> = <span class="string">&quot;http://www.iwencai.com/unifiedwap/result?w=%E7%BB%BF%E8%89%B2%E7%94%B5%E5%8A%9B%E6%A6%82%E5%BF%B5&amp;querytype=stock&quot;</span>;</span><br><span class="line"><span class="title class_">Location</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">hostname</span> = <span class="string">&quot;www.iwencai.com&quot;</span>;</span><br><span class="line">location = <span class="keyword">new</span> <span class="title class_">Location</span>();</span><br><span class="line"></span><br><span class="line"><span class="title class_">LocalStorage</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;</span><br><span class="line"><span class="title class_">LocalStorage</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">getItem</span> = <span class="keyword">function</span>(<span class="params">x</span>) &#123;</span><br><span class="line">	<span class="keyword">if</span> (x == <span class="string">&quot;hexin-v&quot;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">LocalStorage</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">setItem</span> = <span class="keyword">function</span>(<span class="params">x, y</span>) &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">localStorage</span> = <span class="keyword">new</span> <span class="title class_">LocalStorage</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="variable language_">window</span> = &#123;<span class="string">&quot;document&quot;</span>: <span class="variable language_">document</span>, <span class="string">&quot;localStorage&quot;</span>: <span class="variable language_">localStorage</span>, <span class="string">&quot;navigator&quot;</span>: navigator&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>本文通过一个例子，介绍了手动补环境的过程，总结如下：拷贝整个JS然后补环境，需要补头补尾，原则上中间的整个JS文件一点也不能动，这样做的好处是中间的文件可以用一个占位符表示，以后每次JS更新了，只需要更新这个占位符的内容，这样更加通用，维护起来更加容易。</p>
+<h4 id="关于代码的获取"><a href="#关于代码的获取" class="headerlink" title="关于代码的获取"></a>关于代码的获取</h4><p>扫码关注微信号——逆向一步步，公众号内回复关键词<code>05</code>就可以获取本案例的全部代码。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204150057282.jpg" alt="qrcode_for_gh_509fdefd3c81_258" title="">
+                </div>
+                <div class="image-caption">qrcode_for_gh_509fdefd3c81_258</div>
+            </figure>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:34.504Z" itemprop="dateUpdated">2023-05-09 18:16:34</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/&title=《JS逆向案例——问财网补环境》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/&title=《JS逆向案例——问财网补环境》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——问财网补环境》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向之Fiddler编程猫插件使用</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8Bvscode%E6%97%A0%E7%8E%AF%E5%A2%83%E8%81%94%E8%B0%83/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向之vscode无环境联调</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/&title=《JS逆向案例——问财网补环境》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/&title=《JS逆向案例——问财网补环境》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——问财网补环境》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAAEmCAAAAADqr2IGAAAEj0lEQVR42u3ay24bSwwFQP//T+sCWQXIHemQbCVDqWYlyHY/agw0H/3zEz+PX0/y/eOP5+qnvfGT73//6dU3P+94MGHChAnTLZkeT5/qZM8Jni/xasbn31/R92a5HA0TJkyYMC1nSobrTZ+EC70X0AtlmnNhwoQJE6YvYEq2l4cXPbjqJk+FNZgwYcKE6duYqn81Ly73PucvDBMmTJgwfTZT7wifJMlJWJAXfHvjv6UWjgkTJkyYbsb0dw7me34+/GDChAkTppsxPcZPPmavzfn8mO/NW94jJkyYMGFay5Q3F9/dvHz3RZw8MY5q4ZgwYcKEaQlT3tibFHbztuj8+2TzeUEZEyZMmDBtZ8qPzEljMoFOxkyS53wv+XowYcKECdN2pknpMym89hLgebiQBC7lBBgTJkyYMK1iylPW/JSsxiDVaCWHmIcI0RIxYcKECdNapmrxd9627CXMkyJvpIEJEyZMmNYyVbfUawf2rtqcwu21LS/DAkyYMGHC9BFMSTKZH9KThLa6yd7FnShowIQJEyZMC5kml2mSxU0S4F5TM19VocyNCRMmTJjWMk1Kt0mie+rYPtVqrQY95aExYcKECdPNmKoD9QqpvfLupESbX9AZ/e9gwoQJE6bbM/WWm7cwk0ChB10NFCZlYkyYMGHC9BlMvYsy70iek2CiuuHeyn+qMQgmTJgwYbo9U54o5mFBda7yBuJ15q8nut+ECRMmTJiWMFXbhJMrO9XxeyfyJNCJ1okJEyZMmFYx5S3MampavS5TbVImI0z2FcVNmDBhwoTp9kzzSzbVBZ2aK/88mQsTJkyYMO1lyluP1U1Oju1qoTkv7Fb3hQkTJkyYtjP1irx5Etu7iJO/gGraPN87JkyYMGHayFQtzvZA8zGTCzrVInI1WLlMgDFhwoQJ03Km6hKrKWXOnTQ156FMYY+YMGHChGkh0+TQzQ/1apr6iJ+8jZo3UP/n9zFhwoQJ01qmSVpYLZ5Wl9u7slMtLlcv/WDChAkTpl1MvUN9klJWR540MvNA4cWqMGHChAnTWqYezSRl7RVwT5WD52vDhAkTJky7mPJ0tLeUyWWg5OCfH/BRko8JEyZMmNYyVa/m9MqmkzJuLyCYryeqW2PChAkTptsz5Uns2ZQyDxryFLd32EezYMKECROmtUy9JHPe8sxnnBd5J+VpTJgwYcL0eUx5YlklS8KFHmX1+k71HwITJkyYMO1lSpYyCRTyI/9Uu3RSPh4lvZgwYcKE6fZMyeE9KbNWi7xJYzKByL+53C8mTJgwYVrLVN1Y79LPnLv3nHqpmDBhwoRpL9Oj+FQvykyKvNWjevKbL3AxYcKECdNapt7hWr1kk5dZR6XYVjm4GvRgwoQJE6aNTMlR2puy9/sJRG+FvdYsJkyYMGH6DKZJEFAtAZ8KSs7GQS9eFSZMmDBh+hqmapF0Hkwk4ULeiO2NgwkTJkyYvoEpKenmS+kd/HmrshqavNgXJkyYMGFazjS5WHOqaHuWo7fCFwEBJkyYMGFayFQtsFav75xti1ZT3EnBd1SHxoQJEyZM/57pP9zIXZY/t2TCAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向案例——天眼查过极验滑块验证码 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS,验证码">
+    <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言本文是机器过极验滑块验证码系列文章的第四篇，通过一个实际网站介绍如何利用逆向分析自动过极验滑块，极验滑块系列包含乱序底图还原，验证码w参数生成，补环境，利用像素点RGB差值获取缺口位置以及通过机器学习获取缺口位置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向案例——天眼查过极验滑块验证码">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言本文是机器过极验滑块验证码系列文章的第四篇，通过一个实际网站介绍如何利用逆向分析自动过极验滑块，极验滑块系列包含乱序底图还原，验证码w参数生成，补环境，利用像素点RGB差值获取缺口位置以及通过机器学习获取缺口位置">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204242240627.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204250016632.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204250030914.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204251119325.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204281558130.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204251531087.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204281609390.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204281633498.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-04-24T11:21:03.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:48.487Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta property="article:tag" content="验证码">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204242240627.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向案例——天眼查过极验滑块验证码</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向案例——天眼查过极验滑块验证码</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-04-24T11:21:03.000Z" itemprop="datePublished" class="page-time">
+  2022-04-24
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%89%8D%E8%A8%80"><span class="post-toc-number">1.</span> <span class="post-toc-text">前言</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%A8%A1%E6%8B%9F%E7%99%BB%E5%BD%95%E5%A4%A9%E7%9C%BC%E6%9F%A5"><span class="post-toc-number">2.</span> <span class="post-toc-text">模拟登录天眼查</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E4%B8%8E%E7%99%BB%E5%BD%95%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">极验滑块验证码与登录接口的关系</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%AF%B7%E6%B1%82"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">第一次请求</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AC%A1%E8%AF%B7%E6%B1%82"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">第二次请求</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AC%A1%E8%AF%B7%E6%B1%82"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">第三次请求</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AC%A1%E8%AF%B7%E6%B1%82"><span class="post-toc-number">2.5.</span> <span class="post-toc-text">第四次请求</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%BB%91%E5%9D%97%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F"><span class="post-toc-number">2.5.1.</span> <span class="post-toc-text">滑块底图还原</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%BC%BA%E5%8F%A3%E8%AE%A1%E7%AE%97"><span class="post-toc-number">2.5.2.</span> <span class="post-toc-text">缺口计算</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%94%9F%E6%88%90%E8%BD%A8%E8%BF%B9%E6%95%B0%E7%BB%84"><span class="post-toc-number">2.5.3.</span> <span class="post-toc-text">生成轨迹数组</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%94%9F%E6%88%90w%E5%8F%82%E6%95%B0"><span class="post-toc-number">2.5.4.</span> <span class="post-toc-text">生成w参数</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E8%BF%9B%E8%A1%8C%E6%BB%91%E5%9D%97%E7%9A%84%E9%AA%8C%E8%AF%81"><span class="post-toc-number">2.5.5.</span> <span class="post-toc-text">进行滑块的验证</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%99%BB%E5%BD%95%E5%A4%A9%E7%9C%BC%E6%9F%A5"><span class="post-toc-number">2.5.6.</span> <span class="post-toc-text">登录天眼查</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">3.</span> <span class="post-toc-text">总结</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向案例——天眼查过极验滑块验证码"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向案例——天眼查过极验滑块验证码</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-04-24 19:21:03" datetime="2022-04-24T11:21:03.000Z"  itemprop="datePublished">2022-04-24</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p> 免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
+</blockquote>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是机器过极验滑块验证码系列文章的第四篇，通过一个实际网站介绍如何利用逆向分析自动过极验滑块，极验滑块系列包含乱序底图还原，验证码w参数生成，补环境，利用像素点RGB差值获取缺口位置以及通过机器学习获取缺口位置。而极验滑块系列只是验证码系列的第一个系列，后边会罗列市面上常用的验证码，然后发文一一解决。</p>
+<p>上一篇文章见：<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E8%A1%A5%E7%8E%AF%E5%A2%83/">JS逆向案例——极验滑块验证码补环境</a></p>
+<h3 id="模拟登录天眼查"><a href="#模拟登录天眼查" class="headerlink" title="模拟登录天眼查"></a>模拟登录天眼查</h3><h4 id="极验滑块验证码与登录接口的关系"><a href="#极验滑块验证码与登录接口的关系" class="headerlink" title="极验滑块验证码与登录接口的关系"></a>极验滑块验证码与登录接口的关系</h4><p>网址：aHR0cHM6Ly93d3cudGlhbnlhbmNoYS5jb20v</p>
+<p>以天眼查的登录为例，在进行滑块验证时，进行抓包分析。</p>
+<p>在极验系列第一篇 <a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F/">JS逆向案例——极验滑块验证码底图还原</a> 中，说过geetest的几个请求之间的关系，这里重新梳理一下，然后顺便梳理下geetest请求与天眼查登录接口的关系。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204242240627.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220424224028967" title="">
+                </div>
+                <div class="image-caption">image-20220424224028967</div>
+            </figure>
+
+<p>可以看到每一次请求都是环环相扣，一共发起5次请求，下一次请求的入参或多或少都用到上一次请求的返回。</p>
+<h4 id="第一次请求"><a href="#第一次请求" class="headerlink" title="第一次请求"></a>第一次请求</h4><p>封装一个geetest_xhtml请求，用于获取challenge和gt，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">geetest_xhtml</span>():</span><br><span class="line">    cookies = &#123;</span><br><span class="line">        <span class="comment"># cookie值</span></span><br><span class="line">        <span class="string">&#x27;acw_sc__v2&#x27;</span>: <span class="string">&#x27;acw_sc__v2的值&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="comment"># header值</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    json_data = &#123;</span><br><span class="line">        <span class="string">&#x27;uuid&#x27;</span>: math.floor(time.time() * <span class="number">1000</span>),</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    response = requests.post(<span class="string">&#x27;https://www.tianyancha.com/verify/geetest.xhtml&#x27;</span>, cookies=cookies, headers=headers, json=json_data)</span><br><span class="line">    <span class="keyword">return</span> response.text</span><br></pre></td></tr></table></figure>
+
+<p>cookie值里面仅仅需要一个acw_sc__v2，而acw_sc__v2的值是有时效性的，所以在实际生产中肯定也要逆向去动态生成这个cookie值，但是本文重点放在极验滑动验证码上，所以cookie直接拷贝，并没有细究cookie是如何生成的，后边有空了可以回过头了看看这个cookie是如何生成的。</p>
+<p>运行结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204250016632.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220425001609069" title="">
+                </div>
+                <div class="image-caption">image-20220425001609069</div>
+            </figure>
+
+
+
+<h4 id="第二次请求"><a href="#第二次请求" class="headerlink" title="第二次请求"></a>第二次请求</h4><p>封装一个get_type请求，入参是第一个请求返回的gt，用正则匹配get_type返回的path和type，这两个值将在下一个请求中用到，由于这里只是做一个简单的演示，所以并未考虑程序的健壮性，写的有点糙，略略略。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_type</span>(<span class="params">gt</span>):</span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="comment"># header值</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    params = &#123;</span><br><span class="line">        <span class="string">&#x27;gt&#x27;</span>: gt,</span><br><span class="line">        <span class="string">&#x27;callback&#x27;</span>: <span class="string">f&#x27;geetest_<span class="subst">&#123;math.floor(time.time() * <span class="number">1000</span>)&#125;</span>&#x27;</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    response = requests.get(<span class="string">&#x27;https://api.geetest.com/gettype.php&#x27;</span>, params=params, headers=headers)</span><br><span class="line">    <span class="built_in">print</span>(response.text)</span><br><span class="line">    path = re.findall(<span class="string">&#x27;\&quot;path\&quot;: \&quot;(.*?)\&quot;&#x27;</span>, response.text)[<span class="number">0</span>]</span><br><span class="line">    _<span class="built_in">type</span> = re.findall(<span class="string">&#x27;\&quot;type\&quot;: \&quot;(.*?)\&quot;&#x27;</span>, response.text)[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">return</span> path, _<span class="built_in">type</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>代码运行结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204250030914.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220425003036734" title="">
+                </div>
+                <div class="image-caption">image-20220425003036734</div>
+            </figure>
+
+
+
+<h4 id="第三次请求"><a href="#第三次请求" class="headerlink" title="第三次请求"></a>第三次请求</h4><p>封装一个get请求，如参是第一次请求返回的gt和challenge以及第二次请求返回的type和path，该请求返回新的challenge(实际上在之前的challenge后边拼接了2个字符串)，c，s，bg，fullbg。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">def <span class="title function_">get</span>(gt, challenge, _type, path):</span><br><span class="line">    url = f<span class="string">&quot;https://api.geetest.com/get.php?gt=&#123;gt&#125;&amp;challenge=&#123;challenge&#125;&amp;product=popup&amp;offline=false&amp;&quot;</span> \</span><br><span class="line">          f<span class="string">&quot;protocol=https://&amp;type=&#123;_type&#125;&amp;path=&#123;path&#125;&amp;callback=geetest_&#123;math.floor(time.time() * 1000)&#125;&quot;</span></span><br><span class="line"></span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="string">&#x27;authority&#x27;</span>: <span class="string">&#x27;api.geetest.com&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;accept&#x27;</span>: <span class="string">&#x27;*/*&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;accept-language&#x27;</span>: <span class="string">&#x27;zh-CN,zh;q=0.9&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cache-control&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pragma&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;referer&#x27;</span>: <span class="string">&#x27;https://www.tianyancha.com/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua&#x27;</span>: <span class="string">&#x27;&quot; Not A;Brand&quot;;v=&quot;99&quot;, &quot;Chromium&quot;;v=&quot;100&quot;, &quot;Google Chrome&quot;;v=&quot;100&quot;&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-mobile&#x27;</span>: <span class="string">&#x27;?0&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-platform&#x27;</span>: <span class="string">&#x27;&quot;macOS&quot;&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-fetch-dest&#x27;</span>: <span class="string">&#x27;script&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-fetch-mode&#x27;</span>: <span class="string">&#x27;no-cors&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-fetch-site&#x27;</span>: <span class="string">&#x27;cross-site&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;user-agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Cookie&#x27;</span>: <span class="string">&#x27;GeeTestAjaxUser=feae0be0cdd2042a5e570e9d3245e949; GeeTestUser=52dc984495fafeb0d018864b96edccd9&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    response = requests.<span class="title function_">get</span>(url, headers=headers)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response.<span class="property">text</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>运行结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204251119325.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220425111939144" title="">
+                </div>
+                <div class="image-caption">image-20220425111939144</div>
+            </figure>
+
+
+
+<h4 id="第四次请求"><a href="#第四次请求" class="headerlink" title="第四次请求"></a>第四次请求</h4><p>第四次请求需要滑块的轨迹，轨迹数组需要通过滑块缺口的差值来生成，要想计算滑块缺口的差值，需要还原滑块底图。</p>
+<h5 id="滑块底图还原"><a href="#滑块底图还原" class="headerlink" title="滑块底图还原"></a>滑块底图还原</h5><p>底图还原参考文章： <a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F/">JS逆向案例——极验滑块验证码底图还原</a></p>
+<p>核心代码为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">restore_pic</span>(<span class="params">pic_path, new_pic_path</span>):</span><br><span class="line">    unordered_pic = Image.<span class="built_in">open</span>(pic_path)</span><br><span class="line">    ordered_pic = unordered_pic.copy()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 裁剪并拼接</span></span><br><span class="line">    <span class="keyword">for</span> i, d <span class="keyword">in</span> <span class="built_in">enumerate</span>(div_offset):</span><br><span class="line">        im = unordered_pic.crop((math.fabs(d[<span class="string">&#x27;x&#x27;</span>]), math.fabs(d[<span class="string">&#x27;y&#x27;</span>]), math.fabs(d[<span class="string">&#x27;x&#x27;</span>]) + <span class="number">10</span>, math.fabs(d[<span class="string">&#x27;y&#x27;</span>]) + <span class="number">58</span>))</span><br><span class="line">        <span class="comment"># 上半区</span></span><br><span class="line">        <span class="keyword">if</span> d[<span class="string">&#x27;y&#x27;</span>] != <span class="number">0</span>:</span><br><span class="line">            ordered_pic.paste(im, (<span class="number">10</span> * (i % (<span class="built_in">len</span>(div_offset) // <span class="number">2</span>)), <span class="number">0</span>), <span class="literal">None</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ordered_pic.paste(im, (<span class="number">10</span> * (i % (<span class="built_in">len</span>(div_offset) // <span class="number">2</span>)), <span class="number">58</span>), <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    ordered_pic.save(new_pic_path)</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="缺口计算"><a href="#缺口计算" class="headerlink" title="缺口计算"></a>缺口计算</h5><p>缺口计算的方式基本上分2种，一种是图片处理，计算图片的每个像素点位置的色差去判断缺口；一种是通过深度学习去识别缺口位置。会专门出一篇文章计算这2种方式。这里先贴第一种方式的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">diff_rgb</span>(<span class="params">rgb1, rgb2</span>):</span><br><span class="line">    <span class="keyword">return</span> math.fabs(rgb1[<span class="number">0</span>] - rgb2[<span class="number">0</span>]) + math.fabs(rgb1[<span class="number">1</span>] - rgb2[<span class="number">1</span>]) + math.fabs(rgb1[<span class="number">2</span>] - rgb2[<span class="number">2</span>]) &gt; <span class="number">255</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_moving_dst</span>(<span class="params">complete_pic_path, incomplete_pic_path</span>):</span><br><span class="line">    complete_pic = Image.<span class="built_in">open</span>(complete_pic_path)</span><br><span class="line">    incomplete_pic = Image.<span class="built_in">open</span>(incomplete_pic_path)</span><br><span class="line"></span><br><span class="line">    w, h = complete_pic.size</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, w):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, h):</span><br><span class="line">            complete_pic_pixel_rgb = complete_pic.getpixel((i, j))</span><br><span class="line">            incomplete_pic_pixel_rgb = incomplete_pic.getpixel((i, j))</span><br><span class="line">            <span class="keyword">if</span> diff_rgb(complete_pic_pixel_rgb, incomplete_pic_pixel_rgb):</span><br><span class="line">                <span class="keyword">return</span> i</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="生成轨迹数组"><a href="#生成轨迹数组" class="headerlink" title="生成轨迹数组"></a>生成轨迹数组</h5><p>在网上找了一些轨迹算法，效果似乎不太好。就想着搭建一个本地的轨迹库，然后在实际使用的时候根据滑动距离从本地库中去拿。</p>
+<p>具体思路是：</p>
+<ol>
+<li>用Flask搭建一个轨迹收集服务</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</span><br><span class="line"><span class="keyword">from</span> flask_cors <span class="keyword">import</span> cross_origin</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/track&quot;</span></span>)</span></span><br><span class="line"><span class="meta">@cross_origin(<span class="params">supports_credentials=<span class="literal">True</span>, methods=<span class="string">&quot;*&quot;</span>, allow_headers=<span class="string">&quot;*&quot;</span></span>)</span></span><br><span class="line"><span class="meta">@cross_origin()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">track</span>():</span><br><span class="line">    tracks = pickle.load(<span class="built_in">open</span>(<span class="string">&quot;tracks.pkl&quot;</span>, <span class="string">&quot;rb&quot;</span>))</span><br><span class="line">    d = json.loads(request.data.decode())</span><br><span class="line">    <span class="built_in">print</span>(d)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 下载乱序的缺口图和完整图</span></span><br><span class="line">    download_image(d[<span class="string">&#x27;bg&#x27;</span>], <span class="string">&quot;bg.png&quot;</span>)</span><br><span class="line">    download_image(d[<span class="string">&#x27;fullbg&#x27;</span>], <span class="string">&quot;fullbg.png&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 还原乱序的缺口图和完整图</span></span><br><span class="line">    restore_pic(<span class="string">&quot;bg.png&quot;</span>, <span class="string">&quot;new_bg.png&quot;</span>)</span><br><span class="line">    restore_pic(<span class="string">&quot;fullbg.png&quot;</span>, <span class="string">&quot;new_fullbg.png&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 获取缺口的位置</span></span><br><span class="line">    x = get_moving_dst(<span class="string">&quot;new_bg.png&quot;</span>, <span class="string">&quot;new_fullbg.png&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> tracks.get(x):</span><br><span class="line">        tracks[x].append(&#123;<span class="string">&#x27;track&#x27;</span>: d[<span class="string">&#x27;track&#x27;</span>], <span class="string">&#x27;g7z&#x27;</span>: d[<span class="string">&#x27;g7z&#x27;</span>]&#125;)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        tracks[x] = [&#123;<span class="string">&#x27;track&#x27;</span>: d[<span class="string">&#x27;track&#x27;</span>], <span class="string">&#x27;g7z&#x27;</span>: d[<span class="string">&#x27;g7z&#x27;</span>]&#125;]</span><br><span class="line">    pickle.dump(tracks, <span class="built_in">open</span>(<span class="string">&quot;tracks.pkl&quot;</span>, <span class="string">&quot;wb&quot;</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;ok&#x27;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download_image</span>(<span class="params">url, image_file</span>):</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(image_file, <span class="string">&quot;wb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(requests.get(url).content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    track_data = &#123;&#125;</span><br><span class="line">    pickle.dump(track_data, <span class="built_in">open</span>(<span class="string">&quot;tracks.pkl&quot;</span>, <span class="string">&quot;wb&quot;</span>))</span><br><span class="line">    app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">8088</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>先手动通过滑块验证100-200次，收集起来每一次g7z(g7z为实际滑动的距离)对应的轨迹方程。</p>
+<ol start="2">
+<li>使用</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Http</span> = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line"><span class="keyword">const</span> url=<span class="string">&#x27;http://127.0.0.1:8088/track&#x27;</span>;</span><br><span class="line"><span class="title class_">Http</span>.<span class="title function_">open</span>(<span class="string">&quot;POST&quot;</span>, url);</span><br><span class="line"><span class="title class_">Http</span>.<span class="property">onload</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;请求成功, track: &quot;</span> + <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(X1z));</span><br><span class="line">	<span class="comment">// 请求结束后,在此处写处理代码</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="title class_">Http</span>.<span class="title function_">send</span>(<span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123;</span><br><span class="line">	<span class="attr">track</span>: X1z,</span><br><span class="line">    <span class="attr">bg</span>: <span class="regexp">/\&quot;(.*?)\&quot;/g</span>.<span class="title function_">exec</span>(<span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&quot;gt_cut_bg_slice&quot;</span>)[<span class="number">0</span>].<span class="property">style</span>.<span class="property">backgroundImage</span>)[<span class="number">1</span>],</span><br><span class="line">	<span class="attr">fullbg</span>: <span class="regexp">/\&quot;(.*?)\&quot;/g</span>.<span class="title function_">exec</span>(<span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&quot;gt_cut_fullbg_slice&quot;</span>)[<span class="number">0</span>].<span class="property">style</span>.<span class="property">backgroundImage</span>)[<span class="number">1</span>],</span><br><span class="line">    g7z</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure>
+
+<p>在返回加密轨迹数组的之前去调用Flask服务，这样拿到的轨迹数组就是最终的轨迹数组，从而可以收集正确的轨迹数组。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204281558130.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220428155854981" title="">
+                </div>
+                <div class="image-caption">image-20220428155854981</div>
+            </figure>
+
+
+
+<p>通过手动过滑块就可以把轨迹数组收集到tracks.pkl文件了。</p>
+<h5 id="生成w参数"><a href="#生成w参数" class="headerlink" title="生成w参数"></a>生成w参数</h5><p>w参数逆向分析与其服务搭建参考：<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81w%E5%8F%82%E6%95%B0%E7%94%9F%E6%88%90/">JS逆向案例——极验滑块验证码w参数生成</a> 和 <a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E8%A1%A5%E7%8E%AF%E5%A2%83/">JS逆向案例——极验滑块验证码补环境</a></p>
+<p>鉴于我们早已经搭建好了w请求服务，这里直接调用接口就好了，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_w</span>(<span class="params">gt, challenge, tracks, c, s, v</span>):</span><br><span class="line">    url = <span class="string">&quot;http://127.0.01:8081/geetest/w&quot;</span></span><br><span class="line">    data = &#123;</span><br><span class="line">        <span class="string">&quot;tracks&quot;</span>: json.dumps(tracks),</span><br><span class="line">        <span class="string">&quot;c&quot;</span>: json.dumps(c),</span><br><span class="line">        <span class="string">&quot;s&quot;</span>: s,</span><br><span class="line">        <span class="string">&quot;challenge&quot;</span>: challenge,</span><br><span class="line">        <span class="string">&quot;gt&quot;</span>: gt,</span><br><span class="line">        <span class="string">&quot;v&quot;</span>: v</span><br><span class="line">    &#125;</span><br><span class="line">    response = requests.post(url, json=data)</span><br><span class="line">    <span class="keyword">return</span> response.json()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>运行结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204251531087.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220425153143590" title="">
+                </div>
+                <div class="image-caption">image-20220425153143590</div>
+            </figure>
+
+
+
+<h5 id="进行滑块的验证"><a href="#进行滑块的验证" class="headerlink" title="进行滑块的验证"></a>进行滑块的验证</h5><p>进行滑块验证的请求很简单：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">def <span class="title function_">ajax</span>(gt, challenge, w):</span><br><span class="line">    url = f<span class="string">&#x27;https://api.geetest.com/ajax.php?gt=&#123;gt&#125;&amp;challenge=&#123;challenge&#125;&amp;w=&#123;w&#125;&amp;callback=geetest_&#123;t&#125;&#x27;</span></span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="string">&#x27;authority&#x27;</span>: <span class="string">&#x27;api.geetest.com&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;accept&#x27;</span>: <span class="string">&#x27;*/*&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;accept-language&#x27;</span>: <span class="string">&#x27;zh-CN,zh;q=0.9&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cache-control&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pragma&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;referer&#x27;</span>: <span class="string">&#x27;https://www.tianyancha.com/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua&#x27;</span>: <span class="string">&#x27;&quot; Not A;Brand&quot;;v=&quot;99&quot;, &quot;Chromium&quot;;v=&quot;100&quot;, &quot;Google Chrome&quot;;v=&quot;100&quot;&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-mobile&#x27;</span>: <span class="string">&#x27;?0&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-platform&#x27;</span>: <span class="string">&#x27;&quot;macOS&quot;&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-fetch-dest&#x27;</span>: <span class="string">&#x27;script&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-fetch-mode&#x27;</span>: <span class="string">&#x27;no-cors&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-fetch-site&#x27;</span>: <span class="string">&#x27;cross-site&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;user-agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36&#x27;</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    response = requests.<span class="title function_">get</span>(url, headers=headers)</span><br><span class="line">    <span class="keyword">return</span> response.<span class="property">text</span></span><br></pre></td></tr></table></figure>
+
+<p>就一个get请求，带上gt，challenge和w参数就行。</p>
+<p>滑块验证的核心逻辑，主要调用前面写好的几个方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>(<span class="params">tracks</span>):</span><br><span class="line">    <span class="comment"># 获取gt, challenge</span></span><br><span class="line">    d = geetest_xhtml()</span><br><span class="line">    gt = d[<span class="string">&#x27;data&#x27;</span>][<span class="string">&#x27;gt&#x27;</span>]</span><br><span class="line">    challenge = d[<span class="string">&#x27;data&#x27;</span>][<span class="string">&#x27;challenge&#x27;</span>]</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 获取path, type</span></span><br><span class="line">    path, _<span class="built_in">type</span> = get_type(gt)</span><br><span class="line">    m = get(gt, challenge, _<span class="built_in">type</span>, path)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 下载乱序的缺口图和背景图</span></span><br><span class="line">    url = <span class="string">&quot;https://static.geetest.com/&quot;</span></span><br><span class="line">    unordered_complete_pic = urljoin(url, m[<span class="string">&#x27;fullbg&#x27;</span>])</span><br><span class="line">    unordered_incomplete_pic = urljoin(url, m[<span class="string">&#x27;bg&#x27;</span>])</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;image1.png&quot;</span>, <span class="string">&quot;wb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(requests.get(unordered_complete_pic).content)</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;image2.png&quot;</span>, <span class="string">&quot;wb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(requests.get(unordered_incomplete_pic).content)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 还原乱序图 </span></span><br><span class="line">    restore_pic(<span class="string">&quot;image1.png&quot;</span>, <span class="string">&quot;new_image1.png&quot;</span>)</span><br><span class="line">    restore_pic(<span class="string">&quot;image2.png&quot;</span>, <span class="string">&quot;new_image2.png&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 获取缺口位置</span></span><br><span class="line">    dist = get_moving_dst(<span class="string">&quot;new_image1.png&quot;</span>, <span class="string">&quot;new_image2.png&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 从本地的tracks.pkl中读取轨迹数组</span></span><br><span class="line">    <span class="keyword">if</span> tracks.get(dist):</span><br><span class="line">        track = tracks[dist][<span class="number">0</span>][<span class="string">&#x27;track&#x27;</span>]</span><br><span class="line">        g7z = tracks[dist][<span class="number">0</span>][<span class="string">&#x27;g7z&#x27;</span>]</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># 如果未拿到轨迹数组，直接返回</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 调用Express服务获取w参数</span></span><br><span class="line">    w = get_w(m[<span class="string">&#x27;gt&#x27;</span>], m[<span class="string">&#x27;challenge&#x27;</span>], track, m[<span class="string">&#x27;c&#x27;</span>], m[<span class="string">&#x27;s&#x27;</span>], m[<span class="string">&#x27;version&#x27;</span>], g7z)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 进行验证</span></span><br><span class="line">    validator = ajax(w[<span class="string">&#x27;gt&#x27;</span>], w[<span class="string">&#x27;challenge&#x27;</span>], w[<span class="string">&#x27;w&#x27;</span>])</span><br><span class="line">    <span class="built_in">print</span>(validator)</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204281609390.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220428160923233" title="">
+                </div>
+                <div class="image-caption">image-20220428160923233</div>
+            </figure>
+
+
+
+<h5 id="登录天眼查"><a href="#登录天眼查" class="headerlink" title="登录天眼查"></a>登录天眼查</h5><p>别忘了我们这篇文章的最终目的是模拟登录天眼查，拿到滑块验证成功返回的validate之后，要请求天眼查的登录接口，先看下请求接口的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">login</span>(<span class="params">mobile, password, challenge, validator</span>):</span><br><span class="line">    cookies = &#123;</span><br><span class="line">        <span class="string">&#x27;acw_sc__v2&#x27;</span>: <span class="string">&#x27;acw_sc__v2的值&#x27;</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="comment"># header值</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    json_data = &#123;</span><br><span class="line">        <span class="string">&#x27;mobile&#x27;</span>: mobile,</span><br><span class="line">        <span class="string">&#x27;cdpassword&#x27;</span>: password,</span><br><span class="line">        <span class="string">&#x27;loginway&#x27;</span>: <span class="string">&#x27;PL&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;autoLogin&#x27;</span>: <span class="literal">False</span>,</span><br><span class="line">        <span class="string">&#x27;type&#x27;</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;challenge&#x27;</span>: challenge,</span><br><span class="line">        <span class="string">&#x27;validate&#x27;</span>: validator,</span><br><span class="line">        <span class="string">&#x27;seccode&#x27;</span>: <span class="string">f&#x27;<span class="subst">&#123;validator&#125;</span>|jordan&#x27;</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    response = requests.post(<span class="string">&#x27;https://www.tianyancha.com/cd/login.json&#x27;</span>, cookies=cookies, headers=headers,</span><br><span class="line">                             json=json_data)</span><br><span class="line">    <span class="keyword">return</span> response.text</span><br></pre></td></tr></table></figure>
+
+<p>就是一个post请求，没什么说的。</p>
+<p>接着在主程序main方法的末尾加入调用这个login的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> validator:</span><br><span class="line">    validate = re.findall(<span class="string">&quot;\&quot;validate\&quot;: \&quot;(.*?)\&quot;&quot;</span>, validator)[<span class="number">0</span>]</span><br><span class="line">    login_res = login(<span class="string">&#x27;17777777777&#x27;</span>, <span class="string">&#x27;202cb962ac59075b964b07152d234b70&#x27;</span>, m[<span class="string">&#x27;challenge&#x27;</span>], validate)</span><br><span class="line">        <span class="keyword">return</span> login_res</span><br></pre></td></tr></table></figure>
+
+<p>还是前面提到的，我们的主要目的放在极验验证上，所以这里cookie的acw_sc__v2值跟前面一样，复制下来就可，只不过这个cookie和第一个请求的cookie保持一致就行。另外，password也是一个加密的字符串，32位很符合md5码的特征，但是管它是啥呢？我们复制过来用就行。还有一点要注意的是，challenge要传get请求返回过来的，不要传第一个请求返回的。</p>
+<p>程序运行的结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204281633498.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220428163341351" title="">
+                </div>
+                <div class="image-caption">image-20220428163341351</div>
+            </figure>
+
+<p>提示密码错误，很显然，登录接口成功了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>极验滑块的总算是成功了，暂时告一段落。我们是针对6.0.9这个版本的极验js文件进行的逆向，小版本的极验逻辑都差不多。大版本的可能区别会大一些，不过思路也差不多。极验的最新版本好像是4，后边会看看4这个大版本有什么不同。然后除了极验的滑块，还会试着看看能否搞定极验的点选与推理验证。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:48.487Z" itemprop="dateUpdated">2023-05-09 18:16:48</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/" rel="tag">验证码</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/&title=《JS逆向案例——天眼查过极验滑块验证码》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/&title=《JS逆向案例——天眼查过极验滑块验证码》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——天眼查过极验滑块验证码》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">一文教你如何利用AST还原JS混淆</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E8%A1%A5%E7%8E%AF%E5%A2%83/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向案例——极验滑块验证码补环境</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/&title=《JS逆向案例——天眼查过极验滑块验证码》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/&title=《JS逆向案例——天眼查过极验滑块验证码》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——天眼查过极验滑块验证码》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAT4AAAE+CAAAAAAxUyPsAAAFNklEQVR42u3awW6jQBAE0Pz/T+9qbxslQFX3kEsep8iRMfOw5KJ6Pj7i489/x/3rX//+elyd//6c968kV5tc4ccbBz58+PDhw3fxYVenu4LLz7b5xA16wnR/ex6I8eHDhw8fvhHfJkwkP/n5zcjPllz5JhglZ8aHDx8+fPje5stLgfYMyVLvA1AbOzZRCR8+fPjw4Xubb7a8U0V5saRRAMKHDx8+fPh+ki+JILPw0V7ovoxI6vhT0QcfPnz48OFr+fJdWL/n78MHPnz48OHDF/w87yvvpFbY1Prt6+2mugcBfPjw4cOHbyTQlvKnCoU2NCSP7rOKYTPIx4cPHz58+PKrzX/s89iRR4E83OQ3o63dV8MDfPjw4cOHb8HXnmIWNdpAk1cDyZa4dmT+sEZ8+PDhw4dvwZef4r0CvQ0cpz4rqSTqygAfPnz48OEL+DY7sjZ1f1u7b8r6PIE84OLDhw8fPnwjvrYKz6uHtu7PQ9IsvpwNTPjw4cOHD99oQj38gDbWbMbteZTZlPXDwIQPHz58+PCN+PK40AaaTZk+uw2zEr+9Hnz48OHDh6/la8v0/EH9VBBJ/pufM6/m68iCDx8+fPjwjcqC+x/vPHa03KfK91nxkQcmfPjw4cOHb8N3/+YEur2UNnbkISMf4b9Y1uPDhw8fPnzxf/Mx874UmC21Levz4UF7m/Hhw4cPH74N3z4u3EefWVBoy/q87Gg/Cx8+fPjw4TvLl0eZfIi+3xyWDADyYcP+9frAhw8fPnz4yp/kzQayGessVOXVwCZIRbMOfPjw4cOH7/a/7QN/GyNmUeNUWZ/UHDnlN3/jw4cPHz58Jd++tk6WPTvP7BrObkfL4w4+fPjw4cOX8CXby2YQyZh8tux99Glv/KUAPnz48OHDN+LLQ8CsVphFhLysz6uB9qvzcD348OHDhw/fiG82bN4El7Nbyk6VBXlw+TTrwIcPHz58+GK+lin/4FkY2pT1eRCZHVFxgA8fPnz48JVj8uRtbXSYPeon1fx+e1w7ADigjg8fPnz4fjFfMRIul32qWG8f/vf0r3yz8OHDhw8fvuCi8wfv97ag7a+nLTiKLxY+fPjw4cM3yiSzUXQeFE5Bt0EqOcOB0QI+fPjw4cO34GsLgpw4LxpO1fdt6MkLjvru4cOHDx8+fEFoaJeRx5f2ZuTLno3P2zICHz58+PDhm/FthtBJTDmL2w7IZyVCcX58+PDhw4fvzPmHy0iiwOzBfriBLF7RsfoAHz58+PDhK8uCdoA9e29b0+dVxazmmA3X8eHDhw8fvhlfvrA2lLRF+aasn0EP5xtt6sGHDx8+fPhGH7B58M7JZgvLN8bNgstlZYAPHz58+PDFfLMB8+aRfhMm2mtrxwz5uvDhw4cPH74Z32zD9Kaaz4NLW7jnN3LzVcCHDx8+fPg2fPsf/qSsz0v2fVm/f1deeeDDhw8fPnwtX76kdij+NllbNLQj8KjUwIcPHz58+EZ8s8fvvFxot761RwJ0ahPAp7Phw4cPHz58a74Z0744yLfNzeLU7AwPpT8+fPjw4cNX8m3CQRtK2pCUh4wN6KyAwIcPHz58+DZ87U9+uyEsh95sg2sDymzrW53+8OHDhw8fvgu+/Id8tuz8NmxK+dkGuza64cOHDx8+fD/D1xbxmyH3qSJ+9t7iBuDDhw8fPnyv8W1iQRJWZrenLRfa8fzDZ+HDhw8fPnwjvlPD7M052zyQlxHtu4phOT58+PDhw/fCNrUca1aRbzaNtTdjFoBWdT8+fPjw4cP37/gLdZaG9hEWVJIAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

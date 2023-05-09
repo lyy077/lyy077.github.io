@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之加解密进阶篇 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="不一样的加密算法栅栏密码栅栏密码(Rail-fence Cipher)就是把要加密的明文分为N个一组，然后把每组的第一个字符组合，每组的第二个字符组合…每组的第N个(最后一个分组可能不足N个)个字符组合，最后把他们全部连接起来就是密文。这里以2栏栅栏加密为例。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之加解密进阶篇">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="不一样的加密算法栅栏密码栅栏密码(Rail-fence Cipher)就是把要加密的明文分为N个一组，然后把每组的第一个字符组合，每组的第二个字符组合…每组的第N个(最后一个分组可能不足N个)个字符组合，最后把他们全部连接起来就是密文。这里以2栏栅栏加密为例。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203221629016.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203221940630.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203222207955.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203231807071.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203231813548.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-03-22T12:43:08.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:36.157Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203221629016.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之加解密进阶篇</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之加解密进阶篇</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-03-22T12:43:08.000Z" itemprop="datePublished" class="page-time">
+  2022-03-22
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%B8%8D%E4%B8%80%E6%A0%B7%E7%9A%84%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95"><span class="post-toc-number">1.</span> <span class="post-toc-text">不一样的加密算法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%A0%85%E6%A0%8F%E5%AF%86%E7%A0%81"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">栅栏密码</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%88%97%E4%BD%8D%E7%A7%BB%E5%AF%86%E7%A0%81"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">列位移密码</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%87%AF%E6%92%92%E5%AF%86%E7%A0%81"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">凯撒密码</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%85%B6%E5%AE%83%E5%8A%A0%E5%AF%86"><span class="post-toc-number">1.4.</span> <span class="post-toc-text">其它加密</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#JS%E5%8A%A0%E5%AF%86%E4%B8%8A%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90%E4%B8%8E%E5%8F%98%E5%8C%96"><span class="post-toc-number">2.</span> <span class="post-toc-text">JS加密上的实例分析与变化</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%87%AF%E6%92%92%E5%8A%A0%E5%AF%86%E5%8F%98%E7%A7%8D%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">凯撒加密变种加密算法分析</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%B8%B8%E8%A7%84%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E7%9A%84%E5%8F%98%E7%A7%8D"><span class="post-toc-number">3.</span> <span class="post-toc-text">常规加密算法的变种</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%80%9F%E9%89%B4%E5%8F%A4%E5%85%B8%E5%AF%86%E7%A0%81%E5%AD%A6%E6%94%B9%E9%80%A0%E7%8E%B0%E5%9C%A8%E5%AF%86%E7%A0%81%E5%AD%A6"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">借鉴古典密码学改造现在密码学</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向之加解密进阶篇"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之加解密进阶篇</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-03-22 20:43:08" datetime="2022-03-22T12:43:08.000Z"  itemprop="datePublished">2022-03-22</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h4 id="不一样的加密算法"><a href="#不一样的加密算法" class="headerlink" title="不一样的加密算法"></a>不一样的加密算法</h4><h5 id="栅栏密码"><a href="#栅栏密码" class="headerlink" title="栅栏密码"></a>栅栏密码</h5><p>栅栏密码(Rail-fence Cipher)就是把要加密的明文分为N个一组，然后把每组的第一个字符组合，每组的第二个字符组合…每组的第N个(最后一个分组可能不足N个)个字符组合，最后把他们全部连接起来就是密文。这里以2栏栅栏加密为例。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203221629016.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220322162944513" title="">
+                </div>
+                <div class="image-caption">image-20220322162944513</div>
+            </figure>
+
+<p>以一句话Are you ok为例：</p>
+<ol>
+<li><p>去空格，结果为Areyouok</p>
+</li>
+<li><p>分组，结果为Ar ey ou ok</p>
+</li>
+<li><p>重组</p>
+<ul>
+<li>第一组：Aeoo</li>
+<li>第二组：ryuk</li>
+</ul>
+</li>
+<li><p>生成密文，结果为：Aeooryuk</p>
+</li>
+</ol>
+<p><strong>Python代码演示</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">encode</span>(<span class="params">flag, num</span>):</span><br><span class="line">    <span class="keyword">from</span> math <span class="keyword">import</span> ceil</span><br><span class="line">    length = <span class="built_in">len</span>(flag)</span><br><span class="line">    lines = ceil(length / num)</span><br><span class="line">    arr = [flag[i:i+num] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, lines * num, num)]</span><br><span class="line">    flag = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(arr[<span class="number">0</span>])):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> arr:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                flag += j[i]</span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> flag</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decode</span>(<span class="params">flag, num</span>):</span><br><span class="line">    length = <span class="built_in">len</span>(flag)   <span class="comment"># flag的长度</span></span><br><span class="line">    lines = length // num   <span class="comment"># 判断共有几层并减一</span></span><br><span class="line">    remainder = num * (lines + <span class="number">1</span>) - length  <span class="comment"># 相差的数量</span></span><br><span class="line">    <span class="comment"># 补全flag</span></span><br><span class="line">    result = flag[:length-lines*remainder]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(remainder-<span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>):</span><br><span class="line">        result += flag[length - (i + <span class="number">1</span>) * lines:length - i * lines] + <span class="string">&#x27;*&#x27;</span></span><br><span class="line">    <span class="comment"># 还原flag</span></span><br><span class="line">    lines += <span class="number">1</span></span><br><span class="line">    arr = [result[i:i + lines] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="built_in">len</span>(result), lines)]</span><br><span class="line">    flag = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(arr[<span class="number">0</span>])):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> arr:</span><br><span class="line">            flag += j[i]</span><br><span class="line">    <span class="keyword">return</span> flag[:length]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="built_in">print</span>(encode(<span class="string">&quot;Are you ok&quot;</span>, <span class="number">2</span>))	<span class="comment"># Aeyuor o k</span></span><br><span class="line">    <span class="built_in">print</span>(decode(<span class="string">&quot;Aeyuor o k&quot;</span>, <span class="number">2</span>))	<span class="comment"># Are you ok</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="列位移密码"><a href="#列位移密码" class="headerlink" title="列位移密码"></a>列位移密码</h5><p>列位移密码(Columnar Transposition Cipher)是一种比较简单，易于实现的换位密码，通过一个简单的规则将明文打乱混合成密文。将明文填入事先约定填充的行列数，如果明文不能填充完表格，可以约定使用某个字母进行填充，然后根据密钥在字母表中出现的先后顺序进行编号，根据编码即可推出密文。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203221940630.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220322194007474" title="">
+                </div>
+                <div class="image-caption">image-20220322194007474</div>
+            </figure>
+
+<p>还是以那句话Are you ok为明文，以car为密钥，x为填充字符：</p>
+<ol>
+<li>去空格，结果为：Areyouok</li>
+<li>因为密钥car的长度为3，所以以3个字符为一个单位分组，如下：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">c</th>
+<th align="center">a</th>
+<th align="center">r</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">A</td>
+<td align="center">r</td>
+<td align="center">e</td>
+</tr>
+<tr>
+<td align="center">y</td>
+<td align="center">o</td>
+<td align="center">u</td>
+</tr>
+<tr>
+<td align="center">o</td>
+<td align="center">k</td>
+<td align="center">x</td>
+</tr>
+</tbody></table>
+<p>最后一组只有2个元素不足三个，所以用x填充。由于密钥car的字母顺序排序是a&gt;c&gt;r，所以上述列排序也要根据这个顺序重新排列，如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">a</th>
+<th align="center">c</th>
+<th align="center">r</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">r</td>
+<td align="center">A</td>
+<td align="center">e</td>
+</tr>
+<tr>
+<td align="center">o</td>
+<td align="center">y</td>
+<td align="center">u</td>
+</tr>
+<tr>
+<td align="center">k</td>
+<td align="center">o</td>
+<td align="center">x</td>
+</tr>
+</tbody></table>
+<p>重新排序完成之后，从第一列到最后一列按列取值组成的字符串就是密文了，很显然密钥是不能出现在明文中的，填充字符可以出现在明文中，所以每一列的第一个字符被忽略，最终的密文为：rokAyoeux。</p>
+<p><strong>Python代码演示</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pycipher <span class="keyword">import</span> ColTrans</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">ColTrans(<span class="string">&quot;car&quot;</span>).encipher(<span class="string">&#x27;Are you ok&#x27;</span>) <span class="comment"># ROKAYOEU</span></span><br><span class="line">ColTrans(<span class="string">&quot;car&quot;</span>).decipher(<span class="string">&#x27;ROKAYOEU&#x27;</span>)   <span class="comment"># AREYOUOK</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="凯撒密码"><a href="#凯撒密码" class="headerlink" title="凯撒密码"></a>凯撒密码</h5><p>凯撒密码(Caesar Cipher或称凯撒加密，凯撒变换，变换加密，位移加密)是一种替换加密，明文中的所有字母都在字母表上向后(或向前)按照一个固定的数目进行偏移后被替换成密文。例，当偏移量是3的时候，所有的字母A都将被替换成D，B变成E，依此类推。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203222207955.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220322220707572" title="">
+                </div>
+                <div class="image-caption">image-20220322220707572</div>
+            </figure>
+
+<p> 依旧以Are you ok为例：</p>
+<ol>
+<li><p>去除空格，变为Areyouok</p>
+</li>
+<li><p>以5作为偏移映射，A对应F，r对应w，e对应j，依此往下推，转换后的密文为Fwjdtztp。</p>
+</li>
+</ol>
+<p><strong>Python代码演示</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">encrypt_char</span>(<span class="params">char, key</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">chr</span>(<span class="built_in">ord</span>(<span class="string">&#x27;A&#x27;</span>) + (<span class="built_in">ord</span>(char) - <span class="built_in">ord</span>(<span class="string">&#x27;A&#x27;</span>) + key) % <span class="number">26</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">encrypt_message</span>(<span class="params">message, key</span>):</span><br><span class="line">    message = message.upper()</span><br><span class="line">    cipher = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> char <span class="keyword">in</span> message:</span><br><span class="line">        <span class="keyword">if</span> char <span class="keyword">not</span> <span class="keyword">in</span> <span class="string">&#x27; ,.&#x27;</span>:</span><br><span class="line">            cipher += encrypt_char(char, key)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            cipher += char</span><br><span class="line">    <span class="keyword">return</span> cipher</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decrypt_char</span>(<span class="params">char, key</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">chr</span>(<span class="built_in">ord</span>(<span class="string">&#x27;A&#x27;</span>) + (<span class="built_in">ord</span>(char) - <span class="built_in">ord</span>(<span class="string">&#x27;A&#x27;</span>) + <span class="number">26</span> - key) % <span class="number">26</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decrypt_message</span>(<span class="params">cipher, key</span>):</span><br><span class="line">    cipher = cipher.upper()</span><br><span class="line">    message = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> char <span class="keyword">in</span> cipher:</span><br><span class="line">        <span class="keyword">if</span> char <span class="keyword">not</span> <span class="keyword">in</span> <span class="string">&#x27; ,.&#x27;</span>:</span><br><span class="line">            message += decrypt_char(char, key)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            message += char</span><br><span class="line">    <span class="keyword">return</span> message</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="built_in">print</span>(encrypt_message(<span class="string">&quot;Are you ok&quot;</span>, <span class="number">5</span>))	<span class="comment"># FWJ DTZ TP</span></span><br><span class="line">    <span class="built_in">print</span>(decrypt_message(<span class="string">&quot;FWJ DTZ TP&quot;</span>, <span class="number">5</span>)) <span class="comment"># ARE YOU OK</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="其它加密"><a href="#其它加密" class="headerlink" title="其它加密"></a>其它加密</h5><p>JSfuck仅使用6个字符，即[]+()!，来编写js程序。</p>
+<p>jother是一种可以运用于javascript语言中利用少量字符构造精简的匿名函数方法对于字符串进行的编码方式。其中8个少量字符包括：!+()[]{}。只用这些字符就可以完成任意字符串的编码。</p>
+<p>jjencode将JS代码转换成只有符号的字符串。</p>
+<p>aaencode可以将JS代码转换成常用的网络表情，也就是我们说的颜文字JS加密。</p>
+<h4 id="JS加密上的实例分析与变化"><a href="#JS加密上的实例分析与变化" class="headerlink" title="JS加密上的实例分析与变化"></a>JS加密上的实例分析与变化</h4><h5 id="凯撒加密变种加密算法分析"><a href="#凯撒加密变种加密算法分析" class="headerlink" title="凯撒加密变种加密算法分析"></a>凯撒加密变种加密算法分析</h5><p>密文：lQyjcvi|dcQR pktg t 2 cxl 9tixQR0 wxujzzxg0 gxijgc cxl 9tixQR V t 3 ZYY0rQRR</p>
+<p>算法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_$aU</span>(<span class="params">_$Fj</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> _$U4 = _$Fj.<span class="property">length</span>;</span><br><span class="line">    <span class="keyword">var</span> _$_L, _$cu = <span class="keyword">new</span> <span class="title class_">Array</span>(_$U4 - <span class="number">1</span>), _$h9 = _$Fj.<span class="title function_">charCodeAt</span>(<span class="number">0</span>) - <span class="number">97</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> _$1B = <span class="number">0</span>, _$lp = <span class="number">1</span>; _$lp &lt; _$U4; ++_$lp) &#123;</span><br><span class="line">        _$_L = _$Fj.<span class="title function_">charCodeAt</span>(_$lp);</span><br><span class="line">        <span class="keyword">if</span> (_$_L &gt;= <span class="number">40</span> &amp;&amp; _$_L &lt; <span class="number">92</span>) &#123;</span><br><span class="line">            _$_L += _$h9;</span><br><span class="line">            <span class="keyword">if</span> (_$_L &gt;= <span class="number">92</span>)</span><br><span class="line">                _$_L -= <span class="number">52</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (_$_L &gt;= <span class="number">97</span> &amp;&amp; _$_L &lt; <span class="number">127</span>) &#123;</span><br><span class="line">            _$_L += _$h9;</span><br><span class="line">            <span class="keyword">if</span> (_$_L &gt;= <span class="number">127</span>)</span><br><span class="line">                _$_L -= <span class="number">30</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        _$cu[_$1B++] = _$_L;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">String</span>.<span class="property">fromCharCode</span>.<span class="title function_">apply</span>(<span class="literal">null</span>, _$cu);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用上述算法解密密文结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203231807071.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220323180744951" title="">
+                </div>
+                <div class="image-caption">image-20220323180744951</div>
+            </figure>
+
+<p>可以看到上面是一个无限debugger的字符串，然后通过eval调用可以达到无限debugger的目的，通过前面学习了凯撒密码之后，我们除了可以使用hook的方式绕过无限debugger，还可以使用凯撒密码达到目的，我们删除密文中的<code>wxujzzxg0</code>，然后执行：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203231813548.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220323181330460" title="">
+                </div>
+                <div class="image-caption">image-20220323181330460</div>
+            </figure>
+
+<p>可以看到，同样干掉了debugger关键字。</p>
+<h4 id="常规加密算法的变种"><a href="#常规加密算法的变种" class="headerlink" title="常规加密算法的变种"></a>常规加密算法的变种</h4><h5 id="借鉴古典密码学改造现在密码学"><a href="#借鉴古典密码学改造现在密码学" class="headerlink" title="借鉴古典密码学改造现在密码学"></a>借鉴古典密码学改造现在密码学</h5><p>看一段AES实际案例(某常见人机验证码代码部分案例)</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">CryptoJS</span> = <span class="built_in">require</span>(<span class="string">&quot;crypto-js&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> key = <span class="string">&quot;ABC1234567891234&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> iv = <span class="string">&quot;1234567812345678&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">encrypt</span>(<span class="params">text</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">CryptoJS</span>.<span class="property">AES</span>.<span class="title function_">encrypt</span>(text, <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(key), &#123;</span><br><span class="line">        <span class="attr">iv</span>: <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(iv),</span><br><span class="line">        <span class="attr">mode</span>: <span class="title class_">CryptoJS</span>.<span class="property">mode</span>.<span class="property">CBC</span>,</span><br><span class="line">        <span class="attr">padding</span>: <span class="title class_">CryptoJS</span>.<span class="property">pad</span>.<span class="property">Pkcs7</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">decrypt</span>(<span class="params">text</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> result = <span class="title class_">CryptoJS</span>.<span class="property">AES</span>.<span class="title function_">decrypt</span>(text, <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(key), &#123;</span><br><span class="line">        <span class="attr">iv</span>: <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(iv),</span><br><span class="line">        <span class="attr">mode</span>: <span class="title class_">CryptoJS</span>.<span class="property">mode</span>.<span class="property">CBC</span>,</span><br><span class="line">        <span class="attr">padding</span>: <span class="title class_">CryptoJS</span>.<span class="property">pad</span>.<span class="property">Pkcs7</span></span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> result.<span class="title function_">toString</span>(<span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> encrypted = <span class="title function_">encrypt</span>(<span class="string">&quot;123456&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> s = [];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; encrypted.<span class="property">ciphertext</span>.<span class="property">sigBytes</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">var</span> x = encrypted.<span class="property">ciphertext</span>.<span class="property">words</span>[i &gt;&gt;&gt; <span class="number">2</span>] &gt;&gt;&gt; <span class="number">24</span> - i % <span class="number">4</span> * <span class="number">8</span> &amp; <span class="number">255</span>;</span><br><span class="line">    s.<span class="title function_">push</span>(x)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> data = <span class="title function_">encrypt</span>(<span class="title class_">String</span>.<span class="property">fromCharCode</span>.<span class="title function_">apply</span>(<span class="literal">null</span>, s)).<span class="title function_">toString</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(encrypted.<span class="title function_">toString</span>());	<span class="comment">// 6S3YRylMmp9vIFOplWxypw==</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(data);					<span class="comment">// u79HHbvmZtoSScagKO2JsQzytZH1L5SJGSh338DbaMA=</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">decrypt</span>(data));			<span class="comment">// é-ØG)L  o S© lr§</span></span><br></pre></td></tr></table></figure>
+
+<p>如上，假如加密代码出现了cryptojs关键字，然后让人以为是传统的cryptojs加密，但是实际上做了一点修改，导致如果直接拿data去做解密，会得到的乱码，达到混淆视听的目的。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:36.157Z" itemprop="dateUpdated">2023-05-09 18:16:36</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/&title=《JS逆向之加解密进阶篇》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/&title=《JS逆向之加解密进阶篇》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之加解密进阶篇》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8BWebSocket%E5%8D%8F%E8%AE%AE/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向之WebSocket协议</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/%E4%BD%A0%E4%B8%8D%E5%8F%AF%E4%B8%8D%E7%9F%A5%E7%9A%84CSS%E5%8F%8D%E7%88%AC/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">你不可不知的CSS反爬</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/&title=《JS逆向之加解密进阶篇》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/&title=《JS逆向之加解密进阶篇》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之加解密进阶篇》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%8A%A0%E8%A7%A3%E5%AF%86%E8%BF%9B%E9%98%B6%E7%AF%87/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADJklEQVR42u3a0YoiQQwFUP//p12Yp4FFvUlqwE6ffpJB2zrVMDG59XjE1/Pn+v369/Xq/f9/6v3rV59NVvL4iwsbGxv7Iuzn2+v94nrg5LOv3pmsM7kPNjY29j52r2glxay6ce+R+RZ/+C5sbGzsW7J7Ba+6ZckG5Y0NNjY2NnZvSHSq/aiSsLGxse/M7g1rzg6SJmOmP5ylYWNjY389uxf0fufrP8+3sbGxsb+M/Sxe1RZlMu6vRgIFBTY2NvYidu84zrzUVQG96OLDmrGxsbFXsKuDpGqJqsa08++NHhI2Njb2Ona+9OrRmZx06mFEAQY2Njb2Ivap/+p523B2C3rzf2xsbOxN7MkBl6RJ6AUAeZDQ2z5sbGzsTex53Zu0H9WSOdnK5EFiY2NjX5edNxXV4nRqwJQ/pEKZxMbGxl7BzkdFvfh23tjM7/lyqISNjY29gj1f4qhyDtqMfDuwsbGxd7N7R2HmzUlvu3tbg42NjX0fdt4GVEdR1Uigep9qgIGNjY29j32qaCXxaq+k5YU2apawsbGxl7JPHeLpHdbpFaQyuJdmY2NjY389ez6yr454esdx8ljiw6EfbGxs7EXs91/TKxuThSaDqvkmYmNjY+9m5wdxkhvl4/5qIFFdMzY2NvZWdnO8XgxxewWyOnIqFE5sbGzspexeSaj+9J9vX34ACBsbG/s+7N7YPR/xzA9lnmpFor3HxsbGvhQ7YSQj+2QIlZeuSZtxIOjFxsbGviC794N+cnCnGutWy220KdjY2Ngr2POjjb2BUfVIUB4DR/fHxsbGXsSeDHfyxqNX6qoNUr4GbGxs7E3sfISUH+iZhAp54ezFFdjY2Nhb2XmGkI+fem1GXvzy0BcbGxv7DuzJV+YxcC8S7rUfUR6CjY2NvYKdXzk7byrygLa3tt7dsLGxsa/IPlswkhI1iSXmIypsbGzsrexJuJs3HtUAOOeN2gxsbGzs27DzFiIpIb07VAPpAwUMGxsbeym7104kf8mLXB42HCtg2NjY2F/MnheJfNxTbTN6a/vwYLCxsbEXsScTmOq4J19WFdAbVGFjY2NfnP0PM87UmKGA6HAAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向中用到的常见的编码和加密 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="ASCII码Python代码演示12345_ &#x3D; list(map(lambda x: print(f&quot;ascii of &amp;#123;x&amp;#125; is&quot;, ord(x)), &quot;abcd&quot;))# ascii of a is 97# ascii of b is 98# ascii of c is 99# ascii of d is 100    Base64">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向中用到的常见的编码和加密">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="ASCII码Python代码演示12345_ &#x3D; list(map(lambda x: print(f&quot;ascii of &amp;#123;x&amp;#125; is&quot;, ord(x)), &quot;abcd&quot;))# ascii of a is 97# ascii of b is 98# ascii of c is 99# ascii of d is 100    Base64">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203212353849.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203212359415.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203220024628.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203172352889.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-03-02T13:51:19.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:49.368Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203212353849.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向中用到的常见的编码和加密</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向中用到的常见的编码和加密</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-03-02T13:51:19.000Z" itemprop="datePublished" class="page-time">
+  2022-03-02
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#ASCII%E7%A0%81"><span class="post-toc-number">1.</span> <span class="post-toc-text">ASCII码</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Python%E4%BB%A3%E7%A0%81%E6%BC%94%E7%A4%BA"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">Python代码演示</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Base64"><span class="post-toc-number">2.</span> <span class="post-toc-text">Base64</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFBase64"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">什么是Base64</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Base64%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">Base64的字符集</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Base64%E7%BC%96%E7%A0%81%E8%BF%87%E7%A8%8B"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">Base64编码过程</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E7%BC%96%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">编码示例</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Python%E5%AE%9E%E7%8E%B0"><span class="post-toc-number">2.5.</span> <span class="post-toc-text">Python实现</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#md5%E4%BF%A1%E6%81%AF%E6%8C%87%E7%BA%B9"><span class="post-toc-number">3.</span> <span class="post-toc-text">md5信息指纹</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Python%E4%BB%A3%E7%A0%81%E6%BC%94%E7%A4%BA-1"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">Python代码演示</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#AES-%E5%8A%A0%E5%AF%86"><span class="post-toc-number">4.</span> <span class="post-toc-text">AES 加密</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">对称加密</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="post-toc-number">4.2.</span> <span class="post-toc-text">非对称加密</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E4%B8%8E%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="post-toc-number">4.3.</span> <span class="post-toc-text">对称加密与非对称加密的区别</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#AES%E5%8A%A0%E5%AF%86%E4%B8%89%E8%A6%81%E7%B4%A0"><span class="post-toc-number">4.4.</span> <span class="post-toc-text">AES加密三要素</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Python%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="post-toc-number">4.5.</span> <span class="post-toc-text">Python代码实现</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#NodeJS%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="post-toc-number">4.6.</span> <span class="post-toc-text">NodeJS代码实现</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#AES%E5%8A%A0%E5%AF%86%E6%B5%81%E7%A8%8B%E6%80%BB%E7%BB%93"><span class="post-toc-number">4.7.</span> <span class="post-toc-text">AES加密流程总结</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">5.</span> <span class="post-toc-text">总结</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向中用到的常见的编码和加密"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向中用到的常见的编码和加密</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-03-02 21:51:19" datetime="2022-03-02T13:51:19.000Z"  itemprop="datePublished">2022-03-02</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h4 id="ASCII码"><a href="#ASCII码" class="headerlink" title="ASCII码"></a>ASCII码</h4><h5 id="Python代码演示"><a href="#Python代码演示" class="headerlink" title="Python代码演示"></a>Python代码演示</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">_ = <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="keyword">lambda</span> x: <span class="built_in">print</span>(<span class="string">f&quot;ascii of <span class="subst">&#123;x&#125;</span> is&quot;</span>, <span class="built_in">ord</span>(x)), <span class="string">&quot;abcd&quot;</span>))</span><br><span class="line"><span class="comment"># ascii of a is 97</span></span><br><span class="line"><span class="comment"># ascii of b is 98</span></span><br><span class="line"><span class="comment"># ascii of c is 99</span></span><br><span class="line"><span class="comment"># ascii of d is 100</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Base64"><a href="#Base64" class="headerlink" title="Base64"></a>Base64</h4><h5 id="什么是Base64"><a href="#什么是Base64" class="headerlink" title="什么是Base64"></a>什么是Base64</h5><p>Base64是一种基于64个可打印字符来表示二进制数据的表示方法。</p>
+<h5 id="Base64的字符集"><a href="#Base64的字符集" class="headerlink" title="Base64的字符集"></a>Base64的字符集</h5><ul>
+<li>数字 {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} 共10位</li>
+<li>大小写字母 {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z} 共52位</li>
+<li>特殊符号 {+, &#x2F;} 共2位</li>
+</ul>
+<h5 id="Base64编码过程"><a href="#Base64编码过程" class="headerlink" title="Base64编码过程"></a>Base64编码过程</h5><p>由于base64的字符集大小为64，那么，需要6个比特的二进制数作为一个基本单元表示一个base64字符集中的字符。因为6个比特有2^6&#x3D;64种排列组合。</p>
+<p>具体来说，编码过程如下：</p>
+<ol>
+<li>将每三个字节作为一组，共24bit，若不足24bit在其后补充0；</li>
+<li>将这24个bit分为4组，每一组6个bit；</li>
+<li>在每组前加00扩展为8个bit，形成4个字节，每个字节表示base64字符集索引；</li>
+<li>扩展后的8bit表示的整数作为索引，对应base64字符集的一个字符，这就是base64编码值；在处理最后的不足3字节时，缺一个字节索引字节取3个，最后填充一个&#x3D;，；缺两个字节取2个索引字节，最后填充&#x3D;&#x3D;。</li>
+</ol>
+<p>解码时将过程逆向即可。</p>
+<p>Base64字符集索引表：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203212353849.png" alt="图片来源维基百科" title="">
+                </div>
+                <div class="image-caption">图片来源维基百科</div>
+            </figure>****
+
+<h5 id="编码示例"><a href="#编码示例" class="headerlink" title="编码示例"></a>编码示例</h5><p><strong>Man的base64编码</strong>：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203212359415.png" alt="图片来源维基百科" title="">
+                </div>
+                <div class="image-caption">图片来源维基百科</div>
+            </figure>
+
+<ol>
+<li>第一步，’M’, ‘a’, ‘n’的ASCII值分别为77, 97, 110，对应的二进制值分别为：01001101, 01100001, 01101110；取三个字节共24bit：010011010110000101101110。</li>
+<li>第二步，将这24bit分为4组，每组6个bit：010011, 010110, 000101, 101110。</li>
+<li>每组前面加00，形成4个字节的，00010011, 00010110, 00000101, 00101110, 即19, 22, 5, 46。</li>
+<li>根据索引表，对应的base64字符分别是T, W, F, u。</li>
+</ol>
+<h5 id="Python实现"><a href="#Python实现" class="headerlink" title="Python实现"></a>Python实现</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">base64实现</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> string</span><br><span class="line"></span><br><span class="line"><span class="comment"># base 字符集</span></span><br><span class="line"></span><br><span class="line">base64_charset = string.ascii_uppercase + string.ascii_lowercase + string.digits + <span class="string">&#x27;+/&#x27;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">encode</span>(<span class="params">origin_bytes</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    将bytes类型编码为base64</span></span><br><span class="line"><span class="string">    :param origin_bytes:需要编码的bytes</span></span><br><span class="line"><span class="string">    :return:base64字符串</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 将每一位bytes转换为二进制字符串</span></span><br><span class="line">    base64_bytes = [<span class="string">&#x27;&#123;:0&gt;8&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">str</span>(<span class="built_in">bin</span>(b)).replace(<span class="string">&#x27;0b&#x27;</span>, <span class="string">&#x27;&#x27;</span>)) <span class="keyword">for</span> b <span class="keyword">in</span> origin_bytes]</span><br><span class="line"></span><br><span class="line">    resp = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    nums = <span class="built_in">len</span>(base64_bytes) // <span class="number">3</span></span><br><span class="line">    remain = <span class="built_in">len</span>(base64_bytes) % <span class="number">3</span></span><br><span class="line"></span><br><span class="line">    integral_part = base64_bytes[<span class="number">0</span>:<span class="number">3</span> * nums]</span><br><span class="line">    <span class="keyword">while</span> integral_part:</span><br><span class="line">        <span class="comment"># 取三个字节，以每6比特，转换为4个整数</span></span><br><span class="line">        tmp_unit = <span class="string">&#x27;&#x27;</span>.join(integral_part[<span class="number">0</span>:<span class="number">3</span>])</span><br><span class="line">        tmp_unit = [<span class="built_in">int</span>(tmp_unit[x: x + <span class="number">6</span>], <span class="number">2</span>) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">0</span>, <span class="number">6</span>, <span class="number">12</span>, <span class="number">18</span>]]</span><br><span class="line">        <span class="comment"># 取对应base64字符</span></span><br><span class="line">        resp += <span class="string">&#x27;&#x27;</span>.join([base64_charset[i] <span class="keyword">for</span> i <span class="keyword">in</span> tmp_unit])</span><br><span class="line">        integral_part = integral_part[<span class="number">3</span>:]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> remain:</span><br><span class="line">        <span class="comment"># 补齐三个字节，每个字节补充 0000 0000</span></span><br><span class="line">        remain_part = <span class="string">&#x27;&#x27;</span>.join(base64_bytes[<span class="number">3</span> * nums:]) + (<span class="number">3</span> - remain) * <span class="string">&#x27;0&#x27;</span> * <span class="number">8</span></span><br><span class="line">        <span class="comment"># 取三个字节，以每6比特，转换为4个整数</span></span><br><span class="line">        <span class="comment"># 剩余1字节可构造2个base64字符，补充==；剩余2字节可构造3个base64字符，补充=</span></span><br><span class="line">        tmp_unit = [<span class="built_in">int</span>(remain_part[x: x + <span class="number">6</span>], <span class="number">2</span>) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">0</span>, <span class="number">6</span>, <span class="number">12</span>, <span class="number">18</span>]][:remain + <span class="number">1</span>]</span><br><span class="line">        resp += <span class="string">&#x27;&#x27;</span>.join([base64_charset[i] <span class="keyword">for</span> i <span class="keyword">in</span> tmp_unit]) + (<span class="number">3</span> - remain) * <span class="string">&#x27;=&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> resp</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decode</span>(<span class="params">base64_str</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    解码base64字符串</span></span><br><span class="line"><span class="string">    :param base64_str:base64字符串</span></span><br><span class="line"><span class="string">    :return:解码后的bytearray；若入参不是合法base64字符串，返回空bytearray</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> valid_base64_str(base64_str):</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">bytearray</span>()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 对每一个base64字符取下标索引，并转换为6为二进制字符串</span></span><br><span class="line">    base64_bytes = [<span class="string">&#x27;&#123;:0&gt;6&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">str</span>(<span class="built_in">bin</span>(base64_charset.index(s))).replace(<span class="string">&#x27;0b&#x27;</span>, <span class="string">&#x27;&#x27;</span>)) <span class="keyword">for</span> s <span class="keyword">in</span> base64_str <span class="keyword">if</span> s != <span class="string">&#x27;=&#x27;</span>]</span><br><span class="line">    resp = <span class="built_in">bytearray</span>()</span><br><span class="line">    nums = <span class="built_in">len</span>(base64_bytes) // <span class="number">4</span></span><br><span class="line">    remain = <span class="built_in">len</span>(base64_bytes) % <span class="number">4</span></span><br><span class="line">    integral_part = base64_bytes[<span class="number">0</span>:<span class="number">4</span> * nums]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> integral_part:</span><br><span class="line">        <span class="comment"># 取4个6位base64字符，作为3个字节</span></span><br><span class="line">        tmp_unit = <span class="string">&#x27;&#x27;</span>.join(integral_part[<span class="number">0</span>:<span class="number">4</span>])</span><br><span class="line">        tmp_unit = [<span class="built_in">int</span>(tmp_unit[x: x + <span class="number">8</span>], <span class="number">2</span>) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">0</span>, <span class="number">8</span>, <span class="number">16</span>]]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> tmp_unit:</span><br><span class="line">            resp.append(i)</span><br><span class="line">        integral_part = integral_part[<span class="number">4</span>:]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> remain:</span><br><span class="line">        remain_part = <span class="string">&#x27;&#x27;</span>.join(base64_bytes[nums * <span class="number">4</span>:])</span><br><span class="line">        tmp_unit = [<span class="built_in">int</span>(remain_part[i * <span class="number">8</span>:(i + <span class="number">1</span>) * <span class="number">8</span>], <span class="number">2</span>) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(remain - <span class="number">1</span>)]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> tmp_unit:</span><br><span class="line">            resp.append(i)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> resp</span><br></pre></td></tr></table></figure>
+
+<p>特别注意：<span style="color: red"><strong>Base64默认的字符集索引是上边给出的那张图片，有一些JS反爬会在Base64的字符集上面做文章，比如打乱字符集的顺序，导致编码之后的字符串无法用原来的字符集索引进行解码，这样让人误以为不是Base64编码，实际上依然使用的是Base64编码，只不过解码的时候用的是跟编码一样的打乱之后的字符集索引</strong></span>。比如我们将上面生成字符集索引的代码改为如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">base64_charset = <span class="built_in">list</span>(string.ascii_uppercase + string.ascii_lowercase + string.digits + <span class="string">&#x27;+/&#x27;</span>)</span><br><span class="line">random.shuffle(base64_charset)</span><br><span class="line">base64_charset = <span class="string">&quot;&quot;</span>.join(base64_charset)</span><br></pre></td></tr></table></figure>
+
+<p>然后测试一下程序，结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203220024628.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220322002411118" title="">
+                </div>
+                <div class="image-caption">image-20220322002411118</div>
+            </figure>
+
+<p>可以看到随着每次使用的字符集索引表不同，导致每次Base64编码的结果也不同，但是如果解码跟编码使用同一套字符集索引表，依然可以正确的解码得到编码之前的内容。</p>
+<h4 id="md5信息指纹"><a href="#md5信息指纹" class="headerlink" title="md5信息指纹"></a>md5信息指纹</h4><p><strong>MD5消息摘要算法</strong>（英语：MD5 Message-Digest Algorithm），一种被广泛使用的<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%AF%86%E7%A2%BC%E9%9B%9C%E6%B9%8A%E5%87%BD%E6%95%B8">密码散列函数</a>，可以产生出一个128位（16个字符(BYTES)）的散列值（hash value），用于确保信息传输完整一致。</p>
+<h5 id="Python代码演示-1"><a href="#Python代码演示-1" class="headerlink" title="Python代码演示"></a>Python代码演示</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">md5</span>(<span class="params">text: <span class="built_in">str</span></span>):</span><br><span class="line">    m = hashlib.md5()</span><br><span class="line">    m.update(text.encode(<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line">    <span class="keyword">return</span> m.hexdigest()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">file_md5</span>(<span class="params">filename: <span class="built_in">str</span></span>):</span><br><span class="line">    m = hashlib.md5()</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(filename, <span class="string">&quot;rb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        <span class="keyword">for</span> chunk <span class="keyword">in</span> <span class="built_in">iter</span>(<span class="keyword">lambda</span>: f.read(<span class="number">4096</span>), <span class="string">b&quot;&quot;</span>):</span><br><span class="line">        	m.update(chunk)</span><br><span class="line">            </span><br><span class="line">    <span class="keyword">return</span> m.hexdigest()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(md5(<span class="string">&quot;123456&quot;</span>))  <span class="comment"># e10adc3949ba59abbe56e057f20f883e</span></span><br><span class="line"><span class="built_in">print</span>(file_md5(<span class="string">&quot;xxx.json&quot;</span>)) <span class="comment"># eea7fb16ddf174c2f92cac5adb6ce7bc</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="AES-加密"><a href="#AES-加密" class="headerlink" title="AES 加密"></a>AES 加密</h4><p>AES，高级加密标准（Advanced Encryption Standard）。是用来替代 DES，目前比较流行的对称加密算法。</p>
+<h5 id="对称加密"><a href="#对称加密" class="headerlink" title="对称加密"></a>对称加密</h5><p>一方通过密钥将信息加密后，把密文传给另一方，另一方通过这个相同的密钥将密文解密，转换成可以理解的明文。</p>
+<h5 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h5><ol>
+<li>A要向B发送信息，A和B都要产生一对用于加密和解密的公钥和私钥。</li>
+<li>A的私钥保密，公钥告诉B；B的私钥保密，公钥告诉A。</li>
+<li>A要给B发送信息时，A用B的公钥加密信息，因为A知道B的公钥。</li>
+<li>A将这个信息发给B(已经用B的公钥加密信息)。</li>
+<li>B收到信息后，B用自己的私钥解密A的信息，其它所有收到这个报文的人都无法解密，因为只有B才有解密的私钥。</li>
+<li>反过来，B给A发送信息时一样。</li>
+</ol>
+<h5 id="对称加密与非对称加密的区别"><a href="#对称加密与非对称加密的区别" class="headerlink" title="对称加密与非对称加密的区别"></a>对称加密与非对称加密的区别</h5><ul>
+<li>对称加密与解密使用的同样的密钥，所以速度快，但由于需要将密钥在网络中传输，所以安全性不高。</li>
+<li>非对称加密使用了一对密钥，公钥与私钥，所以安全性高，但加密与解密速度慢。</li>
+<li>解决的方法是将对称加密使用非对称加密的公钥进行加密，然后发送出去，接收方使用私钥进行解密得到对称加密的密钥，然后双方使用对称加密进行信息的传输。</li>
+</ul>
+<h5 id="AES加密三要素"><a href="#AES加密三要素" class="headerlink" title="AES加密三要素"></a>AES加密三要素</h5><p>密钥，填充和模式。</p>
+<ol>
+<li>密钥</li>
+</ol>
+<p>对称加密之所以对称就是因为这类算法对明文的加密和解密使用的是同一个密钥。AES支持三种长度的密钥：128位，192位，256位。</p>
+<ol start="2">
+<li>填充</li>
+</ol>
+<p>说到填充一定要说一下，AES分组加密的特性，AES加密并不是一股脑将明文加密成密文，而是把明文拆成一个个独立的明文块，且每个明文块128bit。假如有一段明文长度是196bit，如果按照每128bit一个明文块来拆分的话，第二个明文块只有64bit，不足128bit。这个时候怎么办呢？就需要对明文块进行填充。</p>
+<p>填充的种类：</p>
+<ul>
+<li>NoPadding - 不作任何填充，但是要求明文长度必须是128位的整倍数。</li>
+<li>PKCS7Padding - 当明文块少于16个字节，在明文块末尾补充相应数量的字符（字符为缺少的字节数）。</li>
+<li>ZeroPadding - 用0进行填充，但是这种方式不推荐，因为经常出现明文块最后一块也是0的时候，解密经常出现错误。</li>
+</ul>
+<p>演示PKCS7Padding：</p>
+<p>比如一段明文为1，2，4，5，6，1，2，3，4，5当这10个字节进行加密的时候是不足16个字节的，如果用PKCS7Padding进行填充，应该是：1，2，4，5，6，1，2，3，4，6，6，6，6，6，6(差6位，补6，且补6个；如果是差7位，则补足7个7)。</p>
+<ol start="3">
+<li>模式</li>
+</ol>
+<p>AES的工作模式主要体现在把明文块加密成密文块的处理过程中，AES加密算法提供了五种不同的工作模式：CBC，ECB，CTR，CFB，OFB。</p>
+<p>模式之间的主题思想是近似的，在处理细节上有一些差别。</p>
+<ul>
+<li>ECB模式是最简单的工作模式，在该模式下，每一个明文块的加密都是完全独立，互不干涉。</li>
+</ul>
+<p>这样做的好处？简单；有利于并行计算。</p>
+<p>这样做的缺点？相同的明文块经过加密会变成相同的密文块，因此安全性较差。</p>
+<ul>
+<li>CBC模式引入了一个新的概念：初始向量IV。</li>
+</ul>
+<p>IV是用来做什么的呢？它的作用和MD5的加盐有些类似，目的是防止同样的明文块始终加密成同样的密文块。</p>
+<p>CBC模式在每一个明文块加密前会让明文块和一个值先做异或操作。</p>
+<p>IV作为初始化变量，参与第一个明文的异或，后续的每一个明文块和它前一个明文块所加密的明文块相异或。这样相同的明文块加密出来的密文块显然是不同的。</p>
+<p>这样做的好处？安全性更高。</p>
+<p>这样做的缺点？无法并行计算，性能上不如CBC模式；引入初始化向量IV，增加复杂度。</p>
+<h5 id="Python代码实现"><a href="#Python代码实现" class="headerlink" title="Python代码实现"></a>Python代码实现</h5><ol>
+<li><strong>ECB 模式</strong></li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.Cipher <span class="keyword">import</span> AES</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLOCK_SIZE = <span class="number">16</span>  <span class="comment"># Bytes</span></span><br><span class="line">pad = <span class="keyword">lambda</span> s: s + (BLOCK_SIZE - <span class="built_in">len</span>(s) % BLOCK_SIZE) * \</span><br><span class="line">                <span class="built_in">chr</span>(BLOCK_SIZE - <span class="built_in">len</span>(s) % BLOCK_SIZE)</span><br><span class="line">unpad = <span class="keyword">lambda</span> s: s[:-<span class="built_in">ord</span>(s[<span class="built_in">len</span>(s) - <span class="number">1</span>:])]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">aesEncrypt</span>(<span class="params">key, data</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    AES的ECB模式加密方法</span></span><br><span class="line"><span class="string">    :param key: 密钥</span></span><br><span class="line"><span class="string">    :param data:被加密字符串（明文）</span></span><br><span class="line"><span class="string">    :return:密文</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    key = key.encode(<span class="string">&#x27;utf8&#x27;</span>)</span><br><span class="line">    <span class="comment"># 字符串补位</span></span><br><span class="line">    data = pad(data)</span><br><span class="line">    cipher = AES.new(key, AES.MODE_ECB)</span><br><span class="line">    <span class="comment"># 加密后得到的是bytes类型的数据，使用Base64进行编码,返回byte字符串</span></span><br><span class="line">    result = cipher.encrypt(data.encode())</span><br><span class="line">    encodestrs = base64.b64encode(result)</span><br><span class="line">    enctext = encodestrs.decode(<span class="string">&#x27;utf8&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(enctext)</span><br><span class="line">    <span class="keyword">return</span> enctext</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">aesDecrypt</span>(<span class="params">key, data</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    :param key: 密钥</span></span><br><span class="line"><span class="string">    :param data: 加密后的数据（密文）</span></span><br><span class="line"><span class="string">    :return:明文</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    key = key.encode(<span class="string">&#x27;utf8&#x27;</span>)</span><br><span class="line">    data = base64.b64decode(data)</span><br><span class="line">    cipher = AES.new(key, AES.MODE_ECB)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 去补位</span></span><br><span class="line">    text_decrypted = unpad(cipher.decrypt(data))</span><br><span class="line">    text_decrypted = text_decrypted.decode(<span class="string">&#x27;utf8&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(text_decrypted)</span><br><span class="line">    <span class="keyword">return</span> text_decrypted</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    key = <span class="string">&#x27;5c44c819appsapi0&#x27;</span></span><br><span class="line"></span><br><span class="line">    data = <span class="string">&#x27;herish acorn&#x27;</span></span><br><span class="line"></span><br><span class="line">    ecdata = aesEncrypt(key, data)  <span class="comment"># 0FyQSXu3Q9Q13JGf4F74jA==</span></span><br><span class="line">    aesDecrypt(key, ecdata)			<span class="comment"># herish acorn</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<ol start="2">
+<li><strong>CBC 模式</strong></li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.Cipher  <span class="keyword">import</span> AES</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 密钥（key）, 密斯偏移量（iv） CBC模式加密</span></span><br><span class="line"></span><br><span class="line">BLOCK_SIZE = <span class="number">16</span>  <span class="comment"># Bytes</span></span><br><span class="line">pad = <span class="keyword">lambda</span> s: s + (BLOCK_SIZE - <span class="built_in">len</span>(s) % BLOCK_SIZE) * \</span><br><span class="line">                <span class="built_in">chr</span>(BLOCK_SIZE - <span class="built_in">len</span>(s) % BLOCK_SIZE)</span><br><span class="line">unpad = <span class="keyword">lambda</span> s: s[:-<span class="built_in">ord</span>(s[<span class="built_in">len</span>(s) - <span class="number">1</span>:])]</span><br><span class="line"></span><br><span class="line">vi = <span class="string">&#x27;0102030405060708&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">AES_Encrypt</span>(<span class="params">key, data</span>):</span><br><span class="line">    data = pad(data)</span><br><span class="line">    <span class="comment"># 字符串补位</span></span><br><span class="line">    cipher = AES.new(key.encode(<span class="string">&#x27;utf8&#x27;</span>), AES.MODE_CBC, vi.encode(<span class="string">&#x27;utf8&#x27;</span>))</span><br><span class="line">    encryptedbytes = cipher.encrypt(data.encode(<span class="string">&#x27;utf8&#x27;</span>))</span><br><span class="line">    <span class="comment"># 加密后得到的是bytes类型的数据，使用Base64进行编码,返回byte字符串</span></span><br><span class="line">    encodestrs = base64.b64encode(encryptedbytes)</span><br><span class="line">    <span class="comment"># 对byte字符串按utf-8进行解码</span></span><br><span class="line">    enctext = encodestrs.decode(<span class="string">&#x27;utf8&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> enctext</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">AES_Decrypt</span>(<span class="params">key, data</span>):</span><br><span class="line">    data = data.encode(<span class="string">&#x27;utf8&#x27;</span>)</span><br><span class="line">    encodebytes = base64.decodebytes(data)</span><br><span class="line">    <span class="comment"># 将加密数据转换位bytes类型数据</span></span><br><span class="line">    cipher = AES.new(key.encode(<span class="string">&#x27;utf8&#x27;</span>), AES.MODE_CBC, vi.encode(<span class="string">&#x27;utf8&#x27;</span>))</span><br><span class="line">    text_decrypted = cipher.decrypt(encodebytes)</span><br><span class="line">    <span class="comment"># 去补位</span></span><br><span class="line">    text_decrypted = unpad(text_decrypted)</span><br><span class="line">    text_decrypted = text_decrypted.decode(<span class="string">&#x27;utf8&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(text_decrypted)</span><br><span class="line">    <span class="keyword">return</span> text_decrypted</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    key = <span class="string">&#x27;5c44c819appsapi0&#x27;</span></span><br><span class="line"></span><br><span class="line">    data = <span class="string">&#x27;herish acorn&#x27;</span></span><br><span class="line">    enctext = AES_Encrypt(key, data)	<span class="comment"># svAg4qrFNphvwS47DLSb2A==</span></span><br><span class="line">    <span class="built_in">print</span>(enctext)						<span class="comment"># herish acorn</span></span><br><span class="line"></span><br><span class="line">    AES_Decrypt(key, enctext)</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="NodeJS代码实现"><a href="#NodeJS代码实现" class="headerlink" title="NodeJS代码实现"></a>NodeJS代码实现</h5><ol>
+<li><strong>ECB模式</strong></li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">CryptoJS</span> = <span class="built_in">require</span>(<span class="string">&quot;crypto-js&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> key = <span class="string">&quot;ABC1234567891234&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">encrypt</span>(<span class="params">text</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">CryptoJS</span>.<span class="property">AES</span>.<span class="title function_">encrypt</span>(text, <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(key), &#123;</span><br><span class="line">        <span class="attr">iv</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">        <span class="attr">mode</span>: <span class="title class_">CryptoJS</span>.<span class="property">mode</span>.<span class="property">ECB</span>,</span><br><span class="line">        <span class="attr">padding</span>: <span class="title class_">CryptoJS</span>.<span class="property">pad</span>.<span class="property">Pkcs7</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">decrypt</span>(<span class="params">text</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> result = <span class="title class_">CryptoJS</span>.<span class="property">AES</span>.<span class="title function_">decrypt</span>(text, <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(key), &#123;</span><br><span class="line">        <span class="attr">iv</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">        <span class="attr">mode</span>: <span class="title class_">CryptoJS</span>.<span class="property">mode</span>.<span class="property">ECB</span>,</span><br><span class="line">        <span class="attr">padding</span>: <span class="title class_">CryptoJS</span>.<span class="property">pad</span>.<span class="property">Pkcs7</span></span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> result.<span class="title function_">toString</span>(<span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> text = <span class="string">&quot;123456&quot;</span>;</span><br><span class="line"><span class="keyword">var</span> encoded = <span class="title function_">encrypt</span>(text);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(encoded.<span class="title function_">toString</span>());	<span class="comment">// nWhAGHyLGTLV1dff9+PEUw==</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">decrypt</span>(encoded));		<span class="comment">// 123456</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li><strong>CBC模式</strong></li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">CryptoJS</span> = <span class="built_in">require</span>(<span class="string">&quot;crypto-js&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> key = <span class="string">&quot;ABC1234567891234&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> iv = <span class="string">&quot;1234567812345678&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">encrypt</span>(<span class="params">text</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">CryptoJS</span>.<span class="property">AES</span>.<span class="title function_">encrypt</span>(text, <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(key), &#123;</span><br><span class="line">        <span class="attr">iv</span>: <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(iv),</span><br><span class="line">        <span class="attr">mode</span>: <span class="title class_">CryptoJS</span>.<span class="property">mode</span>.<span class="property">CBC</span>,</span><br><span class="line">        <span class="attr">padding</span>: <span class="title class_">CryptoJS</span>.<span class="property">pad</span>.<span class="property">Pkcs7</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">decrypt</span>(<span class="params">text</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> result = <span class="title class_">CryptoJS</span>.<span class="property">AES</span>.<span class="title function_">decrypt</span>(text, <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(key), &#123;</span><br><span class="line">        <span class="attr">iv</span>: <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(iv),</span><br><span class="line">        <span class="attr">mode</span>: <span class="title class_">CryptoJS</span>.<span class="property">mode</span>.<span class="property">CBC</span>,</span><br><span class="line">        <span class="attr">padding</span>: <span class="title class_">CryptoJS</span>.<span class="property">pad</span>.<span class="property">Pkcs7</span></span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> result.<span class="title function_">toString</span>(<span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> text = <span class="string">&quot;123456&quot;</span>;</span><br><span class="line"><span class="keyword">var</span> encoded = <span class="title function_">encrypt</span>(text);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(encoded.<span class="title function_">toString</span>());	<span class="comment">// 6S3YRylMmp9vIFOplWxypw==</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">decrypt</span>(encoded));		<span class="comment">// 123456</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="AES加密流程总结"><a href="#AES加密流程总结" class="headerlink" title="AES加密流程总结"></a>AES加密流程总结</h5><ol>
+<li>把明文按照128bit拆分成若干个明文块。</li>
+<li>按照选择的填充方式来填充最后一个明文块。</li>
+<li>每一个明文块利用AES加密器和密钥加密成明文。</li>
+<li>拼接所有的密文块成为最终的密文结果。</li>
+</ol>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203172352889.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="AES加密" title="">
+                </div>
+                <div class="image-caption">AES加密</div>
+            </figure>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:49.368Z" itemprop="dateUpdated">2023-05-09 18:16:49</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/&title=《JS逆向中用到的常见的编码和加密》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/&title=《JS逆向中用到的常见的编码和加密》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向中用到的常见的编码和加密》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS代码安全防护原理——AST混淆原理</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8B%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向之快速定位关键代码</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/&title=《JS逆向中用到的常见的编码和加密》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/&title=《JS逆向中用到的常见的编码和加密》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向中用到的常见的编码和加密》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAAEmCAAAAADqr2IGAAAElElEQVR42u3ay47aQBAFUP7/pydSVokS4N4qk9DM8QqRwe4+jlRdj9stvr5+Xr9+vnf9+fd//ureN49/237z+Lm3V1yYMGHChOktmfJtP35AvqB2oY/vnHPPXjkmTJgwYfoMpstuF9zn8ef8SJGvOVnPExNMmDBhwvQNmDa/mm0gf1Wz52LChAkTJkztJjchPwnzswNEXozGhAkTJkyfyrQPsfn3+X1mLyDpRb6wFo4JEyZMmN6MaTa48xmfL74wYcKECdObMX2VV5swX3WAyFeyT4n/8ixMmDBhwnQsU56mJoloMlLTJpavu3P9REyYMGHCdCzTrJE5G6lpt7cZA5r9VyjQMWHChAnT2zO14bMNvW2ie1XpOS/sRkk1JkyYMGE6nCkPtMm2X7HovHSbJ+rFrzBhwoQJ0+FMeTKZj7/k6ei1Rd6kjZqvv6gEYMKECROmt2RKljIb5cnLvsk9Z8M3LfoTSkyYMGHCdDjTVWXZBCsP2+1rS9qibeMWEyZMmDCdyzRb0Ga4Z9+qzO+8n2PChAkTJkyfx5TfelZmzSHyI0LethwmyZgwYcKE6XCmdrSlDcb5wM1m+GZ/nye1AUyYMGHCdCzTbHuzEZzHy20PDXmanf9rfW7ChAkTJkyHMH3FV10kHQX+FiUvIufHIEyYMGHC9BlMbTjfJJwz3JYgfzG31hUTJkyYMB3FdFUJtR1FbQdukkNAm0jXLwYTJkyYMB3ONIuMs0GZfYDPQdt9FU1NTJgwYcJ0CNNVwTgfOZ1tMi8950n7cDQWEyZMmDAdyDQbmskT4BnrcNRm/arqajcmTJgwYXpLpjYAz4J63i5NXsCGMn/Wb58xYcKECdPhTLMhns0R4RVF3ryxWh+JMGHChAnTsUyzlmEb/vegeZLcEieHBkyYMGHCdDpTjjIL3rNibp6g5ttu03tMmDBhwnQ6Uz4uk2yjXWjyGvLib344yAvNmDBhwoTpdKYkHU0Ku/tTSZ7u7su7yV9iwoQJE6ZPYspD8iyZbK+8ddqWjIsy7r09YsKECROmA5k24bbl+zdN0/ZQEo34YMKECROmY5lmTcccd7ax2ZBNfqwZ3g0TJkyYMB3F9PjHbdk3D8P5NmbN0dkh4+5TMGHChAnT4Uxt0tuG6jbkt0lp2zStXycmTJgwYTqcadj/LBuZM/S8/Jq/sPyYggkTJkyYPptpP3Yza3Dm3HnROUd5UuTFhAkTJkwHMm0OB3nRNg/8bWl4AxcNIWHChAkTpo9gurawmzdKi+WWqXg71lO0MzFhwoQJ0yFM+5vOirCbX+VF3qKM216YMGHChOkQplkBt21GJkF91v6ctSfzw8fdWjgmTJgwYTqEqY2JbRJ7VfDO25mbIvUmwcaECRMmTO/M1B4C8rJsO9wze+7sldTDQJgwYcKE6XCmzSHgqiZlPgDUfrN5FiZMmDBh+j5Medk3PyjMRoXyb9p2LCZMmDBhwpSH3vZYsB++aYeKikEiTJgwYcJ0ONOsyLsfoGnT3TbFbY8mL2lnYsKECROm/8rUDu5sSqVtg3NTot2XfesLEyZMmDC9F9MPkOv7zSwghy0AAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

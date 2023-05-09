@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>从零开始学深度学习——泰勒公式 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="数学,深度学习">
+    <meta name="description" content="泰勒公式（也叫 泰勒展开式、泰勒多项式）泰勒级数  它是微积分学下的一个重要概念，与之有关联的有：如泰勒定理，多元泰勒公式，以拉格朗日型余项为代表的各类余项，审敛法，牛顿差值公式（牛顿级数）（列出为了进行树状知识整合和梳理） 什么是泰勒公式基本定义泰勒公式为：$$f(x){Taylor}&#x3D;\sum{n&#x3D;0}^{\infty}{\frac{f^{(n)}(a)}{n!}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零开始学深度学习——泰勒公式">
+<meta property="og:url" content="http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="泰勒公式（也叫 泰勒展开式、泰勒多项式）泰勒级数  它是微积分学下的一个重要概念，与之有关联的有：如泰勒定理，多元泰勒公式，以拉格朗日型余项为代表的各类余项，审敛法，牛顿差值公式（牛顿级数）（列出为了进行树状知识整合和梳理） 什么是泰勒公式基本定义泰勒公式为：$$f(x){Taylor}&#x3D;\sum{n&#x3D;0}^{\infty}{\frac{f^{(n)}(a)}{n!}">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101452973.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101518822.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101519978.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101522280.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101528996.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101530098.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101533737.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101534587.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101534654.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101538003.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101539553.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101546350.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101549609.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101550311.gif?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2021-01-15T12:18:44.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:38.648Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="数学">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101452973.gif">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">从零开始学深度学习——泰勒公式</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">从零开始学深度学习——泰勒公式</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2021-01-15T12:18:44.000Z" itemprop="datePublished" class="page-time">
+  2021-01-15
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F"><span class="post-toc-number">1.</span> <span class="post-toc-text">什么是泰勒公式</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%AE%9A%E4%B9%89"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">基本定义</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%81%94%E6%83%B3%E9%93%BE%E6%9D%A1"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">联想链条</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E6%80%8E%E6%A0%B7%E7%90%86%E8%A7%A3%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F"><span class="post-toc-number">2.</span> <span class="post-toc-text">怎样理解泰勒公式</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%87%BD%E6%95%B0%E5%BC%8F%E8%A7%92%E5%BA%A6"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">函数式角度</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E8%BF%91%E4%BC%BC%E8%BF%87%E7%A8%8B"><span class="post-toc-number">2.1.1.</span> <span class="post-toc-text">近似过程</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8%E5%A4%9A%E9%A1%B9%E5%BC%8F%E6%9D%A5%E8%BF%91%E4%BC%BC"><span class="post-toc-number">2.1.2.</span> <span class="post-toc-text">为什么使用多项式来近似</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89%E4%B8%AA%E7%B3%BB%E6%95%B0-frac-1-n"><span class="post-toc-number">2.1.3.</span> <span class="post-toc-text">为什么有个系数 $\frac{1}{n!}$</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%87%BD%E6%95%B0%E8%A7%92%E5%BA%A6%E6%80%BB%E7%BB%93"><span class="post-toc-number">2.1.4.</span> <span class="post-toc-text">函数角度总结</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%87%A0%E4%BD%95%E8%A7%92%E5%BA%A6"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">几何角度</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%BD%99%E9%A1%B9"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">余项</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E6%B3%B0%E5%8B%92%E7%BA%A7%E6%95%B0"><span class="post-toc-number">3.</span> <span class="post-toc-text">泰勒级数</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%94%B6%E6%95%9B"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">收敛</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%8F%91%E6%95%A3"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">发散</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">4.</span> <span class="post-toc-text">总结</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-从零开始学深度学习——泰勒公式"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">从零开始学深度学习——泰勒公式</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2021-01-15 20:18:44" datetime="2021-01-15T12:18:44.000Z"  itemprop="datePublished">2021-01-15</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <div align="middle" style="margin-bottom: 20px;"><iframe src="//player.bilibili.com/player.html?aid=11251323&bvid=BV1Gx411Y7cz&cid=18609209&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe></div>
+
+
+
+<blockquote>
+<p>泰勒公式（也叫 泰勒展开式、泰勒多项式）<br>泰勒级数</p>
+</blockquote>
+<p>它是<strong>微积分学</strong>下的一个重要概念，与之有关联的有：如<strong>泰勒定理</strong>，<strong>多元泰勒公式</strong>，以<strong>拉格朗日型余项</strong>为代表的各类<strong>余项</strong>，<strong>审敛法</strong>，<strong>牛顿差值公式</strong>（牛顿级数）（列出为了进行树状知识整合和梳理）</p>
+<h1 id="什么是泰勒公式"><a href="#什么是泰勒公式" class="headerlink" title="什么是泰勒公式"></a>什么是泰勒公式</h1><h2 id="基本定义"><a href="#基本定义" class="headerlink" title="基本定义"></a>基本定义</h2><p>泰勒公式为：<br>$$<br>f(x)<em>{Taylor}&#x3D;\sum</em>{n&#x3D;0}^{\infty}{\frac{f^{(n)}(a)}{n!}} \times (x-a)^n&#x3D;f(a)+\frac{f^\prime(a)}{1!}(x-a)+\frac{f^{(2)}(a)}{2!}(x-a)^2+…+\frac{f^{(n)}(a)}{n!}(x-a)^n+R_n(x)<br>$$<br>分析下每部分表示的含义：</p>
+<blockquote>
+<p>$f^{(n)}(a)$ 表示 $f(x)$ 在的第 $n$ 阶导数的表达式带入一个 $a$ 计算后的结果，所以它是一个值</p>
+<p>$\frac{1}{n!}$ 是一个系数，每一项都不同，第一项：$\frac{1}{1!}$，第二项：$\frac{1}{2!}$，第三项：$\frac{1}{3!}$   … 以此类推</p>
+<p>$(x-a)^n$ 是一个以 $x$ 为自变量的表达式</p>
+<p>$R_n(x)$ 是泰勒公式的余项，是 $(x-a)^{n}$ 的高阶无穷小</p>
+</blockquote>
+<p>在记住公式之前，认真梳理下公式的各个部分含义，会清晰很多，更加容易帮助我们理解记忆公式。</p>
+<h2 id="联想链条"><a href="#联想链条" class="headerlink" title="联想链条"></a>联想链条</h2><blockquote>
+<p>所有的 ＜内容＞➜ 符号都表达【由＜内容＞联想到】（一种牢固记忆的技巧）</p>
+<p>联想链条是为了给你一把一个长期记忆的钥匙，很久不用之后，估计只能记住【泰勒公式】四个字了，如何利用这仅有的信息回忆起具体的理解和内容，除了理解透彻，直观，利用图像外，弄一个联想链条也是不错的方法</p>
+</blockquote>
+<p>首先拆字</p>
+<p>【公式】 ＜什么公式？＞➜ 【多项式】（Polynomials），把多项式的一般形式写出来，这应该是非常容易理解的概念，即指数不仅仅为2的抛物线的组合。<br>$$<br>P_n(x)&#x3D;\sum_{i&#x3D;0}^{n}{c_ix^i}&#x3D;c_0+c_1x+c_2x^2+…+c_nx^n<br>$$<br>【泰勒】＜谐音“太乐” ≈ 如果所有小数都能<strong>近似</strong>成整数那不是太快乐了？＞ ➜ <strong>近似</strong>，获得一个直观理解</p>
+<ul>
+<li>泰勒公式<strong>通过把【任意函数表达式】转换（重写）为【多项式】形式</strong>，是一种极其强大的函数<strong>近似工具</strong></li>
+</ul>
+<p>为什么说它强大呢？</p>
+<ul>
+<li>多项式非常【友好】，三易，易计算，易求导，易积分</li>
+<li>几何感觉和计算感觉都很直观，如抛物线和几次方就是底数自己乘自己乘几次</li>
+</ul>
+<p>泰勒公式干的事情就是：<strong>使用多项式表达式估计（近似） $f(x)$ 在 $x&#x3D;a$ 附近的值</strong></p>
+<p>那么如何<strong>近似</strong>呢？<strong>使用一个例子</strong>来加深理解</p>
+<h1 id="怎样理解泰勒公式"><a href="#怎样理解泰勒公式" class="headerlink" title="怎样理解泰勒公式"></a>怎样理解泰勒公式</h1><p>我们要干的事情，就是<strong>改变</strong>多项式函数 $P(x)&#x3D;c_0+c_1x+c_2x^2$ 中 $c_0,c_1,c_2$ 的值</p>
+<p>（只有三项是为图个方便）去<strong>近似</strong>余弦函数 $f(x)&#x3D;cos(x)$，【近似过程】参考下面的动图</p>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101452973.gif" alt="近似过程" style="zoom:50%;"/>
+
+<p>我们需要做的事情（目的）即<strong>寻找一条绿色的曲线</strong>（多项式的系数 $c_0,c_1,c_2$），在 $x&#x3D;0$ 附近（0为上面提到的 $a$）尽可能的与 $f(x)&#x3D;cos(x)$ 的图像<strong>相似</strong>（重合）</p>
+<h2 id="函数式角度"><a href="#函数式角度" class="headerlink" title="函数式角度"></a>函数式角度</h2><p>那如何才能找到这三个参数呢？最为显而易见的做法就是希望在 $x&#x3D;0$ 的位置，两个表达式的切线尽量相等，切线即斜率，也就是<strong>求导</strong>，比较抽象，一步一步来可视化一下。</p>
+<h3 id="近似过程"><a href="#近似过程" class="headerlink" title="近似过程"></a>近似过程</h3><ul>
+<li>【确定 $c_0$】$x&#x3D;0$ 带入公式，令 $cos(x)&#x3D;1$ ，同理对 $p(x)$ 可以得到 $c_0&#x3D;1$</li>
+</ul>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101518822.gif" alt="近似过程0" style="zoom:50%;" />
+
+
+
+<ul>
+<li>【确定 $c_1$ 】容易观察到，如果对 $p(x)$可以把 $c_1$ 前的自变量去掉。并且，$x&#x3D;0$ 处 $p(x)$ 已经固定为1，为了更进一步的相似，如果我们让 $x&#x3D;0$ 处的 $f(x)$ 和 $p(x)$ 的切线斜率也相同不就更<strong>近似</strong>了？（两种思考模式我觉得都可以） 求导之后可以的到 $c_1&#x3D;0$</li>
+</ul>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101519978.gif" alt="近似过程1" style="zoom:50%;" />
+
+
+
+<ul>
+<li>【确定 $c_2$ 】现在我们<strong>已经</strong>确定两个值，那么绿色曲线就只能如下图一样移动（固定了 $x&#x3D;0$ 的函数值和  $x&#x3D;0$ 处的斜率 ），为了更接近<strong>相似</strong>的目标，我们希望<strong>斜率在变化的过程中</strong>，<strong>速度</strong>也是<strong>近似</strong>的（滑动的白色和黄色直线）。求二次导数，斜率的变化率相等，确定 $c_2&#x3D;−\frac{1}{2}$</li>
+</ul>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101522280.gif" alt="近似过程1" style="zoom:50%;" />
+
+<p>此时得到表达式 $p(x)&#x3D;1-\frac{1}{2}x^2$ ，检测一下近似度如何？$cos(0.1)≈1−\frac{1}{2}(0.1)^2&#x3D;0.995$ 同时计算器计算得到 $cos(0.1)&#x3D;0.9950042$ ，其实只取前几项的多项式已经在 $x&#x3D;a$ <strong>附近的近似</strong>这一要求上有很好的效果了</p>
+<p>为什么这个【近似过程】写的这么详细，是为了在过程中体会两个关键点。</p>
+<h3 id="为什么使用多项式来近似"><a href="#为什么使用多项式来近似" class="headerlink" title="为什么使用多项式来近似"></a>为什么使用多项式来近似</h3><p>因为多项式的求导法则可以控制变量，消去<strong>低次项</strong>，使得 $x&#x3D;a$ 未知的 $c_n$ 容易确定，在之前的例子里，如下图所示</p>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101528996.gif" alt="近似过程all" style="zoom:50%;" />
+
+<p>$c_0$ 确保了 $x&#x3D;0$ 时相等，$c_1$ 确保了 $x&#x3D;0$ 时的斜率相等，$c_2$ 确保了 $x&#x3D;0$ 时斜率的变化率相等，或者说，<strong>随着多项式幂次变高，这种近似就越精确</strong></p>
+<h3 id="为什么有个系数-frac-1-n"><a href="#为什么有个系数-frac-1-n" class="headerlink" title="为什么有个系数 $\frac{1}{n!}$"></a>为什么有个系数 $\frac{1}{n!}$</h3><p>阶层系数是由一次一次的求导产生的。我们再把项数加两个，参看下图，直观的感受一个 $n!$ 的诞生</p>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101530098.gif" alt="近似过程More" style="zoom:50%;" />
+
+<p>首先，低次项会变为0，这样可以很方便的通过计算 $f(x)$ 的 $n$ 次求导的表达式，带入 $x&#x3D;a$ 即可得到 $c_n$ 的值，<strong>阶层其实是多次求导的系数</strong></p>
+<h3 id="函数角度总结"><a href="#函数角度总结" class="headerlink" title="函数角度总结"></a>函数角度总结</h3><p>其实，<strong>某一点处的导数值信息 ⟺ 那一点附近的函数值信息</strong> 这个直观感觉，是很重要的</p>
+<ul>
+<li>首先，对于 $cos(x)$ 这个<strong>具体例子</strong>，把 $x&#x3D;0$ 位置的多阶导数求出，再使用多项式进行近似，使用的项越多，得到的近似就越准确，参看下面动图</li>
+</ul>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101533737.gif" alt="近似过程More" style="zoom:50%;" />
+
+
+
+<ul>
+<li>推广到一般函数 $f(x)$ ,下列动图描述了随着项的增加，$x&#x3D;0$ 附近的越来越准确</li>
+</ul>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101534587.gif" alt="近似过程More" style="zoom:50%;" />
+
+
+
+<ul>
+<li>最后，推广到 $x&#x3D;a$ 的情形，完全推导出泰勒展开式的一般形式，如下列动图所示</li>
+</ul>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101534654.gif" alt="近似过程More" style="zoom:50%;" />
+
+
+
+<h2 id="几何角度"><a href="#几何角度" class="headerlink" title="几何角度"></a>几何角度</h2><p>首先定义一个函数表示<strong>求下列图像中函数图像中填满部分的面积</strong>，函数为 $f(x)$，面积函数为 $f_{area}(x)$ ，而围成面积区域的曲线即为面积函数的导数 $\frac{df_{area}}{dx}(x)$（至于为什么是这样，有一个牛逼的名字叫做，微积分基本定理： $∫^b_af(t)dt&#x3D;F(b)−F(a) $），如下图所示</p>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101538003.png" alt="几何解释" style="zoom:50%;" />
+
+<p>定义一个这样的场景是为了计算这样一件事（如下图所示）：假设我们知道了 $f(a)$ 点的面积，往右扩展很小的距离 $dx$ 要算出<strong>新部分的面积</strong>（左边绿色已知 + 黄色矩形 + 红色三角形），公式会是什么样的呢？</p>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101539553.png" alt="几何解释问题" style="zoom:53%;" />
+
+<p>设 $dx$ 开始点为 $a$，终点为 $x$ ，则可以得到</p>
+<ul>
+<li>【黄色矩形】底边为 $x-a$ ；高为 $\frac{df_{area}}{dx}(a)$ ；</li>
+<li>【红色三角形】底边为 $x-a$；高的计算稍微麻烦，首先，斜边的斜率是 $\frac{df_{area}}{dx}(x)$, <strong>函数的导数</strong>在 $x&#x3D;a$ 时的函数值（算斜率，求导数即可），而斜率 $k&#x3D;\frac{y}{x}$ ，所以得到高为 $\frac{d^2f_{area}}{dx^2}(a)\times (x-a)$（前部分是斜率，后半部分是 $x$ ，需要求的是 $y$ 也是高）</li>
+<li>【计算总面积】如下图和公式所示</li>
+</ul>
+<p>$$<br>f_{area}(x) \approx f(a) + \frac{df_{area}}{dx}(a)(x-a)+\frac{1}{2}\frac{d^2f_{area}}{dx^2}(a)(x-a)^2<br>$$</p>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101546350.png" alt="几何解释问题" style="zoom:63%;" />
+
+<p>这个公式为啥这么眼熟呢？其实明显就是泰勒展开式的前3项，如果你还要打破沙锅问到底，第4项呢？你可以放大红色三角形，把函数曲线和面积之间的空白部分再次用多个更小的三角形填补，在积分工具的帮助下，可以得到三次项</p>
+<p>从几何角度来看，再一次验证了，泰勒公式是近似的 $x&#x3D;a$ 附近的函数值这一直观理解</p>
+<h2 id="余项"><a href="#余项" class="headerlink" title="余项"></a>余项</h2><p>我们知道，对<strong>泰勒公式</strong>来说，并没有办法完全逼近待求函数，所以无论如何到最后都会留一点东西，这剩下的东西不好表达，就<strong>全都丢到余项中</strong></p>
+<p>可以暂时如此理解，不在此迷惑，如果是专业学生，需要深究，建议参看专业教材深入理解其中玄妙</p>
+<h1 id="泰勒级数"><a href="#泰勒级数" class="headerlink" title="泰勒级数"></a>泰勒级数</h1><p>完成对【泰勒公式】的理解后，需要对【级数 Series】这个概念进行一个推广，什么是【级数】呢？</p>
+<p>在数学中，【级数】就是<strong>无限多项的和</strong></p>
+<p>在把泰勒展开式，扩展到无限项之后，就会出现【收敛 Converge】和【发散 diverge】的概念</p>
+<h2 id="收敛"><a href="#收敛" class="headerlink" title="收敛"></a>收敛</h2><p>收敛，即在泰勒展开式被推广到无限项之后，整体式子的值会越来越趋近于一个定值，比如下图的 $12$ 和 $e$</p>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101549609.gif" alt="几何解释问题" style="zoom:50%;" />
+
+
+
+<h2 id="发散"><a href="#发散" class="headerlink" title="发散"></a>发散</h2><p>与收敛相对应的，即发散，式子无法趋近于一个定值，比如 $\ln(x)$ 在 $x&#x3D;1$ 附近，如下图所示，虚线即为能够让多项式的和收敛的最大取之范围，称为【泰勒级数的<strong>收敛半径</strong>】</p>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101550311.gif?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="几何解释问题" style="zoom:50%;" />
+
+
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>泰勒公式干了一件什么事？</li>
+</ul>
+<p><strong>使用多项式表达式估计（近似） $f(x)$ 在 $x&#x3D;a$ 附近的值</strong></p>
+<ul>
+<li>泰勒公式的导数项如何推倒出来的？</li>
+</ul>
+<p><strong>某一点处的导数值信息 ⟺ 那一点附近的函数值信息</strong></p>
+<ul>
+<li>泰勒公式如何记永远不会忘？</li>
+</ul>
+<p>参照第一条总结，是 $x&#x3D;a$ 附近，公式 ➜ <strong>多项式</strong>，很多项，要用<strong>求和</strong>写在一起；参照第二条总结，近似信息用的<strong>求导</strong>；系数就是<strong>对 $x&#x3D;a$ 处求导</strong>一次一次放下来。<br>$$<br>f(x)&#x3D;\sum_{n&#x3D;0}^{\infty}{\frac{f^{(n)}a}{n!}}(x-a)^n<br>$$</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:38.648Z" itemprop="dateUpdated">2023-05-09 18:16:38</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag">数学</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/&title=《从零开始学深度学习——泰勒公式》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/&title=《从零开始学深度学习——泰勒公式》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《从零开始学深度学习——泰勒公式》 — 何仕鹏的个人博客&url=http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">一文了解Android构建工具——AAPT2</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%96%B9%E5%90%91%E5%AF%BC%E6%95%B0%E4%B8%8E%E6%A2%AF%E5%BA%A6/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">从零开始学深度学习——方向导数与梯度</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/&title=《从零开始学深度学习——泰勒公式》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/&title=《从零开始学深度学习——泰勒公式》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《从零开始学深度学习——泰勒公式》 — 何仕鹏的个人博客&url=http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAT4AAAE+CAAAAAAxUyPsAAAFVUlEQVR42u3cwW7bMBAE0Pz/T7tAb0UseWaXaoHm6RTEikk+GfBylsjXV3y9fl/3v7+65+rV+/u/35mM9bq47ufw/c7DFz58+PDhwxcMeTXw1WCv0ZU8kvz+zYO8H/dyDvjw4cOHD9+ILy9KZl/w9w/gnuD+gbXlzv3vcxN8+PDhw4fvab52gGISa8S2uJl9RPDhw4cPH76/yZds6ZPo4VQZtH/nPNbHhw8fPnz4zvLNlr2J0fNWd/6o2jb8bCx8+PDhw4dvwzeL2v/vnw9f+PDhw4cPX7nhzwuFNlyYFROb1sKsJHozK3z48OHDh2+09nYznG/F28Nks+Ipj+8371P0DfDhw4cPH754L5wfEdsXKDlrfiht81GYFUn48OHDhw9fztcurJ103lafPe18/qeOr71JXPDhw4cPH76YL2dqD4HNypFZkDE7SJdTRuf78OHDhw8fvpgv/2o/FdOfeufn7m8jfnz48OHDh2/G1zaSk7Jgv9WfBeuzFvhw5vjw4cOHD18883aDPQsXki39JlBo2wBtI7/43OHDhw8fPny3MX2+4Nn9eakxe7e80b4f94/R8eHDhw8fvpJvXxbcE+cReQ49CyPy43GzoAEfPnz48OGb8d3HB7PjX89t6dtQY/ZqPhY+fPjw4cN3z5eg5M3stqHehhGzuc2Cj+jChw8fPnz4Dl3tpr098pXEBEU4vu5ZbwomfPjw4cOHb8aXb7/bn2flUR7ib5rxdaaCDx8+fPjwrfmSMmW/ta579eWS2pZ5Xc3hw4cPHz58R/k2QcAmCp/F7qcig9mjwocPHz58+M7ybSKA9pHMjr7NyqnZIbkP4+LDhw8fPnwx3ywISAqazRG0TbCeBxPHzvfhw4cPHz58h66kQDn1GNpx88eWNwzy9eLDhw8fPnyn+GbFQVIKtLF7GzHkY+2bE/jw4cOHD9+ML2kGtwe4ZxHDrGDaxBlFN+PqHfDhw4cPH74FXxtet0F8vvnPx82XvQ/o38wZHz58+PDhm3+n1+3kzfGy5J681X0qGtgcK8eHDx8+fPhyvrwRPmtd58VKUgy18USC2DYqokoKHz58+PDh+/ZX+6Kkjd3ztnf7wPI4YNb+/3qipsOHDx8+fD+Mry1c8mZzG+jPgGYt/H1ZNowM8OHDhw/fj+fbhN0zjnZ5s2NqZw+xXdLjw4cPHz58Jd9siu1xtJa+2K7Hq9gEHx9w8eHDhw8fvpiv3epvttx5MTELJpKQIi/FipIFHz58+PDh62qJArRtSM9KkFn0UFRqh94ZHz58+PDha+fcxvF5uZAvLI8V2tB/U5pEq8CHDx8+fPhKvna7nrMmuElrPJ/J7PHkrfEPn0F8+PDhw4ev+2Zf/YuQ9jhavuDZ4bZZwLE6+oYPHz58+PAtrrYR3sYKOdk+sGiLkrYsw4cPHz58+HK+/Os8X/asLd0G6G2ZkiMWpRI+fPjw4cN3NLJvW8htfdQuchbu59FGu0Z8+PDhw4ev5cuPprX3tIhPlDWbxn/08PDhw4cPH74RX9v8brffm9Z1G2fk9Vo++ofCBR8+fPjw4VvwtYufhfKnovMWIimDiiN0+PDhw4cPX8k3G7KNxfNoYEbTllD7hkSNiA8fPnz48MXlS95UTohnzYBZbJHMLS9cPpwvwIcPHz58+Eq+9os8J87DiFPFU/sY8pbAm/vx4cOHDx++f8SXtLHzV9t4og0jZjHHZccDHz58+PDhe4Av2Ui3R8GeiyfyWc1GxIcPHz58+DZ8+aG0J/4qh05+s3+ERdseHz58+PDhK/naoHxfuGzi8llR1Qb3bRMdHz58+PDhC/h+ASnb78ggoobfAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

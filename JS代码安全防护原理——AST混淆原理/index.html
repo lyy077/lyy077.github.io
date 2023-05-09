@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS代码安全防护原理——AST混淆原理 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS">
+    <meta name="description" content="常量的混淆原理本篇所用的demo如下。接下来的案例都是围绕这个demo进行混淆。 12345678910Date.prototype.format &#x3D; function(formatStr) &amp;#123;    var str &#x3D; formatStr;    var Week &#x3D; [&amp;#x27;日&amp;#x27;, &amp;#x27;一&amp;#x27;, &amp;#x27;二&amp;#x27;, &amp;#x27;三&amp;#x27;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS代码安全防护原理——AST混淆原理">
+<meta property="og:url" content="http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="常量的混淆原理本篇所用的demo如下。接下来的案例都是围绕这个demo进行混淆。 12345678910Date.prototype.format &#x3D; function(formatStr) &amp;#123;    var str &#x3D; formatStr;    var Week &#x3D; [&amp;#x27;日&amp;#x27;, &amp;#x27;一&amp;#x27;, &amp;#x27;二&amp;#x27;, &amp;#x27;三&amp;#x27;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081500383.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081534835.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081535577.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-03-03T14:22:11.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:35.280Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081500383.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS代码安全防护原理——AST混淆原理</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS代码安全防护原理——AST混淆原理</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-03-03T14:22:11.000Z" itemprop="datePublished" class="page-time">
+  2022-03-03
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%B8%B8%E9%87%8F%E7%9A%84%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86"><span class="post-toc-number">1.</span> <span class="post-toc-text">常量的混淆原理</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%AF%B9%E8%B1%A1%E5%B1%9E%E6%80%A7%E7%9A%84%E4%B8%A4%E7%A7%8D%E8%AE%BF%E9%97%AE%E6%96%B9%E5%BC%8F"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">对象属性的两种访问方式</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">十六进制字符串</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#unicode%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">unicode字符串</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84ASCII%E7%A0%81%E6%B7%B7%E6%B7%86"><span class="post-toc-number">1.4.</span> <span class="post-toc-text">字符串的ASCII码混淆</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E5%8A%A0%E5%AF%86"><span class="post-toc-number">1.5.</span> <span class="post-toc-text">字符串常量加密</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%95%B0%E5%80%BC%E5%B8%B8%E9%87%8F%E5%8A%A0%E5%AF%86"><span class="post-toc-number">1.6.</span> <span class="post-toc-text">数值常量加密</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%A2%9E%E5%8A%A0JS%E9%80%86%E5%90%91%E8%80%85%E7%9A%84%E5%B7%A5%E4%BD%9C%E9%87%8F"><span class="post-toc-number">2.</span> <span class="post-toc-text">增加JS逆向者的工作量</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%95%B0%E7%BB%84%E6%B7%B7%E6%B7%86"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">数组混淆</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%95%B0%E7%BB%84%E4%B9%B1%E5%BA%8F"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">数组乱序</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E8%8A%B1%E6%8C%87%E4%BB%A4"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">花指令</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#jsfuck"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">jsfuck</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E7%9A%84%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86"><span class="post-toc-number">3.</span> <span class="post-toc-text">代码执行流程的防护原理</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%B5%81%E7%A8%8B%E5%B9%B3%E5%9D%A6%E5%8C%96"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">流程平坦化</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%80%97%E5%8F%B7%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B7%B7%E6%B7%86"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">逗号表达式混淆</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%85%B6%E5%AE%83%E4%BB%A3%E7%A0%81%E9%98%B2%E6%8A%A4%E6%96%B9%E6%A1%88"><span class="post-toc-number">4.</span> <span class="post-toc-text">其它代码防护方案</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#eval%E5%8A%A0%E5%AF%86"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">eval加密</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E5%86%85%E5%AD%98%E7%88%86%E7%A0%B4"><span class="post-toc-number">4.2.</span> <span class="post-toc-text">内存爆破</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E6%A3%80%E6%B5%8B%E4%BB%A3%E7%A0%81%E6%98%AF%E5%90%A6%E8%A2%AB%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="post-toc-number">4.3.</span> <span class="post-toc-text">检测代码是否被格式化</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS代码安全防护原理——AST混淆原理"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS代码安全防护原理——AST混淆原理</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-03-03 22:22:11" datetime="2022-03-03T14:22:11.000Z"  itemprop="datePublished">2022-03-03</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h4 id="常量的混淆原理"><a href="#常量的混淆原理" class="headerlink" title="常量的混淆原理"></a>常量的混淆原理</h4><p>本篇所用的demo如下。接下来的案例都是围绕这个demo进行混淆。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Date</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">format</span> = <span class="keyword">function</span>(<span class="params">formatStr</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> str = formatStr;</span><br><span class="line">    <span class="keyword">var</span> <span class="title class_">Week</span> = [<span class="string">&#x27;日&#x27;</span>, <span class="string">&#x27;一&#x27;</span>, <span class="string">&#x27;二&#x27;</span>, <span class="string">&#x27;三&#x27;</span>, <span class="string">&#x27;四&#x27;</span>, <span class="string">&#x27;五&#x27;</span>, <span class="string">&#x27;六&#x27;</span>];</span><br><span class="line">    str = str.<span class="title function_">replace</span>(<span class="regexp">/yyyy|YYYY/</span>, <span class="variable language_">this</span>.<span class="title function_">getFullYear</span>());</span><br><span class="line">    str = str.<span class="title function_">replace</span>(<span class="regexp">/MM/</span>, (<span class="variable language_">this</span>.<span class="title function_">getMonth</span>() + <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="variable language_">this</span>.<span class="title function_">getMonth</span>() + <span class="number">1</span>).<span class="title function_">toString</span>() : <span class="string">&#x27;0&#x27;</span> + (<span class="variable language_">this</span>.<span class="title function_">getMonth</span>() + <span class="number">1</span>));</span><br><span class="line">    str = str.<span class="title function_">replace</span>(<span class="regexp">/dd|DD/</span>, <span class="variable language_">this</span>.<span class="title function_">getDate</span>() &gt; <span class="number">9</span> ? <span class="variable language_">this</span>.<span class="title function_">getDate</span>().<span class="title function_">toString</span>() : <span class="string">&#x27;0&#x27;</span> + <span class="variable language_">this</span>.<span class="title function_">getDate</span>());</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">format</span>(<span class="string">&#x27;yyyy-MM-dd&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="对象属性的两种访问方式"><a href="#对象属性的两种访问方式" class="headerlink" title="对象属性的两种访问方式"></a>对象属性的两种访问方式</h5><p>看下面一段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">People</span>(<span class="params">name</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">name</span> = name;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">People</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">sayHello</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Hello&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> p = <span class="keyword">new</span> <span class="title class_">People</span>(<span class="string">&#x27;zhang san&#x27;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(p.<span class="property">name</span>);    <span class="comment">// zhang san</span></span><br><span class="line">p.<span class="title function_">sayHello</span>();           <span class="comment">// Hello</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(p[<span class="string">&#x27;name&#x27;</span>]); <span class="comment">// zhang san</span></span><br><span class="line">p[<span class="string">&#x27;sayHello&#x27;</span>]();				<span class="comment">// Hello</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>p.name这种方式name是一个标识符，必须明确出现在代码中，不能加密和拼接。</li>
+<li>p[‘name’]这种方式name是一个字符串。由于是字符串，所以访问的时候可以进行拼接和加密等操作。所以在JS混淆中，一般会选择这种方式访问属性。</li>
+</ol>
+<p>所以改变对象属性的访问方式，是代码混淆的前提。</p>
+<p>所以开篇提到的demo改变对象属性的访问方式之后，代码修改如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>[<span class="string">&#x27;Date&#x27;</span>][<span class="string">&#x27;prototype&#x27;</span>][<span class="string">&#x27;format&#x27;</span>] = <span class="keyword">function</span>(<span class="params">formatStr</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> str = formatStr;</span><br><span class="line">    <span class="keyword">var</span> <span class="title class_">Week</span> = [<span class="string">&#x27;日&#x27;</span>, <span class="string">&#x27;一&#x27;</span>, <span class="string">&#x27;二&#x27;</span>, <span class="string">&#x27;三&#x27;</span>, <span class="string">&#x27;四&#x27;</span>, <span class="string">&#x27;五&#x27;</span>, <span class="string">&#x27;六&#x27;</span>];</span><br><span class="line">    str = str[<span class="string">&#x27;replace&#x27;</span>](<span class="regexp">/yyyy|YYYY/</span>, <span class="variable language_">this</span>[<span class="string">&#x27;getFullYear&#x27;</span>]());</span><br><span class="line">    str = str[<span class="string">&#x27;replace&#x27;</span>](<span class="regexp">/MM/</span>, (<span class="variable language_">this</span>[<span class="string">&#x27;getMonth&#x27;</span>]() + <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="variable language_">this</span>[<span class="string">&#x27;getMonth&#x27;</span>]() + <span class="number">1</span>).<span class="title function_">toString</span>() : <span class="string">&#x27;0&#x27;</span> + (<span class="variable language_">this</span>[<span class="string">&#x27;getMonth&#x27;</span>]() + <span class="number">1</span>));</span><br><span class="line">    str = str[<span class="string">&#x27;replace&#x27;</span>](<span class="regexp">/dd|DD/</span>, <span class="variable language_">this</span>[<span class="string">&#x27;getDate&#x27;</span>]() &gt; <span class="number">9</span> ? <span class="variable language_">this</span>[<span class="string">&#x27;getDate&#x27;</span>]().<span class="title function_">toString</span>() : <span class="string">&#x27;0&#x27;</span> + <span class="variable language_">this</span>[<span class="string">&#x27;getDate&#x27;</span>]());</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="variable language_">window</span>[<span class="string">&#x27;Date&#x27;</span>]()[<span class="string">&#x27;format&#x27;</span>](<span class="string">&#x27;yyyy-MM-dd&#x27;</span>));</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Date是JS的内置对象，在JS中很多内置对象都属于window的属性。另外，代码中定义的全局变量都是全局对象window的属性，代码中定义的全局方法都是全局对象window的方法。全局对象的属性或者方法在调用的时候可以省略全局对象名。比如，new window.Date()等同于new Date()。由于把Date变成了字符串，所以前面必须加window。</p>
+<h5 id="十六进制字符串"><a href="#十六进制字符串" class="headerlink" title="十六进制字符串"></a>十六进制字符串</h5><p>在JS中支持字符串的十六进制形式表示，所以可以用字符串的十六进制形式来代替原有的字符串。比如’yyyy-MM-dd’可以表示成’\x79\x79\x79\x79\x2d\x4d\x4d\x2d\x64\x64’。其实，0x79就是字母y的ASCII码的十六进制形式，其余的字母类推。可以用一个方法来完成十六进制字符串的转换。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">hexEnc</span>(<span class="params">code</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> hexStr = []</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>, s; i &lt; code.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        s = code.<span class="title function_">charCodeAt</span>(i).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">        hexStr += <span class="string">&#x27;\\x&#x27;</span> + s;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> hexStr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>开篇的demo转换为十六进制字符串之后如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>[<span class="string">&#x27;\x44\x61\x74\x65&#x27;</span>][<span class="string">&#x27;\x70\x72\x6f\x74\x6f\x74\x79\x70\x65&#x27;</span>][<span class="string">&#x27;\x66\x6f\x72\x6d\x61\x74&#x27;</span>] = <span class="keyword">function</span>(<span class="params">formatStr</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> str = formatStr;</span><br><span class="line">    <span class="keyword">var</span> <span class="title class_">Week</span> = [<span class="string">&#x27;\x65e5&#x27;</span>, <span class="string">&#x27;\x4e00&#x27;</span>, <span class="string">&#x27;\x4e8c&#x27;</span>, <span class="string">&#x27;\x4e09&#x27;</span>, <span class="string">&#x27;\x56db&#x27;</span>, <span class="string">&#x27;\x4e94&#x27;</span>, <span class="string">&#x27;\x516d&#x27;</span>];</span><br><span class="line">    str = str[<span class="string">&#x27;\x72\x65\x70\x6c\x61\x63\x65&#x27;</span>](<span class="regexp">/yyyy|YYYY/</span>, <span class="variable language_">this</span>[<span class="string">&#x27;\x67\x65\x74\x46\x75\x6c\x6c\x59\x65\x61\x72&#x27;</span>]());</span><br><span class="line">    str = str[<span class="string">&#x27;\x72\x65\x70\x6c\x61\x63\x65&#x27;</span>](<span class="regexp">/MM/</span>, (<span class="variable language_">this</span>[<span class="string">&#x27;\x67\x65\x74\x4d\x6f\x6e\x74\x68&#x27;</span>]() + <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="variable language_">this</span>[<span class="string">&#x27;\x67\x65\x74\x4d\x6f\x6e\x74\x68&#x27;</span>]() + <span class="number">1</span>).<span class="title function_">toString</span>() : <span class="string">&#x27;\x30&#x27;</span> + (<span class="variable language_">this</span>[<span class="string">&#x27;\x67\x65\x74\x4d\x6f\x6e\x74\x68&#x27;</span>]() + <span class="number">1</span>));</span><br><span class="line">    str = str[<span class="string">&#x27;\x72\x65\x70\x6c\x61\x63\x65&#x27;</span>](<span class="regexp">/dd|DD/</span>, <span class="variable language_">this</span>[<span class="string">&#x27;\x67\x65\x74\x44\x61\x74\x65&#x27;</span>]() &gt; <span class="number">9</span> ? <span class="variable language_">this</span>[<span class="string">&#x27;\x67\x65\x74\x44\x61\x74\x65&#x27;</span>]().<span class="title function_">toString</span>() : <span class="string">&#x27;\x30&#x27;</span> + <span class="variable language_">this</span>[<span class="string">&#x27;\x67\x65\x74\x44\x61\x74\x65&#x27;</span>]());</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="variable language_">window</span>[<span class="string">&#x27;\x44\x61\x74\x65&#x27;</span>]()[<span class="string">&#x27;\x66\x6f\x72\x6d\x61\x74&#x27;</span>](<span class="string">&#x27;\x79\x79\x79\x79\x2d\x4d\x4d\x2d\x64\x64&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="unicode字符串"><a href="#unicode字符串" class="headerlink" title="unicode字符串"></a>unicode字符串</h5><p>在JS中，字符串除了可以表示成十六进制的形式外，还支持使用unicode形式表示。比如：</p>
+<ol>
+<li>以var Week &#x3D; [‘日’, ‘一’, ‘二’, ‘三’, ‘四’, ‘五’, ‘六’]为例，可以表示成var Week &#x3D; [‘\u65e5’, ‘\u4e00’, ‘\u4e8c’, ‘\u4e09’, ‘\u56db’, ‘\u4e94’, ‘\u516d’]</li>
+<li>非中文的情况，Date可以表示成’\u0044\u0061\u0074\u0065’</li>
+</ol>
+<p>从上述例子不难看出，unicode形式就是\u开头，后面跟四位数的十六进制形式，不足四位的补0。可以通过以下代码完成unicode转换：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">unicodeEnc</span>(<span class="params">str</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> value = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  	<span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; str.<span class="property">length</span>; i++) &#123;</span><br><span class="line">      	value += <span class="string">&quot;\\u&quot;</span> + (<span class="string">&quot;0000&quot;</span> + <span class="built_in">parseInt</span>(str.<span class="title function_">charCodeAt</span>(i)).<span class="title function_">toString</span>(<span class="number">16</span>)).<span class="title function_">substr</span>(-<span class="number">4</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>开篇的demo转换为unicode编码之后如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>[<span class="string">&#x27;\u0044\u0061\u0074\u0065&#x27;</span>][<span class="string">&#x27;\u0070\u0072\u006f\u0074\u006f\u0074\u0079\u0070\u0065&#x27;</span>][<span class="string">&#x27;\u0066\u006f\u0072\u006d\u0061\u0074&#x27;</span>] = <span class="keyword">function</span>(<span class="params">formatStr</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> str = formatStr;</span><br><span class="line">    <span class="keyword">var</span> <span class="title class_">Week</span> = [<span class="string">&#x27;\u65e5&#x27;</span>, <span class="string">&#x27;\u4e00&#x27;</span>, <span class="string">&#x27;\u4e8c&#x27;</span>, <span class="string">&#x27;\u4e09&#x27;</span>, <span class="string">&#x27;\u56db&#x27;</span>, <span class="string">&#x27;\u4e94&#x27;</span>, <span class="string">&#x27;\u516d&#x27;</span>];</span><br><span class="line">    str = str[<span class="string">&#x27;\u0072\u0065\u0070\u006c\u0061\u0063\u0065&#x27;</span>](<span class="regexp">/yyyy|YYYY/</span>, <span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u0046\u0075\u006c\u006c\u0059\u0065\u0061\u0072&#x27;</span>]());</span><br><span class="line">    str = str[<span class="string">&#x27;\u0072\u0065\u0070\u006c\u0061\u0063\u0065&#x27;</span>](<span class="regexp">/MM/</span>, (<span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u004d\u006f\u006e\u0074\u0068&#x27;</span>]() + <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u004d\u006f\u006e\u0074\u0068&#x27;</span>]() + <span class="number">1</span>).<span class="title function_">toString</span>() : <span class="string">&#x27;\u0030&#x27;</span> + (<span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u004d\u006f\u006e\u0074\u0068&#x27;</span>]() + <span class="number">1</span>));</span><br><span class="line">    str = str[<span class="string">&#x27;\u0072\u0065\u0070\u006c\u0061\u0063\u0065&#x27;</span>](<span class="regexp">/dd|DD/</span>, <span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u0044\u0061\u0074\u0065&#x27;</span>]() &gt; <span class="number">9</span> ? <span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u0044\u0061\u0074\u0065&#x27;</span>]().<span class="title function_">toString</span>() : <span class="string">&#x27;\u0030&#x27;</span> + <span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u0044\u0061\u0074\u0065&#x27;</span>]());</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="variable language_">window</span>[<span class="string">&#x27;\u0044\u0061\u0074\u0065&#x27;</span>]()[<span class="string">&#x27;\u0066\u006f\u0072\u006d\u0061\u0074&#x27;</span>](<span class="string">&#x27;\u0079\u0079\u0079\u0079\u002d\u004d\u004d\u002d\u0064\u0064&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>unicode字符和十六进制字符串都能轻易的还原，即直接把字符串放到控制台打印即可还原。</p>
+<h5 id="字符串的ASCII码混淆"><a href="#字符串的ASCII码混淆" class="headerlink" title="字符串的ASCII码混淆"></a>字符串的ASCII码混淆</h5><p>首先关注2个方法。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;x&#x27;</span>.<span class="title function_">charCodeAt</span>(<span class="number">0</span>));						 <span class="comment">//120</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;b&#x27;</span>.<span class="title function_">charCodeAt</span>(<span class="number">0</span>));						 <span class="comment">//98</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">String</span>.<span class="title function_">fromCharCode</span>(<span class="number">120</span>, <span class="number">98</span>)); <span class="comment">//xb</span></span><br></pre></td></tr></table></figure>
+
+<p>charCodeAt方法表示把字符串转换成ASCII编码，fromCharCode表示把ASCII码转换为字符串形式。</p>
+<p>可以通过以下代码将字符串变成字节数组。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">stringToByte</span>(<span class="params">str</span>) &#123;</span><br><span class="line">  	<span class="keyword">var</span> byteArr = [];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; str.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        byteArr.<span class="title function_">push</span>(str.<span class="title function_">charCodeAt</span>(i));</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="keyword">return</span> byteArr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>比如demo中的format可以用字节数组表示为[102, 111, 114, 109, 97, 116]，因此代码中的format可以表示成String.fromCharCode(102, 111, 114, 109, 97, 116)。注意，fromCharCode接受的参数类型不是数组，而是可变参数类型。如果非要传一个数组，可以使用String.fromCharCode.apply(null, [102, 111, 114, 109, 97, 116])。<strong>JS的函数也是对象，可以给函数定义属性和方法，而函数本身也自带一些属性和方法。apply就是从函数的原型对象Function.prototype继承过来的方法</strong>。</p>
+<p>ASCII码混淆不仅可以用于混淆字符串，还可以用来做代码混淆。比如我们把代码<code>str = str[&#39;replace&#39;](/yyyy|YYYY/, this[&#39;getFullYear&#39;]());</code>看作一个字符串：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">stringToByte</span>(<span class="string">&quot;str = str[&#x27;replace&#x27;](/yyyy|YYYY/, this[&#x27;getFullYear&#x27;]());&quot;</span>);</span><br><span class="line"><span class="comment">// [ 115, 116, 114,  32,  61, 32, 115, 116, 114,  91, 39, 114, 101, 112, 108,  97, 99, 101,  39,  93,  40, 47, 121, 121, 121, 121, 124, 89,  89,  89,  89,  47, 44, 32, 116, 104, 105, 115, 91,  39, 103, 101, 116, 70, 117, 108, 108,  89, 101, 97, 114,  39,  93,  40, 41, 41,  59 ]</span></span><br></pre></td></tr></table></figure>
+
+<p>然后再把这个字符串当作代码执行即可。在JS中把字符串当作代码执行的有2个方法，eval和Function。其中eval用来执行一段代码，Function用来生成一个函数。</p>
+<p>所以我们之前的demo可以改写如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>[<span class="string">&#x27;\u0044\u0061\u0074\u0065&#x27;</span>][<span class="string">&#x27;\u0070\u0072\u006f\u0074\u006f\u0074\u0079\u0070\u0065&#x27;</span>][<span class="string">&#x27;\u0066\u006f\u0072\u006d\u0061\u0074&#x27;</span>] = <span class="keyword">function</span>(<span class="params">formatStr</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> str = formatStr;</span><br><span class="line">    <span class="keyword">var</span> <span class="title class_">Week</span> = [<span class="string">&#x27;\u65e5&#x27;</span>, <span class="string">&#x27;\u4e00&#x27;</span>, <span class="string">&#x27;\u4e8c&#x27;</span>, <span class="string">&#x27;\u4e09&#x27;</span>, <span class="string">&#x27;\u56db&#x27;</span>, <span class="string">&#x27;\u4e94&#x27;</span>, <span class="string">&#x27;\u516d&#x27;</span>];</span><br><span class="line">    <span class="built_in">eval</span>(<span class="title class_">String</span>.<span class="title function_">fromCharCode</span>(<span class="number">115</span>, <span class="number">116</span>, <span class="number">114</span>,  <span class="number">32</span>,  <span class="number">61</span>, <span class="number">32</span>, <span class="number">115</span>, <span class="number">116</span>, <span class="number">114</span>,  <span class="number">91</span>, <span class="number">39</span>, <span class="number">114</span>, <span class="number">101</span>, <span class="number">112</span>, <span class="number">108</span>,  <span class="number">97</span>, <span class="number">99</span>, <span class="number">101</span>,  <span class="number">39</span>,  <span class="number">93</span>,  <span class="number">40</span>, <span class="number">47</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">124</span>, <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">47</span>, <span class="number">44</span>, <span class="number">32</span>, <span class="number">116</span>, <span class="number">104</span>, <span class="number">105</span>, <span class="number">115</span>, <span class="number">91</span>,  <span class="number">39</span>, <span class="number">103</span>, <span class="number">101</span>, <span class="number">116</span>, <span class="number">70</span>, <span class="number">117</span>, <span class="number">108</span>, <span class="number">108</span>,  <span class="number">89</span>, <span class="number">101</span>, <span class="number">97</span>, <span class="number">114</span>,  <span class="number">39</span>,  <span class="number">93</span>,  <span class="number">40</span>, <span class="number">41</span>, <span class="number">41</span>,  <span class="number">59</span>))</span><br><span class="line">    str = str[<span class="string">&#x27;\u0072\u0065\u0070\u006c\u0061\u0063\u0065&#x27;</span>](<span class="regexp">/MM/</span>, (<span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u004d\u006f\u006e\u0074\u0068&#x27;</span>]() + <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u004d\u006f\u006e\u0074\u0068&#x27;</span>]() + <span class="number">1</span>).<span class="title function_">toString</span>() : <span class="string">&#x27;\u0030&#x27;</span> + (<span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u004d\u006f\u006e\u0074\u0068&#x27;</span>]() + <span class="number">1</span>));</span><br><span class="line">    str = str[<span class="string">&#x27;\u0072\u0065\u0070\u006c\u0061\u0063\u0065&#x27;</span>](<span class="regexp">/dd|DD/</span>, <span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u0044\u0061\u0074\u0065&#x27;</span>]() &gt; <span class="number">9</span> ? <span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u0044\u0061\u0074\u0065&#x27;</span>]().<span class="title function_">toString</span>() : <span class="string">&#x27;\u0030&#x27;</span> + <span class="variable language_">this</span>[<span class="string">&#x27;\u0067\u0065\u0074\u0044\u0061\u0074\u0065&#x27;</span>]());</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="variable language_">window</span>[<span class="string">&#x27;\u0044\u0061\u0074\u0065&#x27;</span>]()[<span class="string">&#x27;\u0066\u006f\u0072\u006d\u0061\u0074&#x27;</span>](<span class="string">&#x27;\u0079\u0079\u0079\u0079\u002d\u004d\u004d\u002d\u0064\u0064&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="字符串常量加密"><a href="#字符串常量加密" class="headerlink" title="字符串常量加密"></a>字符串常量加密</h5><p>字符串加密的最核心思想是先把字符串加密得到密文，然后在使用之前，调用对应的函数去解密，得到明文。代码中仅仅出现解密函数和明密文。当然也可以使用不同的加密方法去加密字符串，然后再调用不同的解密函数去解密。字符串加密最简单的方式是Base64编码。</p>
+<p>浏览器中自带Base64的编码与解码的函数，其中btoa用来编码，atob用来解码。但是实际的应用中最好是自己去实现，然后加以混淆。注意，字符串加密之后，需要把对应的解码函数放入其中，方能正常运转。比如开头的demo可以改写如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>[<span class="title function_">atob</span>(<span class="string">&#x27;RGF0ZQ==&#x27;</span>)][<span class="title function_">atob</span>(<span class="string">&#x27;cHJvdG90eXBl&#x27;</span>)][<span class="title function_">atob</span>(<span class="string">&#x27;Zm9ybWF0&#x27;</span>)] = <span class="keyword">function</span>(<span class="params">formatStr</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> str = formatStr;</span><br><span class="line">    <span class="keyword">var</span> <span class="title class_">Week</span> = [<span class="string">&#x27;\u65e5&#x27;</span>, <span class="string">&#x27;\u4e00&#x27;</span>, <span class="string">&#x27;\u4e8c&#x27;</span>, <span class="string">&#x27;\u4e09&#x27;</span>, <span class="string">&#x27;\u56db&#x27;</span>, <span class="string">&#x27;\u4e94&#x27;</span>, <span class="string">&#x27;\u516d&#x27;</span>];</span><br><span class="line">    str = str[<span class="title function_">atob</span>(<span class="string">&#x27;cmVwbGFjZQ==&#x27;</span>)](<span class="regexp">/yyyy|YYYY/</span>, <span class="variable language_">this</span>[<span class="title function_">atob</span>(<span class="string">&#x27;Z2V0RnVsbFllYXI=&#x27;</span>)]());</span><br><span class="line">    str = str[<span class="title function_">atob</span>(<span class="string">&#x27;cmVwbGFjZQ==&#x27;</span>)](<span class="regexp">/MM/</span>, (<span class="variable language_">this</span>[<span class="title function_">atob</span>(<span class="string">&#x27;Z2V0TW9udGg=&#x27;</span>)]() + <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="variable language_">this</span>[<span class="title function_">atob</span>(<span class="string">&#x27;Z2V0TW9udGg=&#x27;</span>)]() + <span class="number">1</span>).<span class="title function_">toString</span>() : <span class="title function_">atob</span>(<span class="string">&#x27;MA==&#x27;</span>) + (<span class="variable language_">this</span>[<span class="title function_">atob</span>(<span class="string">&#x27;Z2V0TW9udGg=&#x27;</span>)]() + <span class="number">1</span>));</span><br><span class="line">    str = str[<span class="title function_">atob</span>(<span class="string">&#x27;cmVwbGFjZQ==&#x27;</span>)](<span class="regexp">/dd|DD/</span>, <span class="variable language_">this</span>[<span class="title function_">atob</span>(<span class="string">&#x27;Z2V0RGF0ZQ==&#x27;</span>)]() &gt; <span class="number">9</span> ? <span class="variable language_">this</span>[<span class="title function_">atob</span>(<span class="string">&#x27;Z2V0RGF0ZQ==&#x27;</span>)]().<span class="title function_">toString</span>() : <span class="title function_">atob</span>(<span class="string">&#x27;MA==&#x27;</span>) + <span class="variable language_">this</span>[<span class="title function_">atob</span>(<span class="string">&#x27;Z2V0RGF0ZQ==&#x27;</span>)]());</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="variable language_">window</span>[<span class="title function_">atob</span>(<span class="string">&#x27;RGF0ZQ==&#x27;</span>)]()[<span class="title function_">atob</span>(<span class="string">&#x27;Zm9ybWF0&#x27;</span>)](<span class="title function_">atob</span>(<span class="string">&#x27;eXl5eS1NTS1kZA==&#x27;</span>)));</span><br></pre></td></tr></table></figure>
+
+<p>在实际的混淆应用中，标识符必须处理成没有语义的，不然很容易定位到关键代码。此外，建议减少使用系统函数，自己去实现相应的函数，因为不管怎样混淆，最终执行过程中，系统函数是固定的，通过Hook技术很容易定位到关键代码。</p>
+<h5 id="数值常量加密"><a href="#数值常量加密" class="headerlink" title="数值常量加密"></a>数值常量加密</h5><p>算法加密过程中，会使用一些固定的数值常量，如MD5中的常量0×67452301，0xefcdab89，0x98badcfe和0x10325476，以及SHA1中的常量0x67452301， 0xefcdab89，0x98badcte，0x10325476和0xc3d2e1f0。因此，在标准算法逆向中，会通过搜索这些数值量，来定位代码关键位置,或者确定使用的是哪个算法。当然，在代码中不一定会写十六进制形式，如0x67452301，在代码中可能会与成十进制的1732584193。 安全起见，可以把这些数值常量也进行简单加密。<br>可以利用位异或的特性来加密。例如，如果a^b&#x3D;c,那么c^b&#x3D;a。以SHA1算法中的0xc3d2e1f0常量为例，0xc3d2elf0^0x12345678&#x3D;0xd1e6b788，那么在代码中可以用0xd1e66788^0x12345678来代替0xc3d2e1f0，其中0x12345678可以理解成密钥，它可以随机生成。</p>
+<h4 id="增加JS逆向者的工作量"><a href="#增加JS逆向者的工作量" class="headerlink" title="增加JS逆向者的工作量"></a>增加JS逆向者的工作量</h4><h5 id="数组混淆"><a href="#数组混淆" class="headerlink" title="数组混淆"></a>数组混淆</h5><p>看一行代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="variable language_">window</span>.<span class="title class_">Date</span>().<span class="title function_">getTime</span>());</span><br></pre></td></tr></table></figure>
+
+<p>按照前面介绍的对象属性的2种访问方式，使用第二种改写如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>[<span class="string">&#x27;log&#x27;</span>](<span class="keyword">new</span> <span class="variable language_">window</span>[<span class="string">&#x27;Date&#x27;</span>]()[<span class="string">&#x27;getTime&#x27;</span>]());</span><br></pre></td></tr></table></figure>
+
+<p>这样产生了三个字符串，我们把三个字符串放在数组里面。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> bigArr = [<span class="string">&#x27;Date&#x27;</span>, <span class="string">&#x27;getTime&#x27;</span>, <span class="string">&#x27;log&#x27;</span>];</span><br><span class="line"><span class="variable language_">console</span>[bigArr[<span class="number">2</span>]](<span class="keyword">new</span> <span class="variable language_">window</span>[bigArr[<span class="number">0</span>]]()[bigArr[<span class="number">1</span>]]());</span><br></pre></td></tr></table></figure>
+
+<p>这就是数组混淆。当代码有上千行，那么数组可以提取的字符串可能也有上千个，然后在代码中引用字符串的时候，全部以bigArr[1001]，bigArr[1002]这种去访问，这样更加不容易建立映射关系了。</p>
+<p>在JS中，同一个数组可以存放各种类型，比如布尔，数值，字符串，数组，对象和函数等。因此可以把代码中的一部分函数提取到大数组中去。为了安全，通常对提取到数组中的字符串进行加密处理，把代码处理成字符串就可以进行加密了。比如，对于String.fromCharCode可以改写成：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;</span>[<span class="string">&quot;constructor&quot;</span>][<span class="string">&quot;fromCharCode&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>最前面的表示任意字符串对象或者空字符串，constructor表示构造方法，这样<code>&quot;&quot;[&quot;constructor&quot;]</code>就相当于String。前面的demo处理成数组混淆的形式如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> bigArr = [</span><br><span class="line">    <span class="string">&#x27;\u65e5&#x27;</span>, <span class="string">&#x27;\u4e00&#x27;</span>, <span class="string">&#x27;\u4e8c&#x27;</span>, <span class="string">&#x27;\u4e09&#x27;</span>, <span class="string">&#x27;\u56db&#x27;</span>, <span class="string">&#x27;\u4e94&#x27;</span>, <span class="string">&#x27;\u516d&#x27;</span>, <span class="string">&#x27;cmVwbGFjZQ==&#x27;</span>, <span class="string">&#x27;Z2V0TW9udGg=&#x27;</span>, <span class="string">&#x27;MA==&#x27;</span>, <span class="string">&#x27;Z2V0RGF0ZQ==&#x27;</span>, <span class="string">&#x27;RGF0ZQ==&#x27;</span>, <span class="string">&#x27;Zm9ybWF0&#x27;</span>, <span class="string">&#x27;eXl5eS1NTS1kZA==&#x27;</span>, <span class="string">&quot;&quot;</span>[<span class="string">&#x27;constructor&#x27;</span>][<span class="string">&#x27;fromCharCode&#x27;</span>]</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>[<span class="title function_">atob</span>(<span class="string">&#x27;RGF0ZQ==&#x27;</span>)][<span class="title function_">atob</span>(<span class="string">&#x27;cHJvdG90eXBl&#x27;</span>)][<span class="title function_">atob</span>(<span class="string">&#x27;Zm9ybWF0&#x27;</span>)] = <span class="keyword">function</span>(<span class="params">formatStr</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> str = formatStr;</span><br><span class="line">    <span class="keyword">var</span> <span class="title class_">Week</span> = [bigArr[<span class="number">0</span>], bigArr[<span class="number">1</span>], bigArr[<span class="number">2</span>], bigArr[<span class="number">3</span>], bigArr[<span class="number">4</span>], bigArr[<span class="number">5</span>], bigArr[<span class="number">6</span>]];</span><br><span class="line">    <span class="built_in">eval</span>(bigArr[<span class="number">14</span>](<span class="number">115</span>, <span class="number">116</span>, <span class="number">114</span>,  <span class="number">32</span>,  <span class="number">61</span>, <span class="number">32</span>, <span class="number">115</span>, <span class="number">116</span>, <span class="number">114</span>,  <span class="number">91</span>, <span class="number">39</span>, <span class="number">114</span>, <span class="number">101</span>, <span class="number">112</span>, <span class="number">108</span>,  <span class="number">97</span>, <span class="number">99</span>, <span class="number">101</span>,  <span class="number">39</span>,  <span class="number">93</span>,  <span class="number">40</span>, <span class="number">47</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">124</span>, <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">47</span>, <span class="number">44</span>, <span class="number">32</span>, <span class="number">116</span>, <span class="number">104</span>, <span class="number">105</span>, <span class="number">115</span>, <span class="number">91</span>,  <span class="number">39</span>, <span class="number">103</span>, <span class="number">101</span>, <span class="number">116</span>, <span class="number">70</span>, <span class="number">117</span>, <span class="number">108</span>, <span class="number">108</span>,  <span class="number">89</span>, <span class="number">101</span>, <span class="number">97</span>, <span class="number">114</span>,  <span class="number">39</span>,  <span class="number">93</span>,  <span class="number">40</span>, <span class="number">41</span>, <span class="number">41</span>,  <span class="number">59</span>));</span><br><span class="line">    str = str[<span class="title function_">atob</span>(bigArr[<span class="number">7</span>])](<span class="regexp">/MM/</span>, (<span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])]() + <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])]() + <span class="number">1</span>).<span class="title function_">toString</span>() : <span class="title function_">atob</span>(bigArr[<span class="number">9</span>]) + (<span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])]() + <span class="number">1</span>));</span><br><span class="line">    str = str[<span class="title function_">atob</span>(bigArr[<span class="number">7</span>])](<span class="regexp">/dd|DD/</span>, <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]() &gt; <span class="number">9</span> ? <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]().<span class="title function_">toString</span>() : <span class="title function_">atob</span>(bigArr[<span class="number">9</span>]) + <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]());</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="variable language_">window</span>[<span class="title function_">atob</span>(bigArr[<span class="number">11</span>])]()[<span class="title function_">atob</span>(bigArr[<span class="number">12</span>])](<span class="title function_">atob</span>(bigArr[<span class="number">13</span>])));</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="数组乱序"><a href="#数组乱序" class="headerlink" title="数组乱序"></a>数组乱序</h5><p>上边进行数组混淆之后，数组下标索引与数组成员是一一对应。比如引用bigArr[14]的地方，需要成员String.fromCharCode，而该数组的下标为14的成员刚好是这个方法。可以将数组成员打乱，这样在分析的时候就更加费力，然后在执行的时候，通过一个方法将打乱的数组还原，从而不影响正确的逻辑。</p>
+<p>可以使用以下代码打乱数组：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">var</span> bigArr = [</span><br><span class="line">    <span class="string">&#x27;\u65e5&#x27;</span>, <span class="string">&#x27;\u4e00&#x27;</span>, <span class="string">&#x27;\u4e8c&#x27;</span>, <span class="string">&#x27;\u4e09&#x27;</span>, <span class="string">&#x27;\u56db&#x27;</span>, <span class="string">&#x27;\u4e94&#x27;</span>, <span class="string">&#x27;\u516d&#x27;</span>, <span class="string">&#x27;cmVwbGFjZQ==&#x27;</span>, <span class="string">&#x27;Z2V0TW9udGg=&#x27;</span>, <span class="string">&#x27;MA==&#x27;</span>, <span class="string">&#x27;Z2V0RGF0ZQ==&#x27;</span>, <span class="string">&#x27;RGF0ZQ==&#x27;</span>, <span class="string">&#x27;Zm9ybWF0&#x27;</span>, <span class="string">&#x27;eXl5eS1NTS1kZA==&#x27;</span>, <span class="string">&quot;&quot;</span>[<span class="string">&#x27;constructor&#x27;</span>][<span class="string">&#x27;fromCharCode&#x27;</span>]</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">(<span class="keyword">function</span>(<span class="params">arr, num</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> shuffer = <span class="keyword">function</span>(<span class="params">nums</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (--nums) &#123;</span><br><span class="line">            arr.<span class="title function_">unshift</span>(arr.<span class="title function_">pop</span>());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_">shuffer</span>(++num);</span><br><span class="line">&#125;(bigArr, <span class="number">0x20</span>));</span><br></pre></td></tr></table></figure>
+
+<p>可以使用以下代码还原数组：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> bigArr = [</span><br><span class="line">    <span class="string">&#x27;eXl5eS1NTS1kZA==&#x27;</span>, <span class="string">&quot;&quot;</span>[<span class="string">&#x27;constructor&#x27;</span>][<span class="string">&#x27;fromCharCode&#x27;</span>], <span class="string">&#x27;\u65e5&#x27;</span>, <span class="string">&#x27;\u4e00&#x27;</span>, <span class="string">&#x27;\u4e8c&#x27;</span>, <span class="string">&#x27;\u4e09&#x27;</span>, <span class="string">&#x27;\u56db&#x27;</span>, <span class="string">&#x27;\u4e94&#x27;</span>, <span class="string">&#x27;\u516d&#x27;</span>, <span class="string">&#x27;cmVwbGFjZQ==&#x27;</span>, <span class="string">&#x27;Z2V0TW9udGg=&#x27;</span>, <span class="string">&#x27;MA==&#x27;</span>, <span class="string">&#x27;Z2V0RGF0ZQ==&#x27;</span>, <span class="string">&#x27;RGF0ZQ==&#x27;</span>, <span class="string">&#x27;Zm9ybWF0&#x27;</span></span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">(<span class="keyword">function</span>(<span class="params">arr, num</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> shuffer = <span class="keyword">function</span>(<span class="params">nums</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (--nums) &#123;</span><br><span class="line">            arr[<span class="string">&#x27;push&#x27;</span>](arr[<span class="string">&#x27;shift&#x27;</span>]());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_">shuffer</span>(++num);</span><br><span class="line">&#125;(bigArr, <span class="number">0x20</span>));</span><br></pre></td></tr></table></figure>
+
+<p>所以最前面的demo经过数组混淆和数组乱序之后，可以改写为如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> bigArr = [</span><br><span class="line">    <span class="string">&#x27;eXl5eS1NTS1kZA==&#x27;</span>, <span class="string">&quot;&quot;</span>[<span class="string">&#x27;constructor&#x27;</span>][<span class="string">&#x27;fromCharCode&#x27;</span>], <span class="string">&#x27;\u65e5&#x27;</span>, <span class="string">&#x27;\u4e00&#x27;</span>, <span class="string">&#x27;\u4e8c&#x27;</span>, <span class="string">&#x27;\u4e09&#x27;</span>, <span class="string">&#x27;\u56db&#x27;</span>, <span class="string">&#x27;\u4e94&#x27;</span>, <span class="string">&#x27;\u516d&#x27;</span>, <span class="string">&#x27;cmVwbGFjZQ==&#x27;</span>, <span class="string">&#x27;Z2V0TW9udGg=&#x27;</span>, <span class="string">&#x27;MA==&#x27;</span>, <span class="string">&#x27;Z2V0RGF0ZQ==&#x27;</span>, <span class="string">&#x27;RGF0ZQ==&#x27;</span>, <span class="string">&#x27;Zm9ybWF0&#x27;</span></span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">(<span class="keyword">function</span>(<span class="params">arr, num</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> shuffer = <span class="keyword">function</span>(<span class="params">nums</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (--nums) &#123;</span><br><span class="line">            arr[<span class="string">&#x27;push&#x27;</span>](arr[<span class="string">&#x27;shift&#x27;</span>]());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_">shuffer</span>(++num);</span><br><span class="line">&#125;(bigArr, <span class="number">0x20</span>));</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>[<span class="title function_">atob</span>(<span class="string">&#x27;RGF0ZQ==&#x27;</span>)][<span class="title function_">atob</span>(<span class="string">&#x27;cHJvdG90eXBl&#x27;</span>)][<span class="title function_">atob</span>(<span class="string">&#x27;Zm9ybWF0&#x27;</span>)] = <span class="keyword">function</span>(<span class="params">formatStr</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> str = formatStr;</span><br><span class="line">    <span class="keyword">var</span> <span class="title class_">Week</span> = [bigArr[<span class="number">0</span>], bigArr[<span class="number">1</span>], bigArr[<span class="number">2</span>], bigArr[<span class="number">3</span>], bigArr[<span class="number">4</span>], bigArr[<span class="number">5</span>], bigArr[<span class="number">6</span>]];</span><br><span class="line">    <span class="built_in">eval</span>(bigArr[<span class="number">14</span>](<span class="number">115</span>, <span class="number">116</span>, <span class="number">114</span>,  <span class="number">32</span>,  <span class="number">61</span>, <span class="number">32</span>, <span class="number">115</span>, <span class="number">116</span>, <span class="number">114</span>,  <span class="number">91</span>, <span class="number">39</span>, <span class="number">114</span>, <span class="number">101</span>, <span class="number">112</span>, <span class="number">108</span>,  <span class="number">97</span>, <span class="number">99</span>, <span class="number">101</span>,  <span class="number">39</span>,  <span class="number">93</span>,  <span class="number">40</span>, <span class="number">47</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">124</span>, <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">47</span>, <span class="number">44</span>, <span class="number">32</span>, <span class="number">116</span>, <span class="number">104</span>, <span class="number">105</span>, <span class="number">115</span>, <span class="number">91</span>,  <span class="number">39</span>, <span class="number">103</span>, <span class="number">101</span>, <span class="number">116</span>, <span class="number">70</span>, <span class="number">117</span>, <span class="number">108</span>, <span class="number">108</span>,  <span class="number">89</span>, <span class="number">101</span>, <span class="number">97</span>, <span class="number">114</span>,  <span class="number">39</span>,  <span class="number">93</span>,  <span class="number">40</span>, <span class="number">41</span>, <span class="number">41</span>,  <span class="number">59</span>));</span><br><span class="line">    str = str[<span class="title function_">atob</span>(bigArr[<span class="number">7</span>])](<span class="regexp">/MM/</span>, (<span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])]() + <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])]() + <span class="number">1</span>).<span class="title function_">toString</span>() : <span class="title function_">atob</span>(bigArr[<span class="number">9</span>]) + (<span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])]() + <span class="number">1</span>));</span><br><span class="line">    str = str[<span class="title function_">atob</span>(bigArr[<span class="number">7</span>])](<span class="regexp">/dd|DD/</span>, <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]() &gt; <span class="number">9</span> ? <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]().<span class="title function_">toString</span>() : <span class="title function_">atob</span>(bigArr[<span class="number">9</span>]) + <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]());</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="variable language_">window</span>[<span class="title function_">atob</span>(bigArr[<span class="number">11</span>])]()[<span class="title function_">atob</span>(bigArr[<span class="number">12</span>])](<span class="title function_">atob</span>(bigArr[<span class="number">13</span>])));</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="花指令"><a href="#花指令" class="headerlink" title="花指令"></a>花指令</h5><p>所谓花指令，就是添加一些没有意义却可以混淆视听的代码。以前面提到的demo中的某一行代码为例：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">str = str.<span class="title function_">replace</span>(<span class="regexp">/MM/</span>, (<span class="variable language_">this</span>.<span class="title function_">getMonth</span>() + <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="variable language_">this</span>.<span class="title function_">getMonth</span>() + <span class="number">1</span>).<span class="title function_">toString</span>() : <span class="string">&#x27;0&#x27;</span> + (<span class="variable language_">this</span>.<span class="title function_">getMonth</span>() + <span class="number">1</span>));</span><br></pre></td></tr></table></figure>
+
+<p>把this.getMonth() + 1这个二项式改写为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx1</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// str = str.replace(/MM/, (_0x20abefx1(new Date().getMonth(), 1)) &gt; 9 ? (_0x20abefx1(new Date().getMonth(), 1)).toString() : &#x27;0&#x27; + (_0x20abefx1(new Date().getMonth(), 1)));</span></span><br></pre></td></tr></table></figure>
+
+<p>本质是把一个二项式拆成三个部分，最左边和最右边的参数，中间的运算符可以封装成一个函数，这个函数没有什么意义，但是能瞬间增加代码量，从而增加JS你逆向者的工作量。</p>
+<p>二项式转成函数时，还可以多级嵌套：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx1</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx2</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">_0x20abefx1</span>(a, b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具有同样功能的二项式，可以调用不同的函数，比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx1</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx2</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx3</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">_0x20abefx1</span>(a, b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// str = str.replace(/MM/, (_0x20abefx1(new Date().getMonth(), 1)) &gt; 9 ? (_0x20abefx2(new Date().getMonth(), 1)).toString() : &#x27;0&#x27; + (_0x20abefx3(new Date().getMonth(), 1)));</span></span><br></pre></td></tr></table></figure>
+
+<p>除了二项式转为函数可以使用花指令，函数调用表达式也可以处理成类似的花指令：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx1</span>(<span class="params">a, b, c</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">a</span>(b, c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx2</span>(<span class="params">a, b, c</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">_0x20abefx1</span>(a, b, c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx3</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">str = str.<span class="title function_">replace</span>(</span><br><span class="line">    <span class="regexp">/MM/</span>, </span><br><span class="line">    <span class="title function_">_0x20abefx2</span>(_0x20abefx3, <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getMonth</span>(), <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="title function_">_0x20abefx2</span>(_0x20abefx3, <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getMonth</span>(), <span class="number">1</span>)).<span class="title function_">toString</span>() : <span class="title function_">_0x20abefx2</span>(_0x20abefx3, <span class="string">&#x27;0&#x27;</span>, (<span class="title function_">_0x20abefx2</span>(_0x20abefx3, <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getMonth</span>(), <span class="number">1</span>)))</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="jsfuck"><a href="#jsfuck" class="headerlink" title="jsfuck"></a>jsfuck</h5><p>jsfuck可以看作一种编码方式，可以把JS代码通过只用()，[]，+，!这6种字符表示的代码，并且可以正常阅读。比如数值常量8可以表示成：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])</span><br></pre></td></tr></table></figure>
+
+<p>[]表示空数组，+[]表示把空数组转换为数值然后进行运行，由于空数组是0，所以+[]表示数值0，!+[]表示对数值0取反为布尔值true。</p>
+<p>JS中有七种值为false，其余都为true。这7种值为false, undefine, null, 0, -0, NaN和””。所以!![]为true。</p>
+<p>JS中的+运算符作为一个二元运算符时，假如有一边是字符串则代表字符串拼接，否则代表数值相加。所以true + true &#x3D; 2。</p>
+<p>在实际的开发中，jsfuck的应用有限。只会应用于js文件中的一部分代码。主要它的代码量非常庞大，且易于还原，只需要将代码复制到console即可还原。在jsfuck的混淆中，通过用()来进行分组，如果我们遇到JS文件局部应用jsfuck的代码，可以先通过()将代码分组，然后逐组逐组的分析还原。</p>
+<h4 id="代码执行流程的防护原理"><a href="#代码执行流程的防护原理" class="headerlink" title="代码执行流程的防护原理"></a>代码执行流程的防护原理</h4><h5 id="流程平坦化"><a href="#流程平坦化" class="headerlink" title="流程平坦化"></a>流程平坦化</h5><p>在流程平坦化混淆中，会用到switch语句，因为switch语句中的case块是平级的，而且调换case块的前后顺序并不影响代码原先的执行逻辑。看一段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">test</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">var</span> b = a + <span class="number">200</span>;</span><br><span class="line">    <span class="keyword">var</span> c = b + <span class="number">300</span>;</span><br><span class="line">    <span class="keyword">var</span> d = c + <span class="number">400</span>;</span><br><span class="line">    <span class="keyword">var</span> e = d + <span class="number">500</span>;</span><br><span class="line">    <span class="keyword">var</span> f = e + <span class="number">600</span>;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>混淆test方法的执行流程为：首先把代码分块，且打乱代码块的顺序，分别添加到不同的case块中，方便起见，这里处理场一行代码对应一个case块的形式，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> () &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;1&#x27;</span>:</span><br><span class="line">        <span class="keyword">var</span> c = b + <span class="number">300</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;2&#x27;</span>:</span><br><span class="line">        <span class="keyword">var</span> e = d + <span class="number">500</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;3&#x27;</span>:</span><br><span class="line">        <span class="keyword">var</span> d = c + <span class="number">400</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;4&#x27;</span>:</span><br><span class="line">        <span class="keyword">var</span> f = e + <span class="number">600</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;5&#x27;</span>:</span><br><span class="line">        <span class="keyword">var</span> b = a + <span class="number">200</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;6&#x27;</span>:</span><br><span class="line">        <span class="keyword">return</span> f;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;7&#x27;</span>:</span><br><span class="line">        <span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，当代码块打乱之后，如果想跟原先的执行顺序一样，那么case块的跳转顺序应该是7，5，1，3，2，4，6。只有case块按照这个流程执行，才能跟原始代码块的顺序保持一致。其次，需要一个循环，因为switch语句只计算一次switch表达式。整个代码改写如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (!![]) &#123;</span><br><span class="line">    <span class="keyword">switch</span> () &#123;</span><br><span class="line">     <span class="keyword">case</span> <span class="string">&#x27;1&#x27;</span>:</span><br><span class="line">         <span class="keyword">var</span> c = b + <span class="number">300</span>;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">     <span class="keyword">case</span> <span class="string">&#x27;2&#x27;</span>:</span><br><span class="line">         <span class="keyword">var</span> e = d + <span class="number">500</span>;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">     <span class="keyword">case</span> <span class="string">&#x27;3&#x27;</span>:</span><br><span class="line">         <span class="keyword">var</span> d = c + <span class="number">400</span>;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">     <span class="keyword">case</span> <span class="string">&#x27;4&#x27;</span>:</span><br><span class="line">         <span class="keyword">var</span> f = e + <span class="number">600</span>;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">     <span class="keyword">case</span> <span class="string">&#x27;5&#x27;</span>:</span><br><span class="line">         <span class="keyword">var</span> b = a + <span class="number">200</span>;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">     <span class="keyword">case</span> <span class="string">&#x27;6&#x27;</span>:</span><br><span class="line">         <span class="keyword">return</span> f;</span><br><span class="line">     <span class="keyword">case</span> <span class="string">&#x27;7&#x27;</span>:</span><br><span class="line">         <span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是一个死循环，假如函数有返回值，则执行到相应的case语句块后直接返回。假如函数没有返回值，则代码块执行到最后就需要让switch计算出来的表达式的值与每一个case的值都不匹配，那么就会执行最后的break来跳出循环。</p>
+<p>接着我们需要构造一个分发器，里面记录代码块执行的真实顺序，例如var arrStr &#x3D; ‘7|5|1|3|2|4|6’.split(‘|’)，i&#x3D;0。把这个字符串’7|5|1|3|2|4|6’通过split分割成一个数组。i作为计数器，每次递增，按顺序引用数组中的每一个成员。因此，switch中的表达式就可以写成switch(arrStr[i++])，完整代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">test</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> arrStr = <span class="string">&#x27;7|5|1|3|2|4|6&#x27;</span>.<span class="title function_">split</span>(<span class="string">&#x27;|&#x27;</span>)，i=<span class="number">0</span>;</span><br><span class="line">  <span class="keyword">while</span> (!![]) &#123;</span><br><span class="line">        <span class="keyword">switch</span> (arrStr[i++]) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;1&#x27;</span>:</span><br><span class="line">                <span class="keyword">var</span> c = b + <span class="number">300</span>;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;2&#x27;</span>:</span><br><span class="line">                <span class="keyword">var</span> e = d + <span class="number">500</span>;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;3&#x27;</span>:</span><br><span class="line">                <span class="keyword">var</span> d = c + <span class="number">400</span>;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;4&#x27;</span>:</span><br><span class="line">                <span class="keyword">var</span> f = e + <span class="number">600</span>;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;5&#x27;</span>:</span><br><span class="line">                <span class="keyword">var</span> b = a + <span class="number">200</span>;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;6&#x27;</span>:</span><br><span class="line">                <span class="keyword">return</span> f;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;7&#x27;</span>:</span><br><span class="line">                <span class="keyword">var</span> a = <span class="number">100</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果函数没有返回值，即switch中没有return语句，最后一次递增i会导致数组越界，JS中数组越界不会报错，而是取出来为undefined，然后匹配不到任何的switch语句就会执行break跳出死循环。</p>
+<p>在了解了流程平坦化之后，我们可以对之前的demo进一步混淆：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> bigArr = [</span><br><span class="line">    <span class="string">&#x27;eXl5eS1NTS1kZA==&#x27;</span>, <span class="string">&quot;&quot;</span>[<span class="string">&#x27;constructor&#x27;</span>][<span class="string">&#x27;fromCharCode&#x27;</span>], <span class="string">&#x27;\u65e5&#x27;</span>, <span class="string">&#x27;\u4e00&#x27;</span>, <span class="string">&#x27;\u4e8c&#x27;</span>, <span class="string">&#x27;\u4e09&#x27;</span>, <span class="string">&#x27;\u56db&#x27;</span>, <span class="string">&#x27;\u4e94&#x27;</span>, <span class="string">&#x27;\u516d&#x27;</span>, <span class="string">&#x27;cmVwbGFjZQ==&#x27;</span>, <span class="string">&#x27;Z2V0TW9udGg=&#x27;</span>, <span class="string">&#x27;MA==&#x27;</span>, <span class="string">&#x27;Z2V0RGF0ZQ==&#x27;</span>, <span class="string">&#x27;RGF0ZQ==&#x27;</span>, <span class="string">&#x27;Zm9ybWF0&#x27;</span></span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">(<span class="keyword">function</span>(<span class="params">arr, num</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> shuffer = <span class="keyword">function</span>(<span class="params">nums</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (--nums) &#123;</span><br><span class="line">            arr[<span class="string">&#x27;push&#x27;</span>](arr[<span class="string">&#x27;shift&#x27;</span>]());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_">shuffer</span>(++num);</span><br><span class="line">&#125;(bigArr, <span class="number">0x20</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx1</span>(<span class="params">a, b, c</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">a</span>(b, c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx2</span>(<span class="params">a, b, c</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">_0x20abefx1</span>(a, b, c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_0x20abefx3</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>[<span class="title function_">atob</span>(<span class="string">&#x27;RGF0ZQ==&#x27;</span>)][<span class="title function_">atob</span>(<span class="string">&#x27;cHJvdG90eXBl&#x27;</span>)][<span class="title function_">atob</span>(<span class="string">&#x27;Zm9ybWF0&#x27;</span>)] = <span class="keyword">function</span>(<span class="params">formatStr</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> arrStr = <span class="string">&#x27;7|5|1|3|2|4&#x27;</span>.<span class="title function_">split</span>(<span class="string">&quot;|&quot;</span>), i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (!![]) &#123;</span><br><span class="line">        <span class="keyword">switch</span> (arrStr[i++]) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;1&#x27;</span>:</span><br><span class="line">                <span class="built_in">eval</span>(bigArr[<span class="number">14</span>](<span class="number">115</span>, <span class="number">116</span>, <span class="number">114</span>,  <span class="number">32</span>,  <span class="number">61</span>, <span class="number">32</span>, <span class="number">115</span>, <span class="number">116</span>, <span class="number">114</span>,  <span class="number">91</span>, <span class="number">39</span>, <span class="number">114</span>, <span class="number">101</span>, <span class="number">112</span>, <span class="number">108</span>,  <span class="number">97</span>, <span class="number">99</span>, <span class="number">101</span>,  <span class="number">39</span>,  <span class="number">93</span>,  <span class="number">40</span>, <span class="number">47</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">124</span>, <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">47</span>, <span class="number">44</span>, <span class="number">32</span>, <span class="number">116</span>, <span class="number">104</span>, <span class="number">105</span>, <span class="number">115</span>, <span class="number">91</span>,  <span class="number">39</span>, <span class="number">103</span>, <span class="number">101</span>, <span class="number">116</span>, <span class="number">70</span>, <span class="number">117</span>, <span class="number">108</span>, <span class="number">108</span>,  <span class="number">89</span>, <span class="number">101</span>, <span class="number">97</span>, <span class="number">114</span>,  <span class="number">39</span>,  <span class="number">93</span>,  <span class="number">40</span>, <span class="number">41</span>, <span class="number">41</span>,  <span class="number">59</span>));</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;2&#x27;</span>:</span><br><span class="line">                str = str[<span class="title function_">atob</span>(bigArr[<span class="number">7</span>])](</span><br><span class="line">    				<span class="regexp">/dd|DD/</span>,</span><br><span class="line">    				<span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])] &gt; <span class="number">9</span> ? <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]().<span class="title function_">toString</span>() : <span class="title function_">_0x20abefx2</span>(_0x20abefx3, <span class="title function_">atob</span>(bigArr[<span class="number">9</span>]), <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]())</span><br><span class="line">);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;3&#x27;</span>:</span><br><span class="line">                str = str[<span class="title function_">atob</span>(bigArr[<span class="number">7</span>])](</span><br><span class="line">    				<span class="regexp">/MM/</span>,</span><br><span class="line">    				<span class="title function_">_0x20abefx2</span>(_0x20abefx3, <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])](), <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="title function_">_0x20abefx2</span>(_0x20abefx3, <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])](), <span class="number">1</span>)).<span class="title function_">toString</span>() : <span class="title function_">_0x20abefx2</span>(_0x20abefx3, <span class="title function_">atob</span>(bigArr[<span class="number">9</span>]), (<span class="title function_">_0x20abefx2</span>(_0x20abefx3, <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])](), <span class="number">1</span>)))</span><br><span class="line">);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;4&#x27;</span>:</span><br><span class="line">                <span class="keyword">return</span> str;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;5&#x27;</span>:</span><br><span class="line">     			<span class="keyword">var</span> <span class="title class_">Week</span> = [bigArr[<span class="number">0</span>], bigArr[<span class="number">1</span>], bigArr[<span class="number">2</span>], bigArr[<span class="number">3</span>], bigArr[<span class="number">4</span>], bigArr[<span class="number">5</span>], bigArr[<span class="number">6</span>]];</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;7&#x27;</span>:</span><br><span class="line">     			<span class="keyword">var</span> \u0073\u0074\u0072 = \u0066\u006f\u0072\u006d\u0061\u0074\u0053\u0074\u0072; </span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="variable language_">window</span>[<span class="title function_">atob</span>(bigArr[<span class="number">11</span>])]()[<span class="title function_">atob</span>(bigArr[<span class="number">12</span>])](<span class="title function_">atob</span>(bigArr[<span class="number">13</span>])));</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="逗号表达式混淆"><a href="#逗号表达式混淆" class="headerlink" title="逗号表达式混淆"></a>逗号表达式混淆</h5><p>逗号运算符的主要作用是把多个表达式或语句连接成一个复合语句。比如前面提到的test方法，可以改写为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">test</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> a, b, c, d, e, f;</span><br><span class="line">    <span class="keyword">return</span> a = <span class="number">100</span>, b = a + <span class="number">200</span>, c = b + <span class="number">300</span>, d = c + <span class="number">400</span>, e = d + <span class="number">500</span>, f = e + <span class="number">600</span>, f;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>return语句通常只跟一个语句，但是逗号表达式可以把多个语句符合成一个语句，这样会依次执行前面的语句，然后把最后一条语句作为返回值。</p>
+<p>再看一个例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = (a = <span class="number">100</span>, a += <span class="number">200</span>)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a); <span class="comment">// 300</span></span><br></pre></td></tr></table></figure>
+
+<p>括号会作为一个整体，先把括号里面的运算完，然后把这个整体的值赋值给a。明白了这个道理，我们再改写下test方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">test</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> a, b, c, d, e, f;</span><br><span class="line">    <span class="keyword">return</span> f = (e = (d = (c = (b = (a = <span class="number">100</span>, a + <span class="number">200</span>), b + <span class="number">300</span>), c + <span class="number">400</span>), d + <span class="number">500</span>), e + <span class="number">600</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以进一步优化，这里声明了一系列的变量，可以把这些变量作为参数传入，同时，在每一个变量的赋值的逗号表达式中可以插入花指令：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">test</span>(<span class="params">a, b, c, d, e, f</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> f = (e = (d = (c = (b = (a = <span class="number">100</span>, b + <span class="number">1000</span>, c + <span class="number">2000</span>, d + <span class="number">3000</span>, e + <span class="number">4000</span>, f + <span class="number">5000</span>, a + <span class="number">200</span>), c + <span class="number">2000</span>, d + <span class="number">3000</span>, e + <span class="number">4000</span>, f + <span class="number">5000</span>, b + <span class="number">300</span>), d + <span class="number">3000</span>, e + <span class="number">4000</span>, f + <span class="number">5000</span>, c + <span class="number">400</span>), e + <span class="number">4000</span>, f + <span class="number">5000</span>, d + <span class="number">500</span>), f + <span class="number">5000</span>, e + <span class="number">600</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>虽然需要6个参数，但是实际上不传任何参数，依然是正确的代码逻辑。同时中间的花指令，b+1000，c+2000，d+3000，e+4000，f+5000是没有意义的。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081500383.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220308150018181" title="">
+                </div>
+                <div class="image-caption">image-20220308150018181</div>
+            </figure>
+
+
+
+<p>我们对前面给的demo进行改写：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> bigArr = [</span><br><span class="line">    <span class="string">&#x27;eXl5eS1NTS1kZA==&#x27;</span>, <span class="string">&quot;&quot;</span>[<span class="string">&#x27;constructor&#x27;</span>][<span class="string">&#x27;fromCharCode&#x27;</span>], <span class="string">&#x27;\u65e5&#x27;</span>, <span class="string">&#x27;\u4e00&#x27;</span>, <span class="string">&#x27;\u4e8c&#x27;</span>, <span class="string">&#x27;\u4e09&#x27;</span>, <span class="string">&#x27;\u56db&#x27;</span>, <span class="string">&#x27;\u4e94&#x27;</span>, <span class="string">&#x27;\u516d&#x27;</span>, <span class="string">&#x27;cmVwbGFjZQ==&#x27;</span>, <span class="string">&#x27;Z2V0TW9udGg=&#x27;</span>, <span class="string">&#x27;MA==&#x27;</span>, <span class="string">&#x27;Z2V0RGF0ZQ==&#x27;</span>, <span class="string">&#x27;RGF0ZQ==&#x27;</span>, <span class="string">&#x27;Zm9ybWF0&#x27;</span></span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">(<span class="keyword">function</span>(<span class="params">arr, num</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> shuffer = <span class="keyword">function</span>(<span class="params">nums</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (--nums) &#123;</span><br><span class="line">            arr[<span class="string">&#x27;push&#x27;</span>](arr[<span class="string">&#x27;shift&#x27;</span>]());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_">shuffer</span>(++num);</span><br><span class="line">&#125;(bigArr, <span class="number">0x20</span>));</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>[<span class="title function_">atob</span>(<span class="string">&#x27;RGF0ZQ==&#x27;</span>)][<span class="title function_">atob</span>(<span class="string">&#x27;cHJvdG90eXBl&#x27;</span>)][<span class="title function_">atob</span>(<span class="string">&#x27;Zm9ybWF0&#x27;</span>)] = <span class="keyword">function</span>(<span class="params">formatStr, str, Week</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> str = (</span><br><span class="line">        (str = (</span><br><span class="line">                <span class="title class_">Week</span> = (</span><br><span class="line">                    \u0073\u0074\u0072 = \u0066\u006f\u0072\u006d\u0061\u0074\u0053\u0074\u0072,</span><br><span class="line">                        [bigArr[<span class="number">0</span>], bigArr[<span class="number">1</span>], bigArr[<span class="number">2</span>], bigArr[<span class="number">3</span>], bigArr[<span class="number">4</span>], bigArr[<span class="number">5</span>], bigArr[<span class="number">6</span>]]</span><br><span class="line">                ),</span><br><span class="line">                    <span class="built_in">eval</span>(bigArr[<span class="number">14</span>](<span class="number">115</span>, <span class="number">116</span>, <span class="number">114</span>,  <span class="number">32</span>,  <span class="number">61</span>, <span class="number">32</span>, <span class="number">115</span>, <span class="number">116</span>, <span class="number">114</span>,  <span class="number">91</span>, <span class="number">39</span>, <span class="number">114</span>, <span class="number">101</span>, <span class="number">112</span>, <span class="number">108</span>,  <span class="number">97</span>, <span class="number">99</span>, <span class="number">101</span>,  <span class="number">39</span>,  <span class="number">93</span>,  <span class="number">40</span>, <span class="number">47</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">121</span>, <span class="number">124</span>, <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">89</span>,  <span class="number">47</span>, <span class="number">44</span>, <span class="number">32</span>, <span class="number">116</span>, <span class="number">104</span>, <span class="number">105</span>, <span class="number">115</span>, <span class="number">91</span>,  <span class="number">39</span>, <span class="number">103</span>, <span class="number">101</span>, <span class="number">116</span>, <span class="number">70</span>, <span class="number">117</span>, <span class="number">108</span>, <span class="number">108</span>,  <span class="number">89</span>, <span class="number">101</span>, <span class="number">97</span>, <span class="number">114</span>,  <span class="number">39</span>,  <span class="number">93</span>,  <span class="number">40</span>, <span class="number">41</span>, <span class="number">41</span>,  <span class="number">59</span>)),</span><br><span class="line">                    str[<span class="title function_">atob</span>(bigArr[<span class="number">7</span>])](<span class="regexp">/MM/</span>, (<span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])]() + <span class="number">1</span>) &gt; <span class="number">9</span> ? (<span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])]() + <span class="number">1</span>).<span class="title function_">toString</span>() : <span class="title function_">atob</span>(bigArr[<span class="number">9</span>]) + (<span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">8</span>])]() + <span class="number">1</span>))</span><br><span class="line">            ),</span><br><span class="line">                str[<span class="title function_">atob</span>(bigArr[<span class="number">7</span>])](<span class="regexp">/dd|DD/</span>, <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]() &gt; <span class="number">9</span> ? <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]().<span class="title function_">toString</span>() : <span class="title function_">atob</span>(bigArr[<span class="number">9</span>]) + <span class="variable language_">this</span>[<span class="title function_">atob</span>(bigArr[<span class="number">10</span>])]())</span><br><span class="line">        )</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="variable language_">window</span>[<span class="title function_">atob</span>(bigArr[<span class="number">11</span>])]()[<span class="title function_">atob</span>(bigArr[<span class="number">12</span>])](<span class="title function_">atob</span>(bigArr[<span class="number">13</span>])));</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="其它代码防护方案"><a href="#其它代码防护方案" class="headerlink" title="其它代码防护方案"></a>其它代码防护方案</h4><h5 id="eval加密"><a href="#eval加密" class="headerlink" title="eval加密"></a>eval加密</h5><p>看一段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">eval</span>(<span class="keyword">function</span> (<span class="params">p, a, c, k, e, r</span>) &#123;</span><br><span class="line">    e = <span class="keyword">function</span> (<span class="params">c</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> c.<span class="title function_">toString</span>(<span class="number">36</span>)</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">if</span> (<span class="string">&#x27;0&#x27;</span>.<span class="title function_">replace</span>(<span class="number">0</span>, e) == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (c--)</span><br><span class="line">            r[<span class="title function_">e</span>(c)] = k[c];</span><br><span class="line">        k = [<span class="keyword">function</span> (<span class="params">e</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> r[e] || e</span><br><span class="line">            &#125;</span><br><span class="line">        ];</span><br><span class="line">        e = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;[2-8a-f]&#x27;</span></span><br><span class="line">        &#125;;</span><br><span class="line">        c = <span class="number">1</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">while</span> (c--)</span><br><span class="line">        <span class="keyword">if</span> (k[c])</span><br><span class="line">            p = p.<span class="title function_">replace</span>(<span class="keyword">new</span> <span class="title class_">RegExp</span>(<span class="string">&#x27;\\b&#x27;</span> + <span class="title function_">e</span>(c) + <span class="string">&#x27;\\b&#x27;</span>, <span class="string">&#x27;g&#x27;</span>), k[c]);</span><br><span class="line">    <span class="keyword">return</span> p</span><br><span class="line">&#125;(<span class="string">&#x27;7.prototype.8=function(a)&#123;b 2=a;b Week=[\&#x27;日\&#x27;,\&#x27;一\&#x27;,\&#x27;二\&#x27;,\&#x27;三\&#x27;,\&#x27;四\&#x27;,\&#x27;五\&#x27;,\&#x27;六\&#x27;];2=2.4(/c|YYYY/,3.getFullYear());2=2.4(/d/,(3.5()+1)&gt;9?(3.5()+1).e():\&#x27;0\&#x27;+(3.5()+1));2=2.4(/f|DD/,3.6()&gt;9?3.6().e():\&#x27;0\&#x27;+3.6());return 2&#125;;console.log(new 7().8(\&#x27;c-d-f\&#x27;));&#x27;</span>, [], <span class="number">16</span>, <span class="string">&#x27;||str|this|replace|getMonth|getDate|Date|format||formatStr|var|yyyy|MM|toString|dd&#x27;</span>.<span class="title function_">split</span>(<span class="string">&#x27;|&#x27;</span>), <span class="number">0</span>, &#123;&#125;))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>传给eval的是一个匿名函数，而不是一个字符串，这就是说先通过匿名函数将加密的代码解密成字符串代码，然后再通过eval之心这串代码。所以eval加密跟eval关系不大，重要的是这个解密函数，eval只是执行解密后的结果，并不参与加解密。</p>
+<p>通过解密函数解密出来的字符串代码为：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081534835.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220308153442661" title="">
+                </div>
+                <div class="image-caption">image-20220308153442661</div>
+            </figure>
+
+<p>通过eval执行解密出来的字符串结果为：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081535577.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220308153523029" title="">
+                </div>
+                <div class="image-caption">image-20220308153523029</div>
+            </figure>
+
+
+
+<h5 id="内存爆破"><a href="#内存爆破" class="headerlink" title="内存爆破"></a>内存爆破</h5><p>内存爆破是指在代码中加入死代码，正常情况下这段代码不执行。当检测到函数被格式化或者函数被Hook的时候，就跳转到这段代码执行，直到内存溢出，浏览器会提示Out of Memory程序奔溃。内存爆破的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> d = [<span class="number">0x1</span>, <span class="number">0x0</span>, <span class="number">0x0</span>];</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">b</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0x0</span>, c = d.<span class="property">length</span>; i &lt; c; i++) &#123;</span><br><span class="line">        d.<span class="title function_">push</span>(<span class="title class_">Math</span>.<span class="title function_">round</span>(<span class="title class_">Math</span>.<span class="title function_">round</span>()));</span><br><span class="line">        c = d.<span class="property">length</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码中的for循环是一个死循环，但是代码写的又不像 while(true) 这样明显。尤其是代码混淆以后，会更具迷惑性。这段代码其实是从某网站简化而来，原先的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">this</span>[<span class="string">&#x27;NsTJKl&#x27;</span>] = [<span class="number">0x1</span>, <span class="number">0x0</span>, <span class="number">0x0</span>]</span><br><span class="line">......</span><br><span class="line"><span class="number">0x4b1809</span>[<span class="string">&#x27;prototype&#x27;</span>][<span class="string">&#x27;xTDWoN&#x27;</span>] = <span class="keyword">function</span>(<span class="params">_0x597ca7</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> _0x3e27c4 = <span class="number">0x0</span>, _0x192434 = <span class="variable language_">this</span>[<span class="string">&#x27;NsTJKl&#x27;</span>][<span class="string">&#x27;length&#x27;</span>]; _0x3e27c4 &lt; _0x192434; _0x3e27c4++) &#123;</span><br><span class="line">        <span class="variable language_">this</span>[<span class="string">&#x27;NsTJKl&#x27;</span>][<span class="string">&#x27;push&#x27;</span>](<span class="title class_">Math</span>[<span class="string">&#x27;round&#x27;</span>](<span class="title class_">Math</span>[<span class="string">&#x27;random&#x27;</span>]()))</span><br><span class="line">        _0x192434 = <span class="variable language_">this</span>[<span class="string">&#x27;NsTJKl&#x27;</span>][<span class="string">&#x27;length&#x27;</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">_0x597ca7</span>(<span class="variable language_">this</span>[<span class="string">&#x27;NsTJKl&#x27;</span>][<span class="number">0x0</span>])</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>for循环的结束条件是 _03e27c4 &lt; _0x92434，其中 _0x192434 的初始化值是数组的大小。看着像是一个遍历数组的操作，是在循环中，又往数组中push了成员，接着又重新给 _0x192434 赋值为数组的大小。这时这段代码就永远也不会结束了，直到内存溢出。</p>
+<h5 id="检测代码是否被格式化"><a href="#检测代码是否被格式化" class="headerlink" title="检测代码是否被格式化"></a>检测代码是否被格式化</h5><p>检测的思路很简单，在JS中，函数是可以转为字符串的。因此可以选择一个函数转为字符串，然后跟内置的字符串对比或者用正则匹配。函数转为字符串很简单：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">add</span> (a, b) &#123;</span><br><span class="line">  <span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(add + <span class="string">&#x27;&#x27;</span>)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(add.<span class="title function_">toString</span>())</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在调试窗口使用格式化之后，会产生一个后缀为：formatted的文件。之后这个文件中设置断点，触发断点后，会停在这个文件中，选中这个函数，鼠标悬停在上面，会显示出他原来没有格式化之前的样子。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:35.280Z" itemprop="dateUpdated">2023-05-09 18:16:35</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/&title=《JS代码安全防护原理——AST混淆原理》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/&title=《JS代码安全防护原理——AST混淆原理》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS代码安全防护原理——AST混淆原理》 — 何仕鹏的个人博客&url=http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B7%B7%E6%B7%86JS%E6%89%8B%E5%8A%A8%E9%80%86%E5%90%91/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">JS逆向之混淆JS手动逆向</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E5%8A%A0%E5%AF%86/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向中用到的常见的编码和加密</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/&title=《JS代码安全防护原理——AST混淆原理》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/&title=《JS代码安全防护原理——AST混淆原理》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS代码安全防护原理——AST混淆原理》 — 何仕鹏的个人博客&url=http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAAEmCAAAAADqr2IGAAAEl0lEQVR42u3ay07cQBAFUP7/p4mUVaTEw71VJnIPxys0DHb3MVLX6+Mjvj5/X8l3/rz+/vzqble/vXpu/nny9NsuTJgwYcL0SKbPl9fVw5KlJIvOoTdYr1/J671jwoQJE6b3YEpu14YIyct4DZRsrz3+hy8AEyZMmDD9AKY2rc23kd/nNWhyH0yYMGHChGnzgCSlzIOJHG6W1mLChAkTpp/DlN9un5pujvlNApx8fkMtHBMmTJgwPYzp/xzMz/z5G+ebMGHChAnTA5g+b7ra0nA+sjMbx2nT4C92hwkTJkyYjmWapaDJVvPEdRaU7D+vS9iYMGHChOlYptnxOSv+tsM6+Sf5apOwAxMmTJgwvRNTm3bmWLMl5hXXtlGahAVFqRcTJkyYMD2eqR1tyQ/4fZl48zISvuL1Y8KECROmw5k2CWGeXt5Vop0NGM328sV/ASZMmDBhejzTXeMveUq8CRdmAUT7CjFhwoQJ0/sxbRZ0b081T7BniXde5P0iesKECRMmTEcxzcZrkkQx+e1+G7My7gwXEyZMmDCdyLRvas6+mX8yu2ZJ7+VqMWHChAnTgUxtuzFPaPfjMq8DhTakmL1mTJgwYcJ0OtMsla2z6lFzsS0H56Xq4dgQJkyYMGE6kKlNDvPS7Qy3balu/jvygAMTJkyYMJ3LNDsmkwfki0teTJt4tzRtYIQJEyZMmE5hardx75buCh1mDcviPpgwYcKE6Vim/LBsW5htqNEO32yS2/xZH3n0gQkTJkyYHsnUNi/bkZfNb2dN0E0bNaqFY8KECROmo5jyQ3GWauahQ/4a8s3kQz914IIJEyZMmI5iaguy7SbbcZxNAXfzgosgABMmTJgwHcJUWI4O2rakm99zGO/MCtCYMGHChOktmNphmn0afO/3Z0XbqAyNCRMmTJiOZdoM5eQJczs22gYfbXE5+aSoiGPChAkTpgcztQ9Lrln6uh/ZmSXJURkaEyZMmDAdy5SXO/PGYbvEtji7SX3bBBgTJkyYMP0EptkBPFtKnr7um6xtWIMJEyZMmE5k2lSF20e2ReG2Mt2Wg/NgBRMmTJgwncvUDt+0YzFtu7RteSbEyaqKv8KECRMmTMcytUnpPmXdvIzZiE9dA8CECRMmTIczzZp/m3ZjstV8DOjesONyDZgwYcKE6VimPMmcbSZPOzcRzQYub8diwoQJE6YTmdoC6OzQzVunbaCQF6Zn98SECRMmTO/E1B7M+bLyVHPTbsxT7rodiwkTJkyY3oJplo7OgPLDeHO3thd5mQBjwoQJE6Zjme4t4N5b/G3P5U3xtw6JMGHChAnTIUyf5dUu6/Wx3YYI7Qpnr/Oy34sJEyZMmA5kmh3GeWOybTrmqWlL35aDMWHChAnTOzHNjth2OGYzgjP75gb9H3+LCRMmTJgOZ5q1KvNGYFFpXozjbOKgL1aICRMmTJh+JFM+HJOnwe1oTjt885rvWwICTJgwYcJ0CFMyiDM7hvcl3fY7bTsWEyZMmDCdzrQv4yZAbRG2DSn2K7/cESZMmDBhOpZpc2znzc6EoH3i980rDf8WEyZMmDA9i+kXzmh8hWnvdXAAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

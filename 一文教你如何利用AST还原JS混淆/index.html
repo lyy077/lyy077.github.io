@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>一文教你如何利用AST还原JS混淆 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS,AST">
+    <meta name="description" content="如果不了解JS混淆原理以及常见的混淆手段，可以戳我以前写过的2篇文章：JS代码安全防护原理——AST混淆原理 和 JS逆向之代码混淆的原理  开篇先回答一个问题，为什么需要反混淆？因为一般具有防护的JS代码都会经过混淆处理，虽然经过混淆的代码完全可以不处理混淆依旧对其进行逆向，但是由于字符串，数字都是混淆的，同时源码中冗余了很多无关的代码，控制流程平台化的存在更是让我们在代码的阅读上有了很大的障">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一文教你如何利用AST还原JS混淆">
+<meta property="og:url" content="http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="如果不了解JS混淆原理以及常见的混淆手段，可以戳我以前写过的2篇文章：JS代码安全防护原理——AST混淆原理 和 JS逆向之代码混淆的原理  开篇先回答一个问题，为什么需要反混淆？因为一般具有防护的JS代码都会经过混淆处理，虽然经过混淆的代码完全可以不处理混淆依旧对其进行逆向，但是由于字符串，数字都是混淆的，同时源码中冗余了很多无关的代码，控制流程平台化的存在更是让我们在代码的阅读上有了很大的障">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307135.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307165.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307184.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307216.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307245.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307274.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="article:published_time" content="2022-04-25T15:06:51.000Z">
+<meta property="article:modified_time" content="2023-05-09T10:16:30.335Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta property="article:tag" content="AST">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307135.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">一文教你如何利用AST还原JS混淆</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">一文教你如何利用AST还原JS混淆</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2022-04-25T15:06:51.000Z" itemprop="datePublished" class="page-time">
+  2022-04-25
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/">AST反混淆</a></li></ul></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFAST%EF%BC%9F"><span class="post-toc-number">1.</span> <span class="post-toc-text">什么是AST？</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#Babel%E7%AE%80%E4%BB%8B"><span class="post-toc-number">2.</span> <span class="post-toc-text">Babel简介</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#babel%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">babel库的安装</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#babel-x2F-core"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">@babel&#x2F;core</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#babel-x2F-parser"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">@babel&#x2F;parser</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#babel-x2F-generator"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">@babel&#x2F;generator</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#babel-x2F-traverse"><span class="post-toc-number">2.5.</span> <span class="post-toc-text">@babel&#x2F;traverse</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#babel-x2F-types"><span class="post-toc-number">2.6.</span> <span class="post-toc-text">@babel&#x2F;types</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%B0%8F%E6%A1%88%E4%BE%8B"><span class="post-toc-number">3.</span> <span class="post-toc-text">小案例</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-一文教你如何利用AST还原JS混淆"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">一文教你如何利用AST还原JS混淆</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2022-04-25 23:06:51" datetime="2022-04-25T15:06:51.000Z"  itemprop="datePublished">2022-04-25</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/">AST反混淆</a></li></ul></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p>如果不了解JS混淆原理以及常见的混淆手段，可以戳我以前写过的2篇文章：<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/">JS代码安全防护原理——AST混淆原理</a> 和 <a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%9A%84%E5%8E%9F%E7%90%86/">JS逆向之代码混淆的原理</a></p>
+</blockquote>
+<p>开篇先回答一个问题，为什么需要反混淆？因为一般具有防护的JS代码都会经过混淆处理，虽然经过混淆的代码完全可以不处理混淆依旧对其进行逆向，但是由于字符串，数字都是混淆的，同时源码中冗余了很多无关的代码，控制流程平台化的存在更是让我们在代码的阅读上有了很大的障碍，这样下来导致逆向源码耗费的时间需要成倍的增加。如果有一种方式，能够让我们获得的源码就是高可阅读性，也没有冗余的代码，能帮我们不止一点点地提高逆向源码的效率，你学还是不学？</p>
+<h1 id="什么是AST？"><a href="#什么是AST？" class="headerlink" title="什么是AST？"></a>什么是AST？</h1><p>所谓磨刀不误砍材功，既然反混淆是必要的，那跟AST有啥关系？不着急，容我慢慢解释。试想一下，要反混淆的话，是不是得处理JS源码？对于源码而言，如果只是一个文本文件，是不是非常不好处理(变量，常量，函数，分支什么的都是分散的)？所以我们必须把源码预处理成一种利于解混淆的形式，比如JSON格式？如果大学有接触过编译原理的话，一定有接触一个概念叫做语法树。没错，AST（Abstract Syntax Tree），中文抽象语法树，简称语法树（Syntax Tree），是源代码的抽象语法结构的树状表现形式，树上的每个节点都表示源代码中的一种结构。</p>
+<p>让我们看看AST长啥样？打开AST提供的一个解析网站：<a target="_blank" rel="noopener" href="https://astexplorer.net/">https://astexplorer.net/</a> ，其顶部可以选择语言，编译器。语法树没有单一的格式，选择不同的语言、不同的编译器，得到的结果也是不一样的，在 JavaScript 中，编译器有 Acorn、Espree、Esprima、Recast、Uglify-JS 等，使用最多的是 Babel，后续的学习也是以 Babel 为例。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307135.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220629155332110" title="">
+                </div>
+                <div class="image-caption">image-20220629155332110</div>
+            </figure>
+
+
+
+<h1 id="Babel简介"><a href="#Babel简介" class="headerlink" title="Babel简介"></a>Babel简介</h1><p>Babel 是一个 JavaScript 编译器，也可以说是一个解析库。Babel 内置了很多分析 JavaScript 代码的方法，我们可以利用 Babel 将 JavaScript 代码转换成 AST 语法树，然后增删改查等操作之后，再转换成 JavaScript 代码。</p>
+<p>在做逆向解混淆中，主要用到了 Babel 的以下几个功能包，本文也仅介绍以下几个功能包：</p>
+<ol>
+<li><code>@babel/core</code>：Babel 编译器本身，提供了 babel 的编译 API；</li>
+<li><code>@babel/parser</code> ：将 JavaScript 代码解析成 AST 语法树；</li>
+<li><code>@babel/traverse</code>： 遍历、修改 AST 语法树的各个节点；</li>
+<li><code>@babel/generator</code>：将 AST 还原成 JavaScript 代码；</li>
+<li><code>@babel/types</code>：判断、验证节点的类型、构建新 AST 节点等。</li>
+</ol>
+<p>用一张图说明上面各个模块的功能：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307165.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="640" title="">
+                </div>
+                <div class="image-caption">640</div>
+            </figure>
+
+
+
+
+
+<h2 id="babel库的安装"><a href="#babel库的安装" class="headerlink" title="babel库的安装"></a>babel库的安装</h2><p>安装完NodeJS之后，使用命令<code>npm install @babel/core</code>进行安装即可。</p>
+<h2 id="babel-x2F-core"><a href="#babel-x2F-core" class="headerlink" title="@babel&#x2F;core"></a>@babel&#x2F;core</h2><p>Babel 编译器本身，被拆分成了三个模块：<code>@babel/parser</code>、<code>@babel/traverse</code>、<code>@babel/generator</code>，比如以下方法的导入效果都是一样的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> parse = <span class="built_in">require</span>(<span class="string">&quot;@babel/parser&quot;</span>).<span class="property">parse</span>;</span><br><span class="line"><span class="keyword">const</span> parse = <span class="built_in">require</span>(<span class="string">&quot;@babel/core&quot;</span>).<span class="property">parse</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> traverse = <span class="built_in">require</span>(<span class="string">&quot;@babel/traverse&quot;</span>).<span class="property">default</span></span><br><span class="line"><span class="keyword">const</span> traverse = <span class="built_in">require</span>(<span class="string">&quot;@babel/core&quot;</span>).<span class="property">traverse</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="babel-x2F-parser"><a href="#babel-x2F-parser" class="headerlink" title="@babel&#x2F;parser"></a>@babel&#x2F;parser</h2><p><code>@babel/parser</code> 可以将 JavaScript 代码解析成 AST 语法树，其中主要提供了两个方法：</p>
+<ul>
+<li><code>parser.parse(code, [&#123;options&#125;])</code>：解析一段 JavaScript 代码；</li>
+<li><code>parser.parseExpression(code, [&#123;options&#125;])</code>：考虑到了性能问题，解析单个 JavaScript 表达式。</li>
+</ul>
+<p>部分可选参数 <code>options</code>：</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">allowImportExportEverywhere</td>
+<td align="left">默认 import 和 export 声明语句只能出现在程序的最顶层，设置为 true 则在任何地方都可以声明</td>
+</tr>
+<tr>
+<td align="left">allowReturnOutsideFunction</td>
+<td align="left">默认如果在顶层中使用 return 语句会引起错误，设置为 true 就不会报错</td>
+</tr>
+<tr>
+<td align="left">sourceType</td>
+<td align="left">默认为 script，当代码中含有 import 、export 等关键字时会报错，需要指定为 module</td>
+</tr>
+<tr>
+<td align="left">errorRecovery</td>
+<td align="left">默认如果 babel 发现一些不正常的代码就会抛出错误，设置为 true 则会在保存解析错误的同时继续解析代码，错误的记录将被保存在最终生成的 AST 的 errors 属性中，当然如果遇到严重的错误，依然会终止解析</td>
+</tr>
+</tbody></table>
+<p>好了，看完理论知识，来实践下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> parser = <span class="built_in">require</span>(<span class="string">&quot;@babel/parser&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> code = <span class="string">&quot;var a = &#x27;\u0068\u0065\u006c\u006c\u006f\u002c\u0041\u0053\u0054&#x27;; \n console[&#x27;log&#x27;](a);&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> ast = parser.<span class="title function_">parse</span>(code, &#123;<span class="attr">sourceType</span>: <span class="string">&quot;module&quot;</span>&#125;)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(ast)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>执行，结果如下，可以看到跟在 <a target="_blank" rel="noopener" href="https://astexplorer.net/">https://astexplorer.net/</a> 中看到的是一致的。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307184.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220629171249989" title="">
+                </div>
+                <div class="image-caption">image-20220629171249989</div>
+            </figure>
+
+
+
+<h2 id="babel-x2F-generator"><a href="#babel-x2F-generator" class="headerlink" title="@babel&#x2F;generator"></a>@babel&#x2F;generator</h2><p><code>@babel/generator</code> 可以将 AST 还原成 JavaScript 代码，提供了一个 <code>generate</code> 方法：<code>generate(ast, [&#123;options&#125;], code)</code>。</p>
+<p>部分可选参数 <code>options</code>：</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">auxiliaryCommentBefore</td>
+<td align="left">在输出文件内容的头部添加注释块文字</td>
+</tr>
+<tr>
+<td align="left">auxiliaryCommentAfter</td>
+<td align="left">在输出文件内容的末尾添加注释块文字</td>
+</tr>
+<tr>
+<td align="left">comments</td>
+<td align="left">输出内容是否包含注释</td>
+</tr>
+<tr>
+<td align="left">compact</td>
+<td align="left">输出内容是否不添加空格，避免格式化</td>
+</tr>
+<tr>
+<td align="left">concise</td>
+<td align="left">输出内容是否减少空格使其更紧凑一些</td>
+</tr>
+<tr>
+<td align="left">minified</td>
+<td align="left">是否压缩输出代码</td>
+</tr>
+<tr>
+<td align="left">retainLines</td>
+<td align="left">尝试在输出代码中使用与源代码中相同的行号</td>
+</tr>
+</tbody></table>
+<p>我们运行一段下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> parser = <span class="built_in">require</span>(<span class="string">&quot;@babel/parser&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> generate = <span class="built_in">require</span>(<span class="string">&quot;@babel/generator&quot;</span>).<span class="property">default</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> code = <span class="string">&quot;var a = &#x27;Hello, world&#x27;&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> ast = parser.<span class="title function_">parse</span>(code, &#123;<span class="attr">sourceType</span>: <span class="string">&quot;module&quot;</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改id名为b</span></span><br><span class="line">ast.<span class="property">program</span>.<span class="property">body</span>[<span class="number">0</span>].<span class="property">declarations</span>[<span class="number">0</span>].<span class="property">id</span>.<span class="property">name</span> = <span class="string">&quot;b&quot;</span>;</span><br><span class="line"><span class="comment">// 修改变量值为Hello</span></span><br><span class="line">ast.<span class="property">program</span>.<span class="property">body</span>[<span class="number">0</span>].<span class="property">declarations</span>[<span class="number">0</span>].<span class="property">init</span>.<span class="property">value</span> = <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// generate模块将AST语法树转换成JS代码</span></span><br><span class="line"><span class="keyword">const</span> result = <span class="title function_">generate</span>(ast, &#123;<span class="attr">minified</span>: <span class="literal">true</span>&#125;)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(result.<span class="property">code</span>)</span><br></pre></td></tr></table></figure>
+
+<p>最终输出结果<code>var b=&quot;Hello&quot;;</code>，变量名和值都成功更改了，由于加了压缩处理，等号左右两边的空格也没了。</p>
+<p>代码里 <code>&#123;minified: true&#125;</code> 演示了如何添加可选参数，这里表示压缩输出代码，<code>generate</code> 得到的 <code>result</code> 得到的是一个对象，其中的 <code>code</code> 属性才是最终的 JS 代码。</p>
+<p>代码里 <code>ast.program.body[0].declarations[0].id.name</code> 是 a 在 AST 中的位置，<code>ast.program.body[0].declarations[0].init.value</code> 是 a的值即字符串Hello 在 AST 中的位置，如下图所示：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307216.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220629175017218" title="">
+                </div>
+                <div class="image-caption">image-20220629175017218</div>
+            </figure>
+
+
+
+<h2 id="babel-x2F-traverse"><a href="#babel-x2F-traverse" class="headerlink" title="@babel&#x2F;traverse"></a>@babel&#x2F;traverse</h2><p>当代码多了，我们不可能像前面那样挨个定位并修改，对于相同类型的节点，我们可以直接遍历所有节点来进行修改，这里就用到了 <code>@babel/traverse</code>，它通常和 <code>visitor</code> 一起使用，<code>visitor</code> 是一个对象，这个名字是可以随意取的，<code>visitor</code> 里可以定义一些方法来过滤节点，这里还是用一个例子来演示：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> parser = <span class="built_in">require</span>(<span class="string">&quot;@babel/parser&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> generate = <span class="built_in">require</span>(<span class="string">&quot;@babel/generator&quot;</span>).<span class="property">default</span></span><br><span class="line"><span class="keyword">const</span> traverse = <span class="built_in">require</span>(<span class="string">&quot;@babel/traverse&quot;</span>).<span class="property">default</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> code = <span class="string">&quot;var a = &#x27;Hello, world&#x27;&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> ast = parser.<span class="title function_">parse</span>(code, &#123;<span class="attr">sourceType</span>: <span class="string">&quot;module&quot;</span>&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> visitor = &#123;</span><br><span class="line">    <span class="title class_">Identifier</span>(path) &#123;</span><br><span class="line">        path.<span class="property">node</span>.<span class="property">name</span> = path.<span class="property">node</span>.<span class="property">name</span> == <span class="string">&#x27;a&#x27;</span> ? <span class="string">&#x27;a&#x27;</span> : <span class="string">&#x27;b&#x27;</span>;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title class_">StringLiteral</span>(path)&#123;</span><br><span class="line">        path.<span class="property">node</span>.<span class="property">value</span> = <span class="string">&quot;I Love JavaScript!&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">traverse</span>(ast, visitor)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> result = <span class="title function_">generate</span>(ast, &#123;<span class="attr">minified</span>: <span class="literal">true</span>&#125;)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(result.<span class="property">code</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出为<code>var b=&quot;I Love JavaScript!&quot;;</code>，通过AST语法树，将变量a更名为变量b，同时将其值修改为”I Love JavaScript!”。</p>
+<p>我们看看代码主逻辑，首先定义一个<code>visitor</code>，然后定义对应类型的处理方法，<code>traverse</code> 接收两个参数，第一个是 AST 对象，第二个是 <code>visitor</code>，当 <code>traverse</code> 遍历所有节点，遇到节点类型为 <code>StringLiteral</code> 和 <code>Identifier</code> 时，就会调用 <code>visitor</code> 中对应的处理方法。 之所以定义<code>StringLiteral</code>和<code>Identifier</code>两种类型，是因为在抽象语法树中变量a是一个标识符，其类型为<code>Identifier</code>，而a的值是一个字符串，其类型为<code>StringLiteral</code>。<code>visitor</code> 中的方法会接收一个当前节点的 <code>path</code> 对象，该对象的类型是 <code>NodePath</code>，该对象有非常多的属性，以下介绍几种最常用的：</p>
+<table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">toString()</td>
+<td align="left">当前路径的源码</td>
+</tr>
+<tr>
+<td align="left">node</td>
+<td align="left">当前路径的节点</td>
+</tr>
+<tr>
+<td align="left">parent</td>
+<td align="left">当前路径的父级节点</td>
+</tr>
+<tr>
+<td align="left">parentPath</td>
+<td align="left">当前路径的父级路径</td>
+</tr>
+<tr>
+<td align="left">type</td>
+<td align="left">当前路径的类型</td>
+</tr>
+</tbody></table>
+<p><code>path</code> 对象除了有很多属性以外，还有很多方法，比如替换节点、删除节点、插入节点、寻找父级节点、获取同级节点、添加注释、判断节点类型等，可在需要时查询相关文档或查看源码，后续介绍 <code>@babel/types</code> 部分将会举部分例子来演示，以后的实战文章中也会有相关实例。</p>
+<p>如果多个类型的节点，处理的方式都一样，那么还可以使用 <code>|</code> 将所有节点连接成字符串，将同一个方法应用到所有节点：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> visitor = &#123;</span><br><span class="line">    <span class="string">&quot;Identifier|StringLiteral&quot;</span>(path) &#123;</span><br><span class="line">        path.<span class="property">node</span>.<span class="property">name</span> = path.<span class="property">node</span>.<span class="property">name</span> == <span class="string">&#x27;a&#x27;</span> ? <span class="string">&#x27;a&#x27;</span> : <span class="string">&#x27;b&#x27;</span>;</span><br><span class="line">        path.<span class="property">node</span>.<span class="property">value</span> = path.<span class="property">node</span>.<span class="property">name</span> == <span class="string">&#x27;a&#x27;</span> ? path.<span class="property">node</span>.<span class="property">value</span> : <span class="string">&quot;I Love JavaScript!&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>visitor</code> 对象有多种写法，以下几种写法的效果都是一样的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> visitor = &#123;</span><br><span class="line">    <span class="title class_">Identifier</span>(path) &#123;</span><br><span class="line">        path.<span class="property">node</span>.<span class="property">name</span> = path.<span class="property">node</span>.<span class="property">name</span> == <span class="string">&#x27;a&#x27;</span> ? <span class="string">&#x27;a&#x27;</span> : <span class="string">&#x27;b&#x27;</span>;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title class_">StringLiteral</span>(path)&#123;</span><br><span class="line">        path.<span class="property">node</span>.<span class="property">value</span> = <span class="string">&quot;I Love JavaScript!&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> visitor = &#123;</span><br><span class="line">    <span class="title class_">Identifier</span>: <span class="keyword">function</span>(<span class="params">path</span>) &#123;</span><br><span class="line">        path.<span class="property">node</span>.<span class="property">name</span> = path.<span class="property">node</span>.<span class="property">name</span> == <span class="string">&#x27;a&#x27;</span> ? <span class="string">&#x27;a&#x27;</span> : <span class="string">&#x27;b&#x27;</span>;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title class_">StringLiteral</span>: <span class="keyword">function</span>(<span class="params">path</span>)&#123;</span><br><span class="line">        path.<span class="property">node</span>.<span class="property">value</span> = <span class="string">&quot;I Love JavaScript!&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> visitor = &#123;</span><br><span class="line">    <span class="title class_">Identifier</span>: &#123;</span><br><span class="line">    	<span class="title function_">enter</span>(<span class="params">path</span>) &#123;</span><br><span class="line">        	path.<span class="property">node</span>.<span class="property">name</span> = path.<span class="property">node</span>.<span class="property">name</span> == <span class="string">&#x27;a&#x27;</span> ? <span class="string">&#x27;a&#x27;</span> : <span class="string">&#x27;b&#x27;</span>;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title class_">StringLiteral</span>: &#123;</span><br><span class="line">        <span class="title function_">enter</span>(<span class="params">path</span>)&#123;</span><br><span class="line">        	path.<span class="property">node</span>.<span class="property">value</span> = <span class="string">&quot;I Love JavaScript!&quot;</span></span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> visitor = &#123;</span><br><span class="line">    <span class="title function_">enter</span>(<span class="params">path</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (path.<span class="property">node</span>.<span class="property">type</span> == <span class="string">&quot;Identifier&quot;</span>) &#123;</span><br><span class="line">            path.<span class="property">node</span>.<span class="property">name</span> = path.<span class="property">node</span>.<span class="property">name</span> == <span class="string">&#x27;a&#x27;</span> ? <span class="string">&#x27;a&#x27;</span> : <span class="string">&#x27;b&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (path.<span class="property">node</span>.<span class="property">type</span> === <span class="string">&quot;StringLiteral&quot;</span>) &#123;</span><br><span class="line">            path.<span class="property">node</span>.<span class="property">value</span> = <span class="string">&quot;I Love JavaScript!&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上几种写法中有用到了 <code>enter</code> 方法，在节点的遍历过程中，进入节点（enter）与退出（exit）节点都会访问一次节点，<code>traverse</code> 默认在进入节点时进行节点的处理，如果要在退出节点时处理，那么在 <code>visitor</code> 中就必须声明 <code>exit</code> 方法。</p>
+<h2 id="babel-x2F-types"><a href="#babel-x2F-types" class="headerlink" title="@babel&#x2F;types"></a>@babel&#x2F;types</h2><p>前面提到过，babel&#x2F;types主要2个作用，一是包含了许多节点的类型，经常用来做类型判断。比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">types.<span class="title function_">stringLiteral</span>(<span class="string">&quot;Hello World&quot;</span>); <span class="comment">// string</span></span><br><span class="line">types.<span class="title function_">numericLiteral</span>(<span class="number">100</span>); <span class="comment">// number</span></span><br><span class="line">types.<span class="title function_">booleanLiteral</span>(<span class="literal">true</span>); <span class="comment">// boolean</span></span><br><span class="line">types.<span class="title function_">nullLiteral</span>(); <span class="comment">// null</span></span><br><span class="line">types.<span class="title function_">identifier</span>(); <span class="comment">// undefined</span></span><br><span class="line">types.<span class="title function_">regExpLiteral</span>(<span class="string">&quot;\\.js?$&quot;</span>, <span class="string">&quot;g&quot;</span>); <span class="comment">// 正则</span></span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;Hello World&quot;</span></span><br><span class="line"><span class="number">100</span></span><br><span class="line"><span class="literal">true</span></span><br><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="literal">undefined</span></span><br><span class="line">/\.<span class="property">js</span>?$/g</span><br></pre></td></tr></table></figure>
+
+
+
+<p>另一个作用是构建新的 AST 节点。通过一个简单的例子解释下吧。比如我们有如下代码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a=<span class="string">&quot;Hello&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>想在这句常量的定义之后插入<code>let b=1;</code> 这段代码，变成如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a=<span class="string">&quot;Hello&quot;</span>;</span><br><span class="line"><span class="keyword">let</span> b=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>我们在 <a target="_blank" rel="noopener" href="https://astexplorer.net/">https://astexplorer.net/</a> 中输入这2行代码，然后对照着看下代码该如何写？</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307245.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220629221958113" title="">
+                </div>
+                <div class="image-caption">image-20220629221958113</div>
+            </figure>
+
+
+
+<p>可以看到增加了一个变量声明之后，会在body下面增加一个VariableDeclaration节点。所以我们编写visitor的时候，相应的代码也应该在VariableDeclaration下面。</p>
+<p>我们的思路就是在遍历节点时，遍历到 <code>VariableDeclaration</code> 节点，就在其后面增加一个 <code>VariableDeclaration</code> 节点，生成  <code>VariableDeclaration</code> 节点，可以使用 <code>types.variableDeclaration()</code> 方法，在 types 中各种方法名称和我们在 AST 中看到的是一样的，只不过首字母是小写的，所以我们不需要知道所有方法的情况下，也能大致推断其方法名，只知道这个方法还不行，还得知道传入的参数是什么，可以查文档。</p>
+<p>通过文档，可以看到variableDeclarator需要<code>kind</code> 和 <code>declarations</code> 两个参数，其中 <code>declarations</code> 是 <code>VariableDeclarator</code> 类型的节点组成的列表。kind表示声明的类型，比如const, var, let。这里顺便问下为什么declarations是一个列表呢？因为JS是支持同时声明多个变量的，比如<code>let a, b, c = 1</code>，显然，declarations有多个。</p>
+<p>接下来我们还需要进一步定义 <code>declarator</code>，也就是 <code>VariableDeclarator</code> 类型的节点。调用的是<code>variableDeclarator</code>方法，这个方法接受2个参数，第一个是类型，我们传入<code>types.identifier(&quot;b&quot;)</code>，表示一个名为b的标识符，第二个参数是变量的初始化方式，这里我们传入<code>types.numericLiteral(1)</code>，因为我们是要给b赋值一个数值类型1。</p>
+<p>最后我们要指明这条赋值表达式的插入位置，<code>path.insertAfter()</code> 插入节点语句后面加了一句 <code>path.stop()</code>，表示插入完成后立即停止遍历当前节点和后续的子节点，添加的新节点也是 <code>VariableDeclaration</code>，如果不加停止语句的话，就会无限循环插入下去。</p>
+<p>完整的代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> parser = <span class="built_in">require</span>(<span class="string">&quot;@babel/parser&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> generate = <span class="built_in">require</span>(<span class="string">&quot;@babel/generator&quot;</span>).<span class="property">default</span></span><br><span class="line"><span class="keyword">const</span> traverse = <span class="built_in">require</span>(<span class="string">&quot;@babel/traverse&quot;</span>).<span class="property">default</span></span><br><span class="line"><span class="keyword">const</span> types = <span class="built_in">require</span>(<span class="string">&quot;@babel/types&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> code = <span class="string">&quot;const a = &#x27;Hello&#x27;&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> ast = parser.<span class="title function_">parse</span>(code, &#123;<span class="attr">sourceType</span>: <span class="string">&quot;module&quot;</span>&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> visitor = &#123;</span><br><span class="line">    <span class="title class_">VariableDeclaration</span>(path)&#123;</span><br><span class="line">        <span class="keyword">let</span> init = types.<span class="title function_">numericLiteral</span>(<span class="number">1</span>); <span class="comment">// 变量的初始化方式</span></span><br><span class="line">        <span class="keyword">let</span> declarator = types.<span class="title function_">variableDeclarator</span>(types.<span class="title function_">identifier</span>(<span class="string">&quot;b&quot;</span>), init) <span class="comment">// 声明变量名</span></span><br><span class="line">        <span class="keyword">let</span> declaration = types.<span class="title function_">variableDeclaration</span>(<span class="string">&quot;let&quot;</span>, [declarator]); <span class="comment">// 声明类型</span></span><br><span class="line">        path.<span class="title function_">insertAfter</span>(declaration) <span class="comment">// 插入位置</span></span><br><span class="line">        path.<span class="title function_">stop</span>()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">traverse</span>(ast, visitor)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> result = <span class="title function_">generate</span>(ast, &#123;<span class="attr">minified</span>: <span class="literal">true</span>&#125;)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(result.<span class="property">code</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="小案例"><a href="#小案例" class="headerlink" title="小案例"></a>小案例</h1><p>最后通过一个小案例来为这篇入门文章结尾吧。</p>
+<p>我们有如下一段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="string">&quot;\x44\x61\x74\x65&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> b = <span class="string">&quot;\u0068\u0065\u006c\u006c\u006f\u002c\u0041\u0053\u0054&quot;</span>;</span><br><span class="line"><span class="keyword">let</span> c = <span class="number">0b10001001</span>;</span><br><span class="line"><span class="keyword">let</span> d = <span class="number">0o123456</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这些数字或者字符串看起来非常不方便，所以我们需要对其进行解混淆处理，解混淆代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> parser = <span class="built_in">require</span>(<span class="string">&quot;@babel/parser&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> generate = <span class="built_in">require</span>(<span class="string">&quot;@babel/generator&quot;</span>).<span class="property">default</span></span><br><span class="line"><span class="keyword">const</span> traverse = <span class="built_in">require</span>(<span class="string">&quot;@babel/traverse&quot;</span>).<span class="property">default</span></span><br><span class="line"><span class="keyword">const</span> types = <span class="built_in">require</span>(<span class="string">&quot;@babel/types&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> code = <span class="string">&quot;var a = &#x27;\x44\x61\x74\x65&#x27;; \</span></span><br><span class="line"><span class="string">const b = &#x27;\u0068\u0065\u006c\u006c\u006f\u002c\u0041\u0053\u0054&#x27;; \</span></span><br><span class="line"><span class="string">let c = 0b10001001; \</span></span><br><span class="line"><span class="string">let d = 0o123456;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ast = parser.<span class="title function_">parse</span>(code, &#123;<span class="attr">sourceType</span>: <span class="string">&quot;module&quot;</span>&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> visitor = &#123;</span><br><span class="line">    <span class="title class_">NumericLiteral</span>(&#123;node&#125;) &#123;</span><br><span class="line">    <span class="keyword">if</span> (node.<span class="property">extra</span> &amp;&amp; <span class="regexp">/^0[obx]/i</span>.<span class="title function_">test</span>(node.<span class="property">extra</span>.<span class="property">raw</span>)) &#123;</span><br><span class="line">      node.<span class="property">extra</span> = <span class="literal">undefined</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="title class_">StringLiteral</span>(&#123;node&#125;)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> (node.<span class="property">extra</span> &amp;&amp; <span class="regexp">/\\[ux]/gi</span>.<span class="title function_">test</span>(node.<span class="property">extra</span>.<span class="property">raw</span>)) &#123;</span><br><span class="line">      node.<span class="property">extra</span> = <span class="literal">undefined</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">traverse</span>(ast, visitor)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> result = <span class="title function_">generate</span>(ast, &#123;<span class="attr">minified</span>: <span class="literal">true</span>&#125;)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(result.<span class="property">code</span>)</span><br></pre></td></tr></table></figure>
+
+<p>解混淆结果如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202206292307274.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220629224644829" title="">
+                </div>
+                <div class="image-caption">image-20220629224644829</div>
+            </figure>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-09T10:16:30.335Z" itemprop="dateUpdated">2023-05-09 18:16:30</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AST/" rel="tag">AST</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/&title=《一文教你如何利用AST还原JS混淆》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/&title=《一文教你如何利用AST还原JS混淆》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《一文教你如何利用AST还原JS混淆》 — 何仕鹏的个人博客&url=http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E7%B3%BB%E5%88%97%E6%B1%87%E6%80%BB/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">AST解JS混淆系列汇总</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向案例——天眼查过极验滑块验证码</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/&title=《一文教你如何利用AST还原JS混淆》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/&title=《一文教你如何利用AST还原JS混淆》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《一文教你如何利用AST还原JS混淆》 — 何仕鹏的个人博客&url=http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8AST%E8%BF%98%E5%8E%9FJS%E6%B7%B7%E6%B7%86/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAAEmCAAAAADqr2IGAAAEk0lEQVR42u3aS27jMBAFwNz/0p5tBgPb73UrGFMprQxBpsjSgv3h11d8Pb5dz+58v//szuOfK3nj6xGejfN6hK+fuDBhwoQJ00cyPV5es6Xmi5x9hv3c8rVjwoQJE6Z7MOXDvd748ydfvyvHmv03XzsmTJgwYfqdTHlinCfDOVz+3vZjY8KECROm38zUFmrbtLadQ7K8PKXHhAkTJkz3Zsq30ra821L+RFe2XRcmTJgwYboTU/6a+/3+kfNNmDBhwoTpY5geo6tNOPfp9Ayi3f6frhcTJkyYMB3LtGkcbpb64/FL3Jotmp2YMGHChOlYprZEm7QG8yM++7Ls/n5daMaECRMmTEcxtUPMktXNB2iPGc3S8uLgDiZMmDBhOoQpGfr1Np+HBW1gsfkw7YGkN7PChAkTJky3YCpKnEHZN5/QVdt8nkjnZeuvpNqNCRMmTJg+mClJBdsteRZkJIHF/lBROyYmTJgwYborU9t0zBPd2Raez2dGc3FMgQkTJkyYPp6pDQja18826fYU0rUBBCZMmDBhOpGpLem2KG3heFbkvbZYHLUzMWHChAnTsUz70mrStpxt5HlQkrdXo2M9mDBhwoTpWKY8mWwn0TLtN/irQoGi6owJEyZMmD6eqS3Xzrb2WTLchgJ5+bgORDBhwoQJ07FM+badNxTbiebBRPsB8oCmjp4wYcKECdMhTMmgbcl1cyinncPsqqExYcKECdPhTEki2h61mSXG+wJ0GyhE42DChAkTpmOZ8gR4NsV8zE1Ltd3gc9Y3DU5MmDBhwnQIU9sm3B/62bckZ/9dtTwxYcKECdOBTMnU20UmxMNoZYHVBh9/jYMJEyZMmA5nKoqbcWMyPyiTvGt29Ge2rmLBmDBhwoTp45nyjXaTUiaTyI/1tMn5xU1NTJgwYcJ0INOsyJssYPbM7PmrWqEX18IxYcKECdN/ZWqT2FnLs0W56mqbqUWshAkTJkyYDmFqD8fkjcx9yXVYhC0z/qLMjQkTJkyYjmV6PYkZRBIQbA7f5MHK5qDP0xgKEyZMmDAdxZQ3Effb+WzkDcQmJa5POWHChAkTpg9juqD0uUie9w3UTUBTpL6YMGHChOmmTLOC6azAuk+2N5/5zUfChAkTJky3YJqVZdtm51X0OfSsnYkJEyZMmO7ElC+sPdCTbO1JeTcPWWYp7pu3YMKECROmY5muSkTbFDcv/s4+zFX/xYQJEyZMpzO1S21ftt/I8/bkPvh4+hZMmDBhwnQLprz0uT9eMxs//wztnN8UnTFhwoQJ07FM+UOzYm67hefBQR5etM9HT2LChAkTpkOYHuXVpqZtGDFLvGfHiYqEHBMmTJgwHcvUbqizgGCGmx8tev3f/W9MmDBhwnQ6U3vkZdNEbDfvWdtyExA8nQMmTJgwYTqcqd2kZ0XbtvA6S6RncVDUwsSECRMmTLdmSjbs5H5yQCeZySZ5zoMeTJgwYcL0e5jyJmgbLszGz+/PPi0mTJgwYboT06bI26a+M4g2ONiUoZ8GBJgwYcKE6UCmTUG2TXeTEKEt4O4PBq3ONGHChAkTps9l+gNqx/0uKVVaGgAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
