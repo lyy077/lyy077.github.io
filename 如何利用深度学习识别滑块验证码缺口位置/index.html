@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>如何利用深度学习识别滑块验证码缺口位置 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="深度学习">
+    <meta name="description" content="极验滑块验证码缺口位置的计算有2种方式，第一种通过计算像素点差值来定位缺口位置，在JS逆向案例——天眼查过极验滑块验证码一文中介绍过，今天这篇文章介绍第二种方式，如何利用深度学习识别缺口的位置。这里采用华为云ModelArts云服务去训练缺口识别模型。 数据集的准备收集验证码图片先上代码，如下： 123456789101112131415161718192021222324252627282930">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何利用深度学习识别滑块验证码缺口位置">
+<meta property="og:url" content="http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="极验滑块验证码缺口位置的计算有2种方式，第一种通过计算像素点差值来定位缺口位置，在JS逆向案例——天眼查过极验滑块验证码一文中介绍过，今天这篇文章介绍第二种方式，如何利用深度学习识别缺口的位置。这里采用华为云ModelArts云服务去训练缺口识别模型。 数据集的准备收集验证码图片先上代码，如下： 123456789101112131415161718192021222324252627282930">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121752382.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121808453.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121810001.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121815728.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121816523.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121817355.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121820363.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121821223.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121823354.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121825554.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121828023.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121829716.png">
+<meta property="article:published_time" content="2023-05-12T09:15:57.000Z">
+<meta property="article:modified_time" content="2023-05-12T10:44:12.574Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121752382.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">如何利用深度学习识别滑块验证码缺口位置</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">如何利用深度学习识别滑块验证码缺口位置</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2023-05-12T09:15:57.000Z" itemprop="datePublished" class="page-time">
+  2023-05-12
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E9%AA%8C%E8%AF%81%E7%A0%81/">验证码</a></li></ul></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E5%87%86%E5%A4%87"><span class="post-toc-number">1.</span> <span class="post-toc-text">数据集的准备</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%94%B6%E9%9B%86%E9%AA%8C%E8%AF%81%E7%A0%81%E5%9B%BE%E7%89%87"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">收集验证码图片</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A0%87%E6%B3%A8"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">数据标注</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="post-toc-number">2.</span> <span class="post-toc-text">模型训练</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2"><span class="post-toc-number">3.</span> <span class="post-toc-text">模型部署</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%A8%A1%E5%9E%8B%E6%B5%8B%E8%AF%95"><span class="post-toc-number">4.</span> <span class="post-toc-text">模型测试</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-如何利用深度学习识别滑块验证码缺口位置"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">如何利用深度学习识别滑块验证码缺口位置</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2023-05-12 17:15:57" datetime="2023-05-12T09:15:57.000Z"  itemprop="datePublished">2023-05-12</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E9%AA%8C%E8%AF%81%E7%A0%81/">验证码</a></li></ul></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <p>极验滑块验证码缺口位置的计算有2种方式，第一种通过计算像素点差值来定位缺口位置，在<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/">JS逆向案例——天眼查过极验滑块验证码</a>一文中介绍过，今天这篇文章介绍第二种方式，如何利用深度学习识别缺口的位置。这里采用华为云<strong>ModelArts</strong>云服务去训练缺口识别模型。</p>
+<h3 id="数据集的准备"><a href="#数据集的准备" class="headerlink" title="数据集的准备"></a>数据集的准备</h3><h4 id="收集验证码图片"><a href="#收集验证码图片" class="headerlink" title="收集验证码图片"></a>收集验证码图片</h4><p>先上代码，如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> urljoin</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">div_offset = [</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">157</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">145</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">265</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">277</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">181</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">169</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">241</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">253</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">109</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">97</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">289</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">301</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">85</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">73</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">25</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">37</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">13</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">1</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">121</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">133</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">61</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">49</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">217</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">229</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">205</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">193</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">145</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">157</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">277</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">265</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">169</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">181</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">253</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">241</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">97</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">109</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">301</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">289</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">73</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">85</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">37</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">25</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">1</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">13</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">133</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">121</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">49</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">61</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">229</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">217</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">193</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">205</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">recover_pic</span>(<span class="params">pic_path, new_pic_path</span>):</span><br><span class="line">    unordered_pic = Image.<span class="built_in">open</span>(pic_path)</span><br><span class="line">    ordered_pic = unordered_pic.copy()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 裁剪并拼接</span></span><br><span class="line">    <span class="keyword">for</span> i, d <span class="keyword">in</span> <span class="built_in">enumerate</span>(div_offset):</span><br><span class="line">        im = unordered_pic.crop((math.fabs(d[<span class="string">&#x27;x&#x27;</span>]), math.fabs(d[<span class="string">&#x27;y&#x27;</span>]), math.fabs(d[<span class="string">&#x27;x&#x27;</span>]) + <span class="number">10</span>, math.fabs(d[<span class="string">&#x27;y&#x27;</span>]) + <span class="number">58</span>))</span><br><span class="line">        <span class="comment"># 上半区</span></span><br><span class="line">        <span class="keyword">if</span> d[<span class="string">&#x27;y&#x27;</span>] != <span class="number">0</span>:</span><br><span class="line">            ordered_pic.paste(im, (<span class="number">10</span> * (i % (<span class="built_in">len</span>(div_offset) // <span class="number">2</span>)), <span class="number">0</span>), <span class="literal">None</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ordered_pic.paste(im, (<span class="number">10</span> * (i % (<span class="built_in">len</span>(div_offset) // <span class="number">2</span>)), <span class="number">58</span>), <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    ordered_pic.save(new_pic_path)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download_pic</span>(<span class="params">store_name</span>):</span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="string">&#x27;Accept&#x27;</span>: <span class="string">&#x27;application/json, text/plain, */*&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Accept-Language&#x27;</span>: <span class="string">&#x27;zh-CN,zh;q=0.9&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Cache-Control&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Connection&#x27;</span>: <span class="string">&#x27;keep-alive&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Origin&#x27;</span>: <span class="string">&#x27;https://www.tianyancha.com&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Pragma&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Referer&#x27;</span>: <span class="string">&#x27;https://www.tianyancha.com/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Dest&#x27;</span>: <span class="string">&#x27;empty&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Mode&#x27;</span>: <span class="string">&#x27;cors&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Site&#x27;</span>: <span class="string">&#x27;same-site&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 &#x27;</span></span><br><span class="line">                      <span class="string">&#x27;(KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;X-TYCID&#x27;</span>: <span class="string">&#x27;70c68810ddbd11eda0a455532f9618b6&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua&#x27;</span>: <span class="string">&#x27;&quot;Chromium&quot;;v=&quot;112&quot;, &quot;Google Chrome&quot;;v=&quot;112&quot;, &quot;Not:A-Brand&quot;;v=&quot;99&quot;&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-mobile&#x27;</span>: <span class="string">&#x27;?0&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-platform&#x27;</span>: <span class="string">&#x27;&quot;macOS&quot;&#x27;</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    params = &#123;</span><br><span class="line">        <span class="string">&#x27;_&#x27;</span>: <span class="string">&#x27;1683799958183&#x27;</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    response = requests.get(<span class="string">&#x27;https://napi-huawei.tianyancha.com/validate/init&#x27;</span>, params=params, headers=headers)</span><br><span class="line">    resp = json.loads(response.text)</span><br><span class="line">    data = json.loads(resp[<span class="string">&#x27;data&#x27;</span>])</span><br><span class="line"></span><br><span class="line">    gt = data[<span class="string">&#x27;gt&#x27;</span>]</span><br><span class="line">    challenge = data[<span class="string">&#x27;challenge&#x27;</span>]</span><br><span class="line"></span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="string">&#x27;Accept&#x27;</span>: <span class="string">&#x27;*/*&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Accept-Language&#x27;</span>: <span class="string">&#x27;zh-CN,zh;q=0.9&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Cache-Control&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Connection&#x27;</span>: <span class="string">&#x27;keep-alive&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Pragma&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Referer&#x27;</span>: <span class="string">&#x27;https://www.tianyancha.com/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Dest&#x27;</span>: <span class="string">&#x27;script&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Mode&#x27;</span>: <span class="string">&#x27;no-cors&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Site&#x27;</span>: <span class="string">&#x27;cross-site&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) &#x27;</span></span><br><span class="line">                      <span class="string">&#x27;Chrome/112.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua&#x27;</span>: <span class="string">&#x27;&quot;Chromium&quot;;v=&quot;112&quot;, &quot;Gostiogle Chrome&quot;;v=&quot;112&quot;, &quot;Not:A-Brand&quot;;v=&quot;99&quot;&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-mobile&#x27;</span>: <span class="string">&#x27;?0&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-platform&#x27;</span>: <span class="string">&#x27;&quot;macOS&quot;&#x27;</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    response = requests.get(</span><br><span class="line">        <span class="string">f&#x27;https://api.geevisit.com/get.php?gt=<span class="subst">&#123;gt&#125;</span>&amp;challenge=<span class="subst">&#123;challenge&#125;</span>&amp;product=popup&amp;offline=false&amp;&#x27;</span></span><br><span class="line">        <span class="string">f&#x27;api_server=api.geevisit.com&amp;protocol=https://&amp;type=slide&amp;path=/static/js/geetest.6.0.9.js&#x27;</span></span><br><span class="line">        <span class="string">f&#x27;&amp;callback=geetest_<span class="subst">&#123;<span class="built_in">str</span>(<span class="built_in">round</span>(time.time() * <span class="number">1000</span>))&#125;</span>&#x27;</span>,</span><br><span class="line">        headers=headers,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    bg_url = urljoin(<span class="string">&quot;https://static.geetest.com/&quot;</span>, re.findall(<span class="string">&quot;\&quot;bg\&quot;: \&quot;(.*?)\&quot;&quot;</span>, response.text)[<span class="number">0</span>])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;下载验证码图片，地址：&quot;</span> + bg_url)</span><br><span class="line">    resp = requests.get(bg_url)</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(store_name, <span class="string">&quot;wb+&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(resp.content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">        name = <span class="string">&quot;input/&quot;</span> + <span class="built_in">str</span>(i) + <span class="string">&quot;.jpg&quot;</span></span><br><span class="line">        download_pic(name)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;保存乱序验证码图片，保存位置：&quot;</span> + name)</span><br><span class="line">        new_name = <span class="string">&quot;output/&quot;</span> + <span class="built_in">str</span>(i) + <span class="string">&quot;.jpg&quot;</span></span><br><span class="line">        recover_pic(name, new_name)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;还原乱序验证码图片，保存位置：&quot;</span> + new_name)</span><br><span class="line">        time.sleep(<span class="number">0.5</span>)</span><br></pre></td></tr></table></figure>
+
+<p>解释主要用到的2个方法，<code>download_pic</code>下载乱序的验证码图片，<code>recover_pic</code>还原乱序的验证码图片。关于下载验证码的请求逻辑，参考<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F/">JS逆向案例——极验滑块验证码底图还原</a>。</p>
+<p>运行效果如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121752382.png" alt="image-20230512175231221" style="zoom:50%;" />
+
+
+
+<p>下载好图片后，将图片上传到华为云对象存储，具体方法可以自行网上查阅。这里下载并上传了100张图片。</p>
+<h4 id="数据标注"><a href="#数据标注" class="headerlink" title="数据标注"></a>数据标注</h4><p>通过网址<code>https://console.huaweicloud.com/modelarts/?region=cn-north-4#/dashboard</code>打开<strong>ModelArts</strong>主界面，然后点击主动学习：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121808453.png" alt="image-20230512180852319" style="zoom: 33%;" />
+
+
+
+<p>可以看到ModelArts支持的全部功能，这里选择第二个物体检测，点击创建项目：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121810001.png" alt="image-20230512181042875" style="zoom:33%;" />
+
+<p>项目名称和数据集名称可以采用自动生成的，数据集输入位置填刚才上传验证码的那个bucket的目录，数据集输出位置就在此bucket下新建一个空目录即可。最后点击创建项目。</p>
+<p>然后点击未标注：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121815728.png" alt="image-20230512181548602" style="zoom:33%;" />
+
+
+
+<p>接着随意点击一张未标注的图片，对图片进行标注：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121816523.png" alt="标注1" style="zoom:33%;" />
+
+
+
+<p>标注完成之后，后边会显示缺口相对于背景图的坐标：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121817355.png" alt="标注2" style="zoom:33%;" />
+
+<p>标注完成之后点击选择下一张标注，数据集一共100张，大概10多分钟标注完。</p>
+<h3 id="模型训练"><a href="#模型训练" class="headerlink" title="模型训练"></a>模型训练</h3><p>数据集标注完之后，点击开始训练：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121820363.png" alt="开始训练" style="zoom:33%;" />
+
+
+
+<p>然后会提示模型训练中：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121821223.png" alt="训练中" style="zoom:33%;" />
+
+
+
+<p>数据集样本比较少，训练大概5-10分钟，完成后界面如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121823354.png" alt="训练完成" style="zoom:33%;" />
+
+
+
+<p>注意：之所以准确率只有94%，有2个原因，一是样本数量少；二是数据标注为了节约时间没有太细致。改善这2点原因让准确率接近100%不是不可能。</p>
+<h3 id="模型部署"><a href="#模型部署" class="headerlink" title="模型部署"></a>模型部署</h3><p>点击部署按钮：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121825554.png" alt="部署" style="zoom:33%;" />
+
+<p>直接点击下一步即可。</p>
+<h3 id="模型测试"><a href="#模型测试" class="headerlink" title="模型测试"></a>模型测试</h3><p>上传一张图片测试：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121828023.png" alt="预测测试" style="zoom:33%;" />
+
+<p>可以看到缺口位置基本识别正确。</p>
+<p>再上传一张带干扰的图片测试：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121829716.png" alt="带干扰的预测" style="zoom:33%;" />
+
+<p>也正确识别。</p>
+<p>至此，完结撒花。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-12T10:44:12.574Z" itemprop="dateUpdated">2023-05-12 18:44:12</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/&title=《如何利用深度学习识别滑块验证码缺口位置》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/&title=《如何利用深度学习识别滑块验证码缺口位置》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《如何利用深度学习识别滑块验证码缺口位置》 — 何仕鹏的个人博客&url=http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E8%B0%83%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">AST解JS混淆之去掉未被调用的函数</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/&title=《如何利用深度学习识别滑块验证码缺口位置》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/&title=《如何利用深度学习识别滑块验证码缺口位置》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《如何利用深度学习识别滑块验证码缺口位置》 — 何仕鹏的个人博客&url=http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAVYAAAFWCAAAAAAXxOpfAAAF90lEQVR42u3aQW4aURAE0Nz/0o6UVSIFqOoe5Pn4sUIYw583LEpd/etX/Pj68/j7+d+vJP/7/PH8u2bnfHSG5P2zK60fWLFixYoV6w1Ykwt+9EoC0f7v7AY8v6JW4PnJk7NhxYoVK1asZ7EmoSo/REuQX8YmbG1uT34VWLFixYoV66eyJtD55+SRrr2w5Btn14UVK1asWLFiTSJIG7xmxUZe2OTRCitWrFixYv2ZrEkQmY1gNusOs8/M41T7vW/psrBixYoVK9ZvZW2jzE9+fvEDK1asWLFi/VbWr9EjjzL57dlEpTZO5WXMTAkrVqxYsWI9hbUdl1wbWfKb0d6eWTEzGwBFXRZWrFixYsV6e9Y83OQfnS83tDXPviC56vZHXRZWrFixYsV6Y9YNwZ5pX3hsbkDyc8l/NFixYsWKFeuJrC3N82Pl44k23CQjlU1JM7vBw9IFK1asWLFivQFrXn5cdaxkLSMf9+TfMkudye38z2dixYoVK1asR7HmlO0axCYY5UsP7fs3nxbdSKxYsWLFivVA1jYGtbHjqgWIPe4FDdVzDaxYsWLFivUQ1nzYMVvLyEcVM74cbvYj2FdBWLFixYoV651Z8/HKbJ2irUbyAmYflfKfSz2awYoVK1asWA9k3QeUfBVjtjyRrH0kqyT5D6iNevVlY8WKFStWrDdgbcNTPrZ4XzCahaek5mk/AStWrFixYj2dte0LZuOVzVCjLVdm19WOkB7eKqxYsWLFivUQ1ll9MlueeN/N25RA+ZpFu7aCFStWrFix3p+1jSz75Yx2uaEtSK4qWlYCWLFixYoV64Gs7YJFe6zNDchrklmkmw1fHn4+VqxYsWLFeghrW4dcNaZJapUkPM3Kkvz97QDoxTQLK1asWLFivSVr/s9tFTFbiYiWGy5d/sjR84UPrFixYsWK9f6ss7olLzyuKk5mz9sip308vAFYsWLFihXrUax56XLVMGI2oNmfbbYIstpsxYoVK1asWI9i3RxrNjrJlyreUQhtIuDDv2LFihUrVqyHsG7Kif0axGa5oa1wZuGsLWku6HywYsWKFSvWb2Kd1SGz8cQsSOVwV0XGVcjDihUrVqxYD2G9KpTs1zLyM7QV0fuKH6xYsWLFivWTWNsgMos1ebjJ9xnysqe9/fl5XhBjxYoVK1asN2adBZ1NBZLftmKoUUafzQgpEsOKFStWrFiPYn1+SUngaINaC9oudCannT2vZ1dYsWLFihXrzVjbULVZlJwhzmqVWQTcXO8/r2DFihUrVqxHsV4VqvKbdO2yxWa5s81FX8EDK1asWLFiPZ01v4B2UaO9kRv02ZLHPoRhxYoVK1asp7Amcap9fRZ92u+dnW1WqOSLnv+8EytWrFixYr09a1545BFqNlhplyBn4a8teGY3BitWrFixYj2FtY0pbSExW9po49dVrLMrevGbxYoVK1asWG/MOoPY07THrcPN6P1JbxL5YMWKFStWrMey5iOJlnVT4WzKkn2Yywc6WLFixYoV61msbb3RVi/7IJWPRdoqaLaQmn8mVqxYsWLFeiJrG1meH26z7rAZ08yurh3xvIDGihUrVqxYP4K1HYUk0LMINRuLzJ63Kx0vRi1YsWLFihXrjVlnxUkdOEZDmbY+aaudzRAnGlFhxYoVK1ast2fdDETygJWPM2bhpr0l+3Jl+DvFihUrVqxYb8Y642sXH2dhKA98V1VHybrJJpxhxYoVK1as92FtlxvaULUPMXliyb+9fb0euGDFihUrVqwfxNrGkeTrk3fm9UZeC7VhbphSsWLFihUr1kNY9yFmFnpm6x3t802pswlwWLFixYoV61mss1HLLKjNap7NKsbszHnF8hAaK1asWLFiPYo1CUn50sOs1JkFuNlA56oc+vC7sGLFihUr1h/AuhmgzD6hLWbyAUp+/mIJAytWrFixYv0g1nwlIh/QtEGnvryyHGpBh9soWLFixYoV681Y96XLBrRdwsgrkM3JN+fBihUrVqxYT2Ftg0hScmwizib8tUHqHefBihUrVqxYD2H9DeVic9ljiOvJAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

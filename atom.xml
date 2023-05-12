@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2023-05-09T10:16:45.029Z</updated>
+  <updated>2023-05-12T10:44:12.574Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>如何利用深度学习识别滑块验证码缺口位置</title>
+    <link href="http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/"/>
+    <id>http://example.com/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/</id>
+    <published>2023-05-12T09:15:57.000Z</published>
+    <updated>2023-05-12T10:44:12.574Z</updated>
+    
+    <content type="html"><![CDATA[<p>极验滑块验证码缺口位置的计算有2种方式，第一种通过计算像素点差值来定位缺口位置，在<a href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4%A9%E7%9C%BC%E6%9F%A5%E8%BF%87%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81/">JS逆向案例——天眼查过极验滑块验证码</a>一文中介绍过，今天这篇文章介绍第二种方式，如何利用深度学习识别缺口的位置。这里采用华为云<strong>ModelArts</strong>云服务去训练缺口识别模型。</p><h3 id="数据集的准备"><a href="#数据集的准备" class="headerlink" title="数据集的准备"></a>数据集的准备</h3><h4 id="收集验证码图片"><a href="#收集验证码图片" class="headerlink" title="收集验证码图片"></a>收集验证码图片</h4><p>先上代码，如下：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> urljoin</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">div_offset = [</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">157</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">145</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">265</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">277</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">181</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">169</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">241</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">253</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">109</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">97</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">289</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">301</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">85</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">73</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">25</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">37</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">13</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">1</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">121</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">133</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">61</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">49</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">217</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">229</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">205</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">193</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">145</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">157</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">277</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">265</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">169</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">181</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">253</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">241</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">97</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">109</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">301</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">289</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">73</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">85</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">37</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">25</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">1</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">13</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">133</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">121</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">49</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">61</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">229</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">217</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">193</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">205</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">recover_pic</span>(<span class="params">pic_path, new_pic_path</span>):</span><br><span class="line">    unordered_pic = Image.<span class="built_in">open</span>(pic_path)</span><br><span class="line">    ordered_pic = unordered_pic.copy()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 裁剪并拼接</span></span><br><span class="line">    <span class="keyword">for</span> i, d <span class="keyword">in</span> <span class="built_in">enumerate</span>(div_offset):</span><br><span class="line">        im = unordered_pic.crop((math.fabs(d[<span class="string">&#x27;x&#x27;</span>]), math.fabs(d[<span class="string">&#x27;y&#x27;</span>]), math.fabs(d[<span class="string">&#x27;x&#x27;</span>]) + <span class="number">10</span>, math.fabs(d[<span class="string">&#x27;y&#x27;</span>]) + <span class="number">58</span>))</span><br><span class="line">        <span class="comment"># 上半区</span></span><br><span class="line">        <span class="keyword">if</span> d[<span class="string">&#x27;y&#x27;</span>] != <span class="number">0</span>:</span><br><span class="line">            ordered_pic.paste(im, (<span class="number">10</span> * (i % (<span class="built_in">len</span>(div_offset) // <span class="number">2</span>)), <span class="number">0</span>), <span class="literal">None</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ordered_pic.paste(im, (<span class="number">10</span> * (i % (<span class="built_in">len</span>(div_offset) // <span class="number">2</span>)), <span class="number">58</span>), <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    ordered_pic.save(new_pic_path)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download_pic</span>(<span class="params">store_name</span>):</span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="string">&#x27;Accept&#x27;</span>: <span class="string">&#x27;application/json, text/plain, */*&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Accept-Language&#x27;</span>: <span class="string">&#x27;zh-CN,zh;q=0.9&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Cache-Control&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Connection&#x27;</span>: <span class="string">&#x27;keep-alive&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Origin&#x27;</span>: <span class="string">&#x27;https://www.tianyancha.com&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Pragma&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Referer&#x27;</span>: <span class="string">&#x27;https://www.tianyancha.com/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Dest&#x27;</span>: <span class="string">&#x27;empty&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Mode&#x27;</span>: <span class="string">&#x27;cors&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Site&#x27;</span>: <span class="string">&#x27;same-site&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 &#x27;</span></span><br><span class="line">                      <span class="string">&#x27;(KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;X-TYCID&#x27;</span>: <span class="string">&#x27;70c68810ddbd11eda0a455532f9618b6&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua&#x27;</span>: <span class="string">&#x27;&quot;Chromium&quot;;v=&quot;112&quot;, &quot;Google Chrome&quot;;v=&quot;112&quot;, &quot;Not:A-Brand&quot;;v=&quot;99&quot;&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-mobile&#x27;</span>: <span class="string">&#x27;?0&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-platform&#x27;</span>: <span class="string">&#x27;&quot;macOS&quot;&#x27;</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    params = &#123;</span><br><span class="line">        <span class="string">&#x27;_&#x27;</span>: <span class="string">&#x27;1683799958183&#x27;</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    response = requests.get(<span class="string">&#x27;https://napi-huawei.tianyancha.com/validate/init&#x27;</span>, params=params, headers=headers)</span><br><span class="line">    resp = json.loads(response.text)</span><br><span class="line">    data = json.loads(resp[<span class="string">&#x27;data&#x27;</span>])</span><br><span class="line"></span><br><span class="line">    gt = data[<span class="string">&#x27;gt&#x27;</span>]</span><br><span class="line">    challenge = data[<span class="string">&#x27;challenge&#x27;</span>]</span><br><span class="line"></span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="string">&#x27;Accept&#x27;</span>: <span class="string">&#x27;*/*&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Accept-Language&#x27;</span>: <span class="string">&#x27;zh-CN,zh;q=0.9&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Cache-Control&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Connection&#x27;</span>: <span class="string">&#x27;keep-alive&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Pragma&#x27;</span>: <span class="string">&#x27;no-cache&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Referer&#x27;</span>: <span class="string">&#x27;https://www.tianyancha.com/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Dest&#x27;</span>: <span class="string">&#x27;script&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Mode&#x27;</span>: <span class="string">&#x27;no-cors&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;Sec-Fetch-Site&#x27;</span>: <span class="string">&#x27;cross-site&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) &#x27;</span></span><br><span class="line">                      <span class="string">&#x27;Chrome/112.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua&#x27;</span>: <span class="string">&#x27;&quot;Chromium&quot;;v=&quot;112&quot;, &quot;Gostiogle Chrome&quot;;v=&quot;112&quot;, &quot;Not:A-Brand&quot;;v=&quot;99&quot;&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-mobile&#x27;</span>: <span class="string">&#x27;?0&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;sec-ch-ua-platform&#x27;</span>: <span class="string">&#x27;&quot;macOS&quot;&#x27;</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    response = requests.get(</span><br><span class="line">        <span class="string">f&#x27;https://api.geevisit.com/get.php?gt=<span class="subst">&#123;gt&#125;</span>&amp;challenge=<span class="subst">&#123;challenge&#125;</span>&amp;product=popup&amp;offline=false&amp;&#x27;</span></span><br><span class="line">        <span class="string">f&#x27;api_server=api.geevisit.com&amp;protocol=https://&amp;type=slide&amp;path=/static/js/geetest.6.0.9.js&#x27;</span></span><br><span class="line">        <span class="string">f&#x27;&amp;callback=geetest_<span class="subst">&#123;<span class="built_in">str</span>(<span class="built_in">round</span>(time.time() * <span class="number">1000</span>))&#125;</span>&#x27;</span>,</span><br><span class="line">        headers=headers,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    bg_url = urljoin(<span class="string">&quot;https://static.geetest.com/&quot;</span>, re.findall(<span class="string">&quot;\&quot;bg\&quot;: \&quot;(.*?)\&quot;&quot;</span>, response.text)[<span class="number">0</span>])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;下载验证码图片，地址：&quot;</span> + bg_url)</span><br><span class="line">    resp = requests.get(bg_url)</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(store_name, <span class="string">&quot;wb+&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(resp.content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">        name = <span class="string">&quot;input/&quot;</span> + <span class="built_in">str</span>(i) + <span class="string">&quot;.jpg&quot;</span></span><br><span class="line">        download_pic(name)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;保存乱序验证码图片，保存位置：&quot;</span> + name)</span><br><span class="line">        new_name = <span class="string">&quot;output/&quot;</span> + <span class="built_in">str</span>(i) + <span class="string">&quot;.jpg&quot;</span></span><br><span class="line">        recover_pic(name, new_name)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;还原乱序验证码图片，保存位置：&quot;</span> + new_name)</span><br><span class="line">        time.sleep(<span class="number">0.5</span>)</span><br></pre></td></tr></table></figure><p>解释主要用到的2个方法，<code>download_pic</code>下载乱序的验证码图片，<code>recover_pic</code>还原乱序的验证码图片。关于下载验证码的请求逻辑，参考<a href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F/">JS逆向案例——极验滑块验证码底图还原</a>。</p><p>运行效果如下：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121752382.png" alt="image-20230512175231221" style="zoom:50%;" /><p>下载好图片后，将图片上传到华为云对象存储，具体方法可以自行网上查阅。这里下载并上传了100张图片。</p><h4 id="数据标注"><a href="#数据标注" class="headerlink" title="数据标注"></a>数据标注</h4><p>通过网址<code>https://console.huaweicloud.com/modelarts/?region=cn-north-4#/dashboard</code>打开<strong>ModelArts</strong>主界面，然后点击主动学习：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121808453.png" alt="image-20230512180852319" style="zoom: 33%;" /><p>可以看到ModelArts支持的全部功能，这里选择第二个物体检测，点击创建项目：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121810001.png" alt="image-20230512181042875" style="zoom:33%;" /><p>项目名称和数据集名称可以采用自动生成的，数据集输入位置填刚才上传验证码的那个bucket的目录，数据集输出位置就在此bucket下新建一个空目录即可。最后点击创建项目。</p><p>然后点击未标注：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121815728.png" alt="image-20230512181548602" style="zoom:33%;" /><p>接着随意点击一张未标注的图片，对图片进行标注：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121816523.png" alt="标注1" style="zoom:33%;" /><p>标注完成之后，后边会显示缺口相对于背景图的坐标：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121817355.png" alt="标注2" style="zoom:33%;" /><p>标注完成之后点击选择下一张标注，数据集一共100张，大概10多分钟标注完。</p><h3 id="模型训练"><a href="#模型训练" class="headerlink" title="模型训练"></a>模型训练</h3><p>数据集标注完之后，点击开始训练：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121820363.png" alt="开始训练" style="zoom:33%;" /><p>然后会提示模型训练中：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121821223.png" alt="训练中" style="zoom:33%;" /><p>数据集样本比较少，训练大概5-10分钟，完成后界面如下：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121823354.png" alt="训练完成" style="zoom:33%;" /><p>注意：之所以准确率只有94%，有2个原因，一是样本数量少；二是数据标注为了节约时间没有太细致。改善这2点原因让准确率接近100%不是不可能。</p><h3 id="模型部署"><a href="#模型部署" class="headerlink" title="模型部署"></a>模型部署</h3><p>点击部署按钮：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121825554.png" alt="部署" style="zoom:33%;" /><p>直接点击下一步即可。</p><h3 id="模型测试"><a href="#模型测试" class="headerlink" title="模型测试"></a>模型测试</h3><p>上传一张图片测试：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121828023.png" alt="预测测试" style="zoom:33%;" /><p>可以看到缺口位置基本识别正确。</p><p>再上传一张带干扰的图片测试：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121829716.png" alt="带干扰的预测" style="zoom:33%;" /><p>也正确识别。</p><p>至此，完结撒花。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;极验滑块验证码缺口位置的计算有2种方式，第一种通过计算像素点差值来定位缺口位置，在&lt;a href=&quot;https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%A4</summary>
+      
+    
+    
+    
+    <category term="深度学习" scheme="http://example.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+    
+    <category term="验证码" scheme="http://example.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E9%AA%8C%E8%AF%81%E7%A0%81/"/>
+    
+    
+    <category term="深度学习" scheme="http://example.com/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
   
   <entry>
     <title>AST解JS混淆之去掉未被调用的函数</title>
@@ -38,9 +64,9 @@
     <category term="AST反混淆" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="AST" scheme="http://example.com/tags/AST/"/>
     
@@ -68,9 +94,9 @@
     <category term="AST反混淆" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="AST" scheme="http://example.com/tags/AST/"/>
     
@@ -99,9 +125,9 @@
     <category term="AST反混淆" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="AST" scheme="http://example.com/tags/AST/"/>
     
@@ -130,9 +156,9 @@
     <category term="AST反混淆" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="AST" scheme="http://example.com/tags/AST/"/>
     
@@ -160,9 +186,9 @@
     <category term="AST反混淆" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="AST" scheme="http://example.com/tags/AST/"/>
     
@@ -191,9 +217,9 @@
     <category term="AST反混淆" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="AST" scheme="http://example.com/tags/AST/"/>
     
@@ -222,9 +248,9 @@
     <category term="AST反混淆" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="AST" scheme="http://example.com/tags/AST/"/>
     
@@ -253,9 +279,9 @@
     <category term="AST反混淆" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="AST" scheme="http://example.com/tags/AST/"/>
     
@@ -283,9 +309,9 @@
     <category term="AST反混淆" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="AST" scheme="http://example.com/tags/AST/"/>
     
@@ -314,9 +340,9 @@
     <category term="AST反混淆" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="AST" scheme="http://example.com/tags/AST/"/>
     
@@ -344,9 +370,9 @@
     <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="验证码" scheme="http://example.com/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/"/>
     
@@ -375,9 +401,9 @@
     <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="验证码" scheme="http://example.com/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/"/>
     
@@ -405,9 +431,9 @@
     <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="验证码" scheme="http://example.com/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/"/>
     
@@ -436,9 +462,9 @@
     <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="验证码" scheme="http://example.com/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/"/>
     
@@ -467,9 +493,9 @@
     <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
   </entry>
   
@@ -493,9 +519,9 @@
     <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
   </entry>
   
@@ -522,9 +548,9 @@
     <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
   </entry>
   
@@ -548,9 +574,9 @@
     <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
     
   </entry>
   
@@ -577,40 +603,9 @@
     <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
     
     
-    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
     <category term="JS" scheme="http://example.com/tags/JS/"/>
     
-    <category term="WebPack" scheme="http://example.com/tags/WebPack/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>JS逆向案例——某远海运公司webpack抠JS</title>
-    <link href="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/"/>
-    <id>http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E8%BF%9C%E6%B5%B7%E8%BF%90%E5%85%AC%E5%8F%B8webpack%E6%8A%A0JS/</id>
-    <published>2022-04-03T15:28:00.000Z</published>
-    <updated>2023-05-09T10:16:20.290Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p></blockquote><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>webpack抠JS的一个案例，用来熟练如何从webpack打包的JS代码中抠关键的JS代码。</p><h4 id="抠JS过程"><a href="#抠JS过程" class="headerlink" title="抠JS过程"></a>抠JS过程</h4><p>网址：aHR0cHM6Ly9zeW5jb25odWIuY29zY29zaGlwcGluZy5jb20v</p><p>目标：登录接口的密码加密JS代码分析。</p><p>老规矩，先抓包。</p><figure class="image-bubble">                <div class="img-lightbox">                    <div class="overlay"></div>                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041509227.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404150944421" title="">                </div>                <div class="image-caption">image-20220404150944421</div>            </figure><p>可以看到登录请求的密码这个参数是加密的。</p><p>搜索关键词<code>password</code>，找到一个疑似加密的函数，如下：</p><figure class="image-bubble">                <div class="img-lightbox">                    <div class="overlay"></div>                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041624199.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404162426120" title="">                </div>                <div class="image-caption">image-20220404162426120</div>            </figure><p>点进去看到加密的地方：</p><figure class="image-bubble">                <div class="img-lightbox">                    <div class="overlay"></div>                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041633567.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404163306525" title="">                </div>                <div class="image-caption">image-20220404163306525</div>            </figure><p>接着点进去看这个<code>o.a</code>函数：</p><figure class="image-bubble">                <div class="img-lightbox">                    <div class="overlay"></div>                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041634530.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404163401493" title="">                </div>                <div class="image-caption">image-20220404163401493</div>            </figure><p>可以看到，对密码采用了RSA加密，然后进行Base64编码。然后看下代码结构，很显然是按照webpack模块化编程进行组织的。</p><p>按照前面介绍的——<a href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E4%B9%8Bwebpack%E6%89%A3JS%E6%80%9D%E8%B7%AF/">JS逆向之webpack扣JS思路</a>——这篇文章总结的方法：</p><ol><li>找到模块加载器。</li></ol><p>快速定位模块加载器，一般可以通过搜索<code>&#125;(&#123;</code>，迅速定位到，但是包含加密函数的JS文件中并未找到模块加载器，没有找到的话，我们自己写一个好了。代码如下：</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">b</span>(<span class="params">n</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (e[n])</span><br><span class="line">        <span class="keyword">return</span> e[n].<span class="property">exports</span>;</span><br><span class="line">    <span class="keyword">var</span> u = e[n] = &#123;</span><br><span class="line">        <span class="attr">i</span>: n,</span><br><span class="line">        <span class="attr">l</span>: !<span class="number">1</span>,</span><br><span class="line">        <span class="attr">exports</span>: &#123;&#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">return</span> c[n].<span class="title function_">call</span>(u.<span class="property">exports</span>, u, u.<span class="property">exports</span>, b),</span><br><span class="line">        u.<span class="property">l</span> = !<span class="number">0</span>,</span><br><span class="line">        u.<span class="property">exports</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ol start="2"><li>构造自执行。</li></ol><p>这个也比较简单，我们把上边的代码，稍微做修改：</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">!<span class="keyword">function</span>(<span class="params">c</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> e = &#123;&#125;;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">b</span>(<span class="params">n</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (e[n])</span><br><span class="line">            <span class="keyword">return</span> e[n].<span class="property">exports</span>;</span><br><span class="line">        <span class="keyword">var</span> u = e[n] = &#123;</span><br><span class="line">            <span class="attr">i</span>: n,</span><br><span class="line">            <span class="attr">l</span>: !<span class="number">1</span>,</span><br><span class="line">            <span class="attr">exports</span>: &#123;&#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">return</span> c[n].<span class="title function_">call</span>(u.<span class="property">exports</span>, u, u.<span class="property">exports</span>, b),</span><br><span class="line">        u.<span class="property">l</span> = !<span class="number">0</span>,</span><br><span class="line">        u.<span class="property">exports</span></span><br><span class="line">    &#125;</span><br><span class="line">    encode = b;</span><br><span class="line">&#125;(&#123;</span><br><span class="line"><span class="comment">// TODO</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure><ol start="3"><li>找到并抠出需要的模块。</li></ol><p>抠JS就变成了一道填空题，把加密方法依赖到的模块抠出来，作为参数填到上边自执行函数中去。我们先抠出加密方法， 观察下依赖哪些模块：</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> r = <span class="title function_">n</span>(<span class="string">&quot;XBrZ&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> t = r.<span class="property">pki</span>.<span class="title function_">publicKeyFromPem</span>(</span><br><span class="line">    <span class="string">&quot;-----BEGIN PUBLIC KEY-----\n MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsy4xppPDUT2eAOR5h0cyydzxtKB9O80A\n GjUT6FmDgg6CwelpnE0C2h2JQyP1gCveJs6GDwSDn20RVVpD67f//YPYErjaH/CBOxNG3k5IkW1o\n Qx04uqFNMtWvjzk0aFh2eJLsBi7Ha4elw3WySg00B8oZCL4VBay4ML9kyOAjjCj5jHCX8a2yxIMJ\n IF+EjW3kBR68IMwBvuDL45Qa0oB24vTffaSEs+hGjMTQvoCciOfti3pmEAlVc438/cBgAhK5cIMf\n IMElxYAVvmsDy0I7RCUTrajetKjX94Q+JuQUxnIHNC3IVtYsl1x0lNRtb93IhlRCkZ9djOu350eq\n hZIOXQIDAQAB\n  -----END PUBLIC KEY-----&quot;</span>).<span class="title function_">encrypt</span>(e, <span class="string">&quot;RSA-OAEP&quot;</span>, &#123;</span><br><span class="line">    <span class="attr">md</span>: r.<span class="property">md</span>.<span class="property">sha256</span>.<span class="title function_">create</span>(),</span><br><span class="line">    <span class="attr">mgf1</span>: &#123;</span><br><span class="line">        <span class="attr">md</span>: r.<span class="property">md</span>.<span class="property">sha1</span>.<span class="title function_">create</span>()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">return</span> <span class="variable language_">window</span>.<span class="title function_">btoa</span>(t)</span><br></pre></td></tr></table></figure><p>通过debug知e是我们填入的密码——即123456，唯一用到的模块是键为<code>XBrZ</code>的模块。我们全局搜索<code>XBrZ: </code>找到对应的模块定义：</p><figure class="image-bubble">                <div class="img-lightbox">                    <div class="overlay"></div>                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041656123.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404165620085" title="">                </div>                <div class="image-caption">image-20220404165620085</div>            </figure><p>点进去发现这个模块又引用了很多其它的模块，如果按照模块一个一个的抠的话，比较费时。所以我们将这整个文件中定义的模块全部抠下来，作为我们上边定义的自执行函数的参数。</p><figure class="image-bubble">                <div class="img-lightbox">                    <div class="overlay"></div>                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041656763.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404165643735" title="">                </div>                <div class="image-caption">image-20220404165643735</div>            </figure><p>整理完了之后，我们将代码放到浏览器中检验一下，防止出错：</p><figure class="image-bubble">                <div class="img-lightbox">                    <div class="overlay"></div>                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041701058.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404170102015" title="">                </div>                <div class="image-caption">image-20220404170102015</div>            </figure><p>不出意外的话就不会出意外，没有报错。</p><ol start="4"><li>导出相应的模块。</li></ol><p>模块通过模块加载器加载，所以想要得到加密方法依赖的模块，只需要导出模块函数即可。定义一个全局变量，比如<code>encode</code>，然后将上边实现的模块加载函数赋值给这个全局变量即可。代码如下：</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> encode;</span><br><span class="line"></span><br><span class="line">!<span class="keyword">function</span>(<span class="params">c</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> e = &#123;&#125;;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">b</span>(<span class="params">n</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (e[n])</span><br><span class="line">            <span class="keyword">return</span> e[n].<span class="property">exports</span>;</span><br><span class="line">        <span class="keyword">var</span> u = e[n] = &#123;</span><br><span class="line">            <span class="attr">i</span>: n,</span><br><span class="line">            <span class="attr">l</span>: !<span class="number">1</span>,</span><br><span class="line">            <span class="attr">exports</span>: &#123;&#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">return</span> c[n].<span class="title function_">call</span>(u.<span class="property">exports</span>, u, u.<span class="property">exports</span>, b),</span><br><span class="line">        u.<span class="property">l</span> = !<span class="number">0</span>,</span><br><span class="line">        u.<span class="property">exports</span></span><br><span class="line">    &#125;</span><br><span class="line">    encode = b;</span><br><span class="line">&#125;(&#123;</span><br><span class="line">    <span class="comment">// 此处省略若干行模块函数的定义</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure><ol start="5"><li>编写测试代码。</li></ol><p>对于这个案例而言，测试代码就是那一串加密代码，看能否如期的得到类似的加密字符串，就证明我们抠的JS没有问题，测试代码如下：</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">get_pass</span>(<span class="params">passwd</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> r = <span class="title function_">encode</span>(<span class="string">&quot;XBrZ&quot;</span>); <span class="comment">// 通过模块加载器加载XBrZ模块。</span></span><br><span class="line">    <span class="keyword">var</span> t = r.<span class="property">pki</span>.<span class="title function_">publicKeyFromPem</span>(<span class="string">&quot;-----BEGIN PUBLIC KEY-----\n MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsy4xppPDUT2eAOR5h0cyydzxtKB9O80A\n GjUT6FmDgg6CwelpnE0C2h2JQyP1gCveJs6GDwSDn20RVVpD67f//YPYErjaH/CBOxNG3k5IkW1o\n Qx04uqFNMtWvjzk0aFh2eJLsBi7Ha4elw3WySg00B8oZCL4VBay4ML9kyOAjjCj5jHCX8a2yxIMJ\n IF+EjW3kBR68IMwBvuDL45Qa0oB24vTffaSEs+hGjMTQvoCciOfti3pmEAlVc438/cBgAhK5cIMf\n IMElxYAVvmsDy0I7RCUTrajetKjX94Q+JuQUxnIHNC3IVtYsl1x0lNRtb93IhlRCkZ9djOu350eq\n hZIOXQIDAQAB\n  -----END PUBLIC KEY-----&quot;</span>).<span class="title function_">encrypt</span>(passwd, <span class="string">&quot;RSA-OAEP&quot;</span>, &#123;</span><br><span class="line">        <span class="attr">md</span>: r.<span class="property">md</span>.<span class="property">sha256</span>.<span class="title function_">create</span>(),</span><br><span class="line">        <span class="attr">mgf1</span>: &#123;</span><br><span class="line">            <span class="attr">md</span>: r.<span class="property">md</span>.<span class="property">sha1</span>.<span class="title function_">create</span>()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">window</span>.<span class="title function_">btoa</span>(t)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">get_pass</span>(<span class="string">&quot;123456&quot;</span>));</span><br></pre></td></tr></table></figure><p>运行测试代码，正常的输出了密码加密之后的密文：</p><figure class="image-bubble">                <div class="img-lightbox">                    <div class="overlay"></div>                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204041709186.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220404170927135" title="">                </div>                <div class="image-caption">image-20220404170927135</div>            </figure><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>从webpack组织的JS代码中抠JS，虽然看起来比较简单，但是如果遇到复杂一点的案例，并且对JS语法不太熟的话，还是有一定的难度的的，所以需要对这一块多多练习。后边关于webpack的，还会再出一些案例，一些更加复杂的案例。</p><h4 id="关于代码的获取"><a href="#关于代码的获取" class="headerlink" title="关于代码的获取"></a>关于代码的获取</h4><p>扫码关注微信号——逆向一步步，公众号内回复关键词<code>03</code>就可以获取本案例的全部代码。</p><figure class="image-bubble">                <div class="img-lightbox">                    <div class="overlay"></div>                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202202231720872.jpg" alt="qrcode_for_gh_509fdefd3c81_258" title="">                </div>                <div class="image-caption">qrcode_for_gh_509fdefd3c81_258</div>            </figure>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;免责声明：&lt;strong&gt;本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！&lt;/strong&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-</summary>
-      
-    
-    
-    
-    <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
-    
-    
     <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
-    
-    <category term="JS" scheme="http://example.com/tags/JS/"/>
     
     <category term="WebPack" scheme="http://example.com/tags/WebPack/"/>
     
