@@ -28,18 +28,18 @@
 <meta property="og:site_name" content="何仕鹏的个人博客">
 <meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言本文是机器过极验滑块验证码系列文章的第三篇，接上篇w参数抠出来之后，补环境。后边还会陆陆续续发文，如何包括利用像素点RGB差值获取缺口位置以及通过机器学习获取缺口位置，最后会通过几个采用极验验证码的网站去完整的展示">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204241808114.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204241817808.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204241830790.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204241919217.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204241808114.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204241817808.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204241830790.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204241919217.png">
 <meta property="article:published_time" content="2022-04-24T09:44:38.000Z">
-<meta property="article:modified_time" content="2023-05-09T10:16:29.602Z">
+<meta property="article:modified_time" content="2023-05-12T17:11:56.697Z">
 <meta property="article:author" content="拾光的碎羽">
 <meta property="article:tag" content="逆向">
 <meta property="article:tag" content="JS">
 <meta property="article:tag" content="验证码">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204241808114.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204241808114.png">
     
         <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
     
@@ -197,7 +197,7 @@
 <p>免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
 </blockquote>
 <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>本文是机器过极验滑块验证码系列文章的第三篇，接上篇w参数抠出来之后，补环境。后边还会陆陆续续发文，如何包括利用像素点RGB差值获取缺口位置以及通过机器学习获取缺口位置，最后会通过几个采用极验验证码的网站去完整的展示整个自动化过程。而极验滑块系列只是验证码系列的第一个系列，后边会罗列市面上常用的验证码，然后发文一一解决。</p>
-<p>上一篇文章见：<a target="_blank" rel="noopener" href="http://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97w%E5%8F%82%E6%95%B0%E7%94%9F%E6%88%90/">JS逆向案例——极验滑块w参数生成</a></p>
+<p>上一篇文章见：<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97w%E5%8F%82%E6%95%B0%E7%94%9F%E6%88%90/">JS逆向案例——极验滑块w参数生成</a></p>
 <h4 id="补环境过程"><a href="#补环境过程" class="headerlink" title="补环境过程"></a>补环境过程</h4><p>抠好w参数生成的代码之后，贴到VS中，先补上window和document：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="variable language_">window</span> = <span class="variable language_">global</span>;</span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Document</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;;</span><br><span class="line"><span class="variable language_">document</span> = <span class="keyword">new</span> <span class="title class_">Document</span>();</span><br><span class="line"><span class="variable language_">window</span>.<span class="property">document</span> = <span class="variable language_">document</span>;</span><br></pre></td></tr></table></figure>
 
@@ -207,7 +207,7 @@
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
-                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204241808114.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220424180831738" title="">
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204241808114.png" alt="image-20220424180831738" title="">
                 </div>
                 <div class="image-caption">image-20220424180831738</div>
             </figure>
@@ -223,7 +223,7 @@
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
-                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204241817808.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220424181756529" title="">
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204241817808.png" alt="image-20220424181756529" title="">
                 </div>
                 <div class="image-caption">image-20220424181756529</div>
             </figure>
@@ -239,7 +239,7 @@
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
-                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204241830790.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220424183013485" title="">
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204241830790.png" alt="image-20220424183013485" title="">
                 </div>
                 <div class="image-caption">image-20220424183013485</div>
             </figure>
@@ -255,7 +255,7 @@
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
-                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204241919217.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220424191932778" title="">
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204241919217.png" alt="image-20220424191932778" title="">
                 </div>
                 <div class="image-caption">image-20220424191932778</div>
             </figure>
@@ -267,7 +267,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2023-05-09T10:16:29.602Z" itemprop="dateUpdated">2023-05-09 18:16:29</time>
+    Last updated: <time datetime="2023-05-12T17:11:56.697Z" itemprop="dateUpdated">2023-05-13 01:11:56</time>
 </span><br>
 
 

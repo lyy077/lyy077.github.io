@@ -28,27 +28,27 @@
 <meta property="og:site_name" content="何仕鹏的个人博客">
 <meta property="og:description" content="泰勒公式（也叫 泰勒展开式、泰勒多项式）泰勒级数  它是微积分学下的一个重要概念，与之有关联的有：如泰勒定理，多元泰勒公式，以拉格朗日型余项为代表的各类余项，审敛法，牛顿差值公式（牛顿级数）（列出为了进行树状知识整合和梳理） 什么是泰勒公式基本定义泰勒公式为：$$f(x){Taylor}&#x3D;\sum{n&#x3D;0}^{\infty}{\frac{f^{(n)}(a)}{n!}">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101452973.gif">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101518822.gif">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101519978.gif">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101522280.gif">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101528996.gif">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101530098.gif">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101533737.gif">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101534587.gif">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101534654.gif">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101538003.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101539553.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101546350.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101549609.gif">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101550311.gif?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101452973.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101518822.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101519978.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101522280.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101528996.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101530098.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101533737.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101534587.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101534654.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101538003.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101539553.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101546350.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101549609.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101550311.gif">
 <meta property="article:published_time" content="2021-01-15T12:18:44.000Z">
-<meta property="article:modified_time" content="2023-05-12T09:30:18.265Z">
+<meta property="article:modified_time" content="2023-05-12T17:10:05.454Z">
 <meta property="article:author" content="拾光的碎羽">
 <meta property="article:tag" content="数学">
 <meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101452973.gif">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101452973.gif">
     
         <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
     
@@ -236,66 +236,66 @@
 <p>那么如何<strong>近似</strong>呢？<strong>使用一个例子</strong>来加深理解</p>
 <h1 id="怎样理解泰勒公式"><a href="#怎样理解泰勒公式" class="headerlink" title="怎样理解泰勒公式"></a>怎样理解泰勒公式</h1><p>我们要干的事情，就是<strong>改变</strong>多项式函数 $P(x)&#x3D;c_0+c_1x+c_2x^2$ 中 $c_0,c_1,c_2$ 的值</p>
 <p>（只有三项是为图个方便）去<strong>近似</strong>余弦函数 $f(x)&#x3D;cos(x)$，【近似过程】参考下面的动图</p>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101452973.gif" alt="近似过程" style="zoom:50%;"/>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101452973.gif" alt="近似过程" style="zoom:50%;"/>
 
 <p>我们需要做的事情（目的）即<strong>寻找一条绿色的曲线</strong>（多项式的系数 $c_0,c_1,c_2$），在 $x&#x3D;0$ 附近（0为上面提到的 $a$）尽可能的与 $f(x)&#x3D;cos(x)$ 的图像<strong>相似</strong>（重合）</p>
 <h2 id="函数式角度"><a href="#函数式角度" class="headerlink" title="函数式角度"></a>函数式角度</h2><p>那如何才能找到这三个参数呢？最为显而易见的做法就是希望在 $x&#x3D;0$ 的位置，两个表达式的切线尽量相等，切线即斜率，也就是<strong>求导</strong>，比较抽象，一步一步来可视化一下。</p>
 <h3 id="近似过程"><a href="#近似过程" class="headerlink" title="近似过程"></a>近似过程</h3><ul>
 <li>【确定 $c_0$】$x&#x3D;0$ 带入公式，令 $cos(x)&#x3D;1$ ，同理对 $p(x)$ 可以得到 $c_0&#x3D;1$</li>
 </ul>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101518822.gif" alt="近似过程0" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101518822.gif" alt="近似过程0" style="zoom:50%;" />
 
 
 
 <ul>
 <li>【确定 $c_1$ 】容易观察到，如果对 $p(x)$可以把 $c_1$ 前的自变量去掉。并且，$x&#x3D;0$ 处 $p(x)$ 已经固定为1，为了更进一步的相似，如果我们让 $x&#x3D;0$ 处的 $f(x)$ 和 $p(x)$ 的切线斜率也相同不就更<strong>近似</strong>了？（两种思考模式我觉得都可以） 求导之后可以的到 $c_1&#x3D;0$</li>
 </ul>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101519978.gif" alt="近似过程1" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101519978.gif" alt="近似过程1" style="zoom:50%;" />
 
 
 
 <ul>
 <li>【确定 $c_2$ 】现在我们<strong>已经</strong>确定两个值，那么绿色曲线就只能如下图一样移动（固定了 $x&#x3D;0$ 的函数值和  $x&#x3D;0$ 处的斜率 ），为了更接近<strong>相似</strong>的目标，我们希望<strong>斜率在变化的过程中</strong>，<strong>速度</strong>也是<strong>近似</strong>的（滑动的白色和黄色直线）。求二次导数，斜率的变化率相等，确定 $c_2&#x3D;−\frac{1}{2}$</li>
 </ul>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101522280.gif" alt="近似过程1" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101522280.gif" alt="近似过程1" style="zoom:50%;" />
 
 <p>此时得到表达式 $p(x)&#x3D;1-\frac{1}{2}x^2$ ，检测一下近似度如何？$cos(0.1)≈1−\frac{1}{2}(0.1)^2&#x3D;0.995$ 同时计算器计算得到 $cos(0.1)&#x3D;0.9950042$ ，其实只取前几项的多项式已经在 $x&#x3D;a$ <strong>附近的近似</strong>这一要求上有很好的效果了</p>
 <p>为什么这个【近似过程】写的这么详细，是为了在过程中体会两个关键点。</p>
 <h3 id="为什么使用多项式来近似"><a href="#为什么使用多项式来近似" class="headerlink" title="为什么使用多项式来近似"></a>为什么使用多项式来近似</h3><p>因为多项式的求导法则可以控制变量，消去<strong>低次项</strong>，使得 $x&#x3D;a$ 未知的 $c_n$ 容易确定，在之前的例子里，如下图所示</p>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101528996.gif" alt="近似过程all" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101528996.gif" alt="近似过程all" style="zoom:50%;" />
 
 <p>$c_0$ 确保了 $x&#x3D;0$ 时相等，$c_1$ 确保了 $x&#x3D;0$ 时的斜率相等，$c_2$ 确保了 $x&#x3D;0$ 时斜率的变化率相等，或者说，<strong>随着多项式幂次变高，这种近似就越精确</strong></p>
 <h3 id="为什么有个系数-frac-1-n"><a href="#为什么有个系数-frac-1-n" class="headerlink" title="为什么有个系数 $\frac{1}{n!}$"></a>为什么有个系数 $\frac{1}{n!}$</h3><p>阶层系数是由一次一次的求导产生的。我们再把项数加两个，参看下图，直观的感受一个 $n!$ 的诞生</p>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101530098.gif" alt="近似过程More" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101530098.gif" alt="近似过程More" style="zoom:50%;" />
 
 <p>首先，低次项会变为0，这样可以很方便的通过计算 $f(x)$ 的 $n$ 次求导的表达式，带入 $x&#x3D;a$ 即可得到 $c_n$ 的值，<strong>阶层其实是多次求导的系数</strong></p>
 <h3 id="函数角度总结"><a href="#函数角度总结" class="headerlink" title="函数角度总结"></a>函数角度总结</h3><p>其实，<strong>某一点处的导数值信息 ⟺ 那一点附近的函数值信息</strong> 这个直观感觉，是很重要的</p>
 <ul>
 <li>首先，对于 $cos(x)$ 这个<strong>具体例子</strong>，把 $x&#x3D;0$ 位置的多阶导数求出，再使用多项式进行近似，使用的项越多，得到的近似就越准确，参看下面动图</li>
 </ul>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101533737.gif" alt="近似过程More" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101533737.gif" alt="近似过程More" style="zoom:50%;" />
 
 
 
 <ul>
 <li>推广到一般函数 $f(x)$ ,下列动图描述了随着项的增加，$x&#x3D;0$ 附近的越来越准确</li>
 </ul>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101534587.gif" alt="近似过程More" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101534587.gif" alt="近似过程More" style="zoom:50%;" />
 
 
 
 <ul>
 <li>最后，推广到 $x&#x3D;a$ 的情形，完全推导出泰勒展开式的一般形式，如下列动图所示</li>
 </ul>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101534654.gif" alt="近似过程More" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101534654.gif" alt="近似过程More" style="zoom:50%;" />
 
 
 
 <h2 id="几何角度"><a href="#几何角度" class="headerlink" title="几何角度"></a>几何角度</h2><p>首先定义一个函数表示<strong>求下列图像中函数图像中填满部分的面积</strong>，函数为 $f(x)$，面积函数为 $f_{area}(x)$ ，而围成面积区域的曲线即为面积函数的导数 $\frac{df_{area}}{dx}(x)$（至于为什么是这样，有一个牛逼的名字叫做，微积分基本定理： $∫^b_af(t)dt&#x3D;F(b)−F(a) $），如下图所示</p>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101538003.png" alt="几何解释" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101538003.png" alt="几何解释" style="zoom:50%;" />
 
 <p>定义一个这样的场景是为了计算这样一件事（如下图所示）：假设我们知道了 $f(a)$ 点的面积，往右扩展很小的距离 $dx$ 要算出<strong>新部分的面积</strong>（左边绿色已知 + 黄色矩形 + 红色三角形），公式会是什么样的呢？</p>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101539553.png" alt="几何解释问题" style="zoom:53%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101539553.png" alt="几何解释问题" style="zoom:53%;" />
 
 <p>设 $dx$ 开始点为 $a$，终点为 $x$ ，则可以得到</p>
 <ul>
@@ -304,7 +304,7 @@
 <li>【计算总面积】如下图和公式所示</li>
 </ul>
 <p>$$<br>f_{area}(x) \approx f(a) + \frac{df_{area}}{dx}(a)(x-a)+\frac{1}{2}\frac{d^2f_{area}}{dx^2}(a)(x-a)^2<br>$$</p>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101546350.png" alt="几何解释问题" style="zoom:63%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101546350.png" alt="几何解释问题" style="zoom:63%;" />
 
 <p>这个公式为啥这么眼熟呢？其实明显就是泰勒展开式的前3项，如果你还要打破沙锅问到底，第4项呢？你可以放大红色三角形，把函数曲线和面积之间的空白部分再次用多个更小的三角形填补，在积分工具的帮助下，可以得到三次项</p>
 <p>从几何角度来看，再一次验证了，泰勒公式是近似的 $x&#x3D;a$ 附近的函数值这一直观理解</p>
@@ -314,12 +314,12 @@
 <p>在数学中，【级数】就是<strong>无限多项的和</strong></p>
 <p>在把泰勒展开式，扩展到无限项之后，就会出现【收敛 Converge】和【发散 diverge】的概念</p>
 <h2 id="收敛"><a href="#收敛" class="headerlink" title="收敛"></a>收敛</h2><p>收敛，即在泰勒展开式被推广到无限项之后，整体式子的值会越来越趋近于一个定值，比如下图的 $12$ 和 $e$</p>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101549609.gif" alt="几何解释问题" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101549609.gif" alt="几何解释问题" style="zoom:50%;" />
 
 
 
 <h2 id="发散"><a href="#发散" class="headerlink" title="发散"></a>发散</h2><p>与收敛相对应的，即发散，式子无法趋近于一个定值，比如 $\ln(x)$ 在 $x&#x3D;1$ 附近，如下图所示，虚线即为能够让多项式的和收敛的最大取之范围，称为【泰勒级数的<strong>收敛半径</strong>】</p>
-<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205101550311.gif?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="几何解释问题" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205101550311.gif" alt="几何解释问题" style="zoom:50%;" />
 
 
 
@@ -343,7 +343,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2023-05-12T09:30:18.265Z" itemprop="dateUpdated">2023-05-12 17:30:18</time>
+    Last updated: <time datetime="2023-05-12T17:10:05.454Z" itemprop="dateUpdated">2023-05-13 01:10:05</time>
 </span><br>
 
 

@@ -28,22 +28,22 @@
 <meta property="og:site_name" content="何仕鹏的个人博客">
 <meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言本文的目的不是着重讲WebSockets，而是解决在JS逆向过程中遇到网站使用WebSockets协议的时候如何处理。 WebSocket什么是WebSocketWebSocket是一种网络传输协议，可在单">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272028182.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272034038.jpg?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272250420.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272253279.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272301258.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272303646.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272304410.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
-<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272305422.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272028182.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272034038.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272250420.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272253279.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272301258.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272303646.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272304410.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272305422.png">
 <meta property="article:published_time" content="2022-03-27T09:45:51.000Z">
-<meta property="article:modified_time" content="2023-05-09T10:16:41.242Z">
+<meta property="article:modified_time" content="2023-05-12T17:10:09.725Z">
 <meta property="article:author" content="拾光的碎羽">
 <meta property="article:tag" content="逆向">
 <meta property="article:tag" content="JS">
 <meta property="article:tag" content="WebSockets">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272028182.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272028182.png">
     
         <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
     
@@ -207,7 +207,7 @@
 <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文的目的不是着重讲WebSockets，而是解决在JS逆向过程中遇到网站使用WebSockets协议的时候如何处理。</p>
 <h3 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h3><h4 id="什么是WebSocket"><a href="#什么是WebSocket" class="headerlink" title="什么是WebSocket"></a>什么是WebSocket</h4><p>WebSocket是一种网络传输协议，可在单个TCP连接上进行全双工通信，位于OSI模型的应用层。WebSocket使得客户端和服务器之间的数据交换变得更加简单，允许服务端主动向客户端推送数据。WebSocket的最大特点就是浏览器和服务器只需要完成一次握手，两者之间就可以创建持久性的连接，并进行双向数据传输。</p>
 <p>WebSocket协议规范将<code>ws</code>（WebSocket）和<code>wss</code>（WebSocket Secure）定义为两个新的统一资源标识符(URI)方案，分别对应明文和加密连接。除了方案名称和片段ID（不支持<code>#</code>）之外，其余的URI组件都被定义为此URI的通用语法。</p>
-<p><img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272028182.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="img"></p>
+<p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272028182.png" alt="img"></p>
 <p>WebSocket的其它特点：</p>
 <ol>
 <li>建立在 TCP 协议之上，服务器端的实现比较容易。</li>
@@ -217,7 +217,7 @@
 <li>没有同源限制，客户端可以与任意服务器通信。</li>
 <li>协议标识符是<code>ws</code>（如果加密，则为<code>wss</code>），服务器网址就是 URL。如ws(wss):&#x2F;&#x2F;example.com:80&#x2F;some&#x2F;path。</li>
 </ol>
-<p><img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272034038.jpg?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="img"></p>
+<p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272034038.jpg" alt="img"></p>
 <h4 id="为什么需要WebSocket"><a href="#为什么需要WebSocket" class="headerlink" title="为什么需要WebSocket"></a>为什么需要WebSocket</h4><p>我们已经有了 HTTP 协议，为什么还需要另一个协议？它能带来什么好处？答案很简单，因为 HTTP 协议有一个缺陷：通信只能由客户端发起。试想一下，现在有个场景，比如聊天室。如果A用户与B用户聊天，如果用HTTP协议，只能是A用户客户端向服务器发起一个HTTP请求，询问是否有B用户的消息，同样的对于B用户也一样。这种单向请求的特点，注定了如果服务器有连续的状态变化，客户端要获知就非常麻烦。就只能用轮询的方式：每隔一段时间就发出一个询问，了解服务器有没有新的信息。</p>
 <p>轮询的效率低，非常浪费资源（因为必须不停连接，或者 HTTP 连接始终打开）。因此，工程师们一直在思考，有没有更好的方法。WebSocket 就是这样发明的。</p>
 <h4 id="握手协议"><a href="#握手协议" class="headerlink" title="握手协议"></a>握手协议</h4><p>WebSocket 是独立的、创建在TCP上的协议。Websocket 通过HTTP</p>
@@ -336,7 +336,7 @@
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
-                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272250420.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220327225044186" title="">
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272250420.png" alt="image-20220327225044186" title="">
                 </div>
                 <div class="image-caption">image-20220327225044186</div>
             </figure>
@@ -347,7 +347,7 @@
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
-                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272253279.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220327225356124" title="">
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272253279.png" alt="image-20220327225356124" title="">
                 </div>
                 <div class="image-caption">image-20220327225356124</div>
             </figure>
@@ -357,7 +357,7 @@
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
-                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272301258.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220327230133082" title="">
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272301258.png" alt="image-20220327230133082" title="">
                 </div>
                 <div class="image-caption">image-20220327230133082</div>
             </figure>
@@ -366,7 +366,7 @@
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
-                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272303646.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220327230318560" title="">
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272303646.png" alt="image-20220327230318560" title="">
                 </div>
                 <div class="image-caption">image-20220327230318560</div>
             </figure>
@@ -375,7 +375,7 @@
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
-                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272304410.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220327230426306" title="">
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272304410.png" alt="image-20220327230426306" title="">
                 </div>
                 <div class="image-caption">image-20220327230426306</div>
             </figure>
@@ -384,7 +384,7 @@
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
-                    <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203272305422.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220327230536234" title="">
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202203272305422.png" alt="image-20220327230536234" title="">
                 </div>
                 <div class="image-caption">image-20220327230536234</div>
             </figure>
@@ -410,7 +410,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2023-05-09T10:16:41.242Z" itemprop="dateUpdated">2023-05-09 18:16:41</time>
+    Last updated: <time datetime="2023-05-12T17:10:09.725Z" itemprop="dateUpdated">2023-05-13 01:10:09</time>
 </span><br>
 
 
