@@ -20,7 +20,7 @@
     <meta name="theme-color" content="#3F51B5">
     
     
-    <meta name="keywords" content="JS,逆向,验证码">
+    <meta name="keywords" content="逆向,JS,验证码">
     <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言本文是机器过极验滑块验证码系列文章的第二篇，提交验证请求的w参数逆向分析。后边还会陆陆续续发文，讲解如何补环境，如何利用像素点RGB差值获取缺口位置以及通过机器学习获取缺口位置，最后会通过几个采用极验验证码的网站">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JS逆向案例——极验滑块验证码w参数生成">
@@ -65,10 +65,10 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204222113188.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
 <meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204281459340.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
 <meta property="article:published_time" content="2022-04-21T07:13:39.000Z">
-<meta property="article:modified_time" content="2023-05-09T10:16:47.622Z">
+<meta property="article:modified_time" content="2023-05-12T16:22:46.595Z">
 <meta property="article:author" content="拾光的碎羽">
-<meta property="article:tag" content="JS">
 <meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
 <meta property="article:tag" content="验证码">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204212301379.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
@@ -229,7 +229,7 @@
 <p> 免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
 </blockquote>
 <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>本文是机器过极验滑块验证码系列文章的第二篇，提交验证请求的w参数逆向分析。后边还会陆陆续续发文，讲解如何补环境，如何利用像素点RGB差值获取缺口位置以及通过机器学习获取缺口位置，最后会通过几个采用极验验证码的网站去完整的展示整个自动化过程。而极验滑块系列只是验证码系列的第一个系列，后边会罗列市面上常用的验证码，然后发文一一解决。</p>
-<p>上一篇文章见：<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F/">JS逆向案例——极验滑块验证码底图还原</a></p>
+<p>上一篇文章见：<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F/">JS逆向案例——极验滑块验证码底图还原</a></p>
 <h4 id="逆向分析过程"><a href="#逆向分析过程" class="headerlink" title="逆向分析过程"></a>逆向分析过程</h4><p>网址：aHR0cHM6Ly93d3cudGlhbnlhbmNoYS5jb20v</p>
 <p>以天眼查的登录为例，提交滑块验证请求时，w参数跟值。</p>
 <h5 id="抓包分析"><a href="#抓包分析" class="headerlink" title="抓包分析"></a>抓包分析</h5><p>在底图还原的那篇文章中就提到过一共有四个重要的包，其中前面三个包都没有用到w参数，只有在向服务器提交验证码验证的请求时才需要w参数，如下：</p>
@@ -706,7 +706,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2023-05-09T10:16:47.622Z" itemprop="dateUpdated">2023-05-09 18:16:47</time>
+    Last updated: <time datetime="2023-05-12T16:22:46.595Z" itemprop="dateUpdated">2023-05-13 00:22:46</time>
 </span><br>
 
 

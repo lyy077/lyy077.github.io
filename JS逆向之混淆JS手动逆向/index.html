@@ -20,7 +20,7 @@
     <meta name="theme-color" content="#3F51B5">
     
     
-    <meta name="keywords" content="JS,逆向,AST">
+    <meta name="keywords" content="逆向,JS,AST">
     <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言写作目的：记录手动逆向一个JS高度混淆的网站的整个过程。 网址：aHR0cHM6Ly81NTI0OTY5Ni5jb206Nzc3Ny8&#x3D; 逆向过程话不多说，直接开始调试。输入用户名17777777777">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JS逆向之混淆JS手动逆向">
@@ -64,10 +64,10 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203122208606.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
 <meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203122210618.jpg">
 <meta property="article:published_time" content="2022-03-08T12:24:52.000Z">
-<meta property="article:modified_time" content="2023-05-09T10:16:44.204Z">
+<meta property="article:modified_time" content="2023-05-12T16:23:27.416Z">
 <meta property="article:author" content="拾光的碎羽">
-<meta property="article:tag" content="JS">
 <meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
 <meta property="article:tag" content="AST">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202203081636681.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
@@ -644,7 +644,7 @@
 
 
 
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>本文通过一个网站，手动对AST混淆代码进行了一个反混淆。在<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/">JS代码安全防护原理——AST混淆原理</a>中提到的几种混淆原理基本都出现过了。比如数组混淆，数组逆向，花指令，流程平坦化，逗号表达式混淆，字符串加密，常量加密等。可以看到，手动混淆的过程是极其容易出错，工作量非常大且十分痛苦的。接下来会写相关文章，介绍如何通过工具对AST混淆代码进行自动反混淆，不过，手动混淆这种能力也是必须要掌握的，万一你使用的工具失效了，或者说遇到一些更加特殊的网站，只能通过手动混淆呢？如果想获取本文的完整代码，扫码关注公众号，然后公众号内回复关键字<code>02</code>即可获取。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>本文通过一个网站，手动对AST混淆代码进行了一个反混淆。在<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94AST%E6%B7%B7%E6%B7%86%E5%8E%9F%E7%90%86/">JS代码安全防护原理——AST混淆原理</a>中提到的几种混淆原理基本都出现过了。比如数组混淆，数组逆向，花指令，流程平坦化，逗号表达式混淆，字符串加密，常量加密等。可以看到，手动混淆的过程是极其容易出错，工作量非常大且十分痛苦的。接下来会写相关文章，介绍如何通过工具对AST混淆代码进行自动反混淆，不过，手动混淆这种能力也是必须要掌握的，万一你使用的工具失效了，或者说遇到一些更加特殊的网站，只能通过手动混淆呢？如果想获取本文的完整代码，扫码关注公众号，然后公众号内回复关键字<code>02</code>即可获取。</p>
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
@@ -660,7 +660,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2023-05-09T10:16:44.204Z" itemprop="dateUpdated">2023-05-09 18:16:44</time>
+    Last updated: <time datetime="2023-05-12T16:23:27.416Z" itemprop="dateUpdated">2023-05-13 00:23:27</time>
 </span><br>
 
 

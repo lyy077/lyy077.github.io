@@ -20,7 +20,7 @@
     <meta name="theme-color" content="#3F51B5">
     
     
-    <meta name="keywords" content="JS,逆向,验证码">
+    <meta name="keywords" content="逆向,JS,验证码">
     <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  前言本文是机器过极验滑块验证码系列文章的第四篇，通过一个实际网站介绍如何利用逆向分析自动过极验滑块，极验滑块系列包含乱序底图还原，验证码w参数生成，补环境，利用像素点RGB差值获取缺口位置以及通过机器学习获取缺口位置">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JS逆向案例——天眼查过极验滑块验证码">
@@ -37,10 +37,10 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204281609390.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
 <meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204281633498.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
 <meta property="article:published_time" content="2022-04-24T11:21:03.000Z">
-<meta property="article:modified_time" content="2023-05-09T10:16:48.487Z">
+<meta property="article:modified_time" content="2023-05-12T16:22:44.464Z">
 <meta property="article:author" content="拾光的碎羽">
-<meta property="article:tag" content="JS">
 <meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
 <meta property="article:tag" content="验证码">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204242240627.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
@@ -201,10 +201,10 @@
 <p> 免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
 </blockquote>
 <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文是机器过极验滑块验证码系列文章的第四篇，通过一个实际网站介绍如何利用逆向分析自动过极验滑块，极验滑块系列包含乱序底图还原，验证码w参数生成，补环境，利用像素点RGB差值获取缺口位置以及通过机器学习获取缺口位置。而极验滑块系列只是验证码系列的第一个系列，后边会罗列市面上常用的验证码，然后发文一一解决。</p>
-<p>上一篇文章见：<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E8%A1%A5%E7%8E%AF%E5%A2%83/">JS逆向案例——极验滑块验证码补环境</a></p>
+<p>上一篇文章见：<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E8%A1%A5%E7%8E%AF%E5%A2%83/">JS逆向案例——极验滑块验证码补环境</a></p>
 <h3 id="模拟登录天眼查"><a href="#模拟登录天眼查" class="headerlink" title="模拟登录天眼查"></a>模拟登录天眼查</h3><h4 id="极验滑块验证码与登录接口的关系"><a href="#极验滑块验证码与登录接口的关系" class="headerlink" title="极验滑块验证码与登录接口的关系"></a>极验滑块验证码与登录接口的关系</h4><p>网址：aHR0cHM6Ly93d3cudGlhbnlhbmNoYS5jb20v</p>
 <p>以天眼查的登录为例，在进行滑块验证时，进行抓包分析。</p>
-<p>在极验系列第一篇 <a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F/">JS逆向案例——极验滑块验证码底图还原</a> 中，说过geetest的几个请求之间的关系，这里重新梳理一下，然后顺便梳理下geetest请求与天眼查登录接口的关系。如下图：</p>
+<p>在极验系列第一篇 <a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F/">JS逆向案例——极验滑块验证码底图还原</a> 中，说过geetest的几个请求之间的关系，这里重新梳理一下，然后顺便梳理下geetest请求与天眼查登录接口的关系。如下图：</p>
 <figure class="image-bubble">
                 <div class="img-lightbox">
                     <div class="overlay"></div>
@@ -262,7 +262,7 @@
 
 
 <h4 id="第四次请求"><a href="#第四次请求" class="headerlink" title="第四次请求"></a>第四次请求</h4><p>第四次请求需要滑块的轨迹，轨迹数组需要通过滑块缺口的差值来生成，要想计算滑块缺口的差值，需要还原滑块底图。</p>
-<h5 id="滑块底图还原"><a href="#滑块底图还原" class="headerlink" title="滑块底图还原"></a>滑块底图还原</h5><p>底图还原参考文章： <a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F/">JS逆向案例——极验滑块验证码底图还原</a></p>
+<h5 id="滑块底图还原"><a href="#滑块底图还原" class="headerlink" title="滑块底图还原"></a>滑块底图还原</h5><p>底图还原参考文章： <a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F/">JS逆向案例——极验滑块验证码底图还原</a></p>
 <p>核心代码为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">restore_pic</span>(<span class="params">pic_path, new_pic_path</span>):</span><br><span class="line">    unordered_pic = Image.<span class="built_in">open</span>(pic_path)</span><br><span class="line">    ordered_pic = unordered_pic.copy()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 裁剪并拼接</span></span><br><span class="line">    <span class="keyword">for</span> i, d <span class="keyword">in</span> <span class="built_in">enumerate</span>(div_offset):</span><br><span class="line">        im = unordered_pic.crop((math.fabs(d[<span class="string">&#x27;x&#x27;</span>]), math.fabs(d[<span class="string">&#x27;y&#x27;</span>]), math.fabs(d[<span class="string">&#x27;x&#x27;</span>]) + <span class="number">10</span>, math.fabs(d[<span class="string">&#x27;y&#x27;</span>]) + <span class="number">58</span>))</span><br><span class="line">        <span class="comment"># 上半区</span></span><br><span class="line">        <span class="keyword">if</span> d[<span class="string">&#x27;y&#x27;</span>] != <span class="number">0</span>:</span><br><span class="line">            ordered_pic.paste(im, (<span class="number">10</span> * (i % (<span class="built_in">len</span>(div_offset) // <span class="number">2</span>)), <span class="number">0</span>), <span class="literal">None</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ordered_pic.paste(im, (<span class="number">10</span> * (i % (<span class="built_in">len</span>(div_offset) // <span class="number">2</span>)), <span class="number">58</span>), <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    ordered_pic.save(new_pic_path)</span><br></pre></td></tr></table></figure>
 
@@ -298,7 +298,7 @@
 
 
 <p>通过手动过滑块就可以把轨迹数组收集到tracks.pkl文件了。</p>
-<h5 id="生成w参数"><a href="#生成w参数" class="headerlink" title="生成w参数"></a>生成w参数</h5><p>w参数逆向分析与其服务搭建参考：<a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81w%E5%8F%82%E6%95%B0%E7%94%9F%E6%88%90/">JS逆向案例——极验滑块验证码w参数生成</a> 和 <a target="_blank" rel="noopener" href="https://blog.heshipeng.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E8%A1%A5%E7%8E%AF%E5%A2%83/">JS逆向案例——极验滑块验证码补环境</a></p>
+<h5 id="生成w参数"><a href="#生成w参数" class="headerlink" title="生成w参数"></a>生成w参数</h5><p>w参数逆向分析与其服务搭建参考：<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81w%E5%8F%82%E6%95%B0%E7%94%9F%E6%88%90/">JS逆向案例——极验滑块验证码w参数生成</a> 和 <a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E8%A1%A5%E7%8E%AF%E5%A2%83/">JS逆向案例——极验滑块验证码补环境</a></p>
 <p>鉴于我们早已经搭建好了w请求服务，这里直接调用接口就好了，代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_w</span>(<span class="params">gt, challenge, tracks, c, s, v</span>):</span><br><span class="line">    url = <span class="string">&quot;http://127.0.01:8081/geetest/w&quot;</span></span><br><span class="line">    data = &#123;</span><br><span class="line">        <span class="string">&quot;tracks&quot;</span>: json.dumps(tracks),</span><br><span class="line">        <span class="string">&quot;c&quot;</span>: json.dumps(c),</span><br><span class="line">        <span class="string">&quot;s&quot;</span>: s,</span><br><span class="line">        <span class="string">&quot;challenge&quot;</span>: challenge,</span><br><span class="line">        <span class="string">&quot;gt&quot;</span>: gt,</span><br><span class="line">        <span class="string">&quot;v&quot;</span>: v</span><br><span class="line">    &#125;</span><br><span class="line">    response = requests.post(url, json=data)</span><br><span class="line">    <span class="keyword">return</span> response.json()</span><br></pre></td></tr></table></figure>
 
@@ -360,7 +360,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2023-05-09T10:16:48.487Z" itemprop="dateUpdated">2023-05-09 18:16:48</time>
+    Last updated: <time datetime="2023-05-12T16:22:44.464Z" itemprop="dateUpdated">2023-05-13 00:22:44</time>
 </span><br>
 
 
