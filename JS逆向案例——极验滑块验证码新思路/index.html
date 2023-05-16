@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向案例——极验滑块验证码新思路 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="JS, 逆向, 验证码]">
+    <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  逆向目标 目标：极验滑块验证码逆向 主页：https:&#x2F;&#x2F;www.tianyancha.com&#x2F; 接口：https:&#x2F;&#x2F;api.geetest.com&#x2F;ajax.php 逆向参数： Get Param gt: f5c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向案例——极验滑块验证码新思路">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  逆向目标 目标：极验滑块验证码逆向 主页：https:&#x2F;&#x2F;www.tianyancha.com&#x2F; 接口：https:&#x2F;&#x2F;api.geetest.com&#x2F;ajax.php 逆向参数： Get Param gt: f5c">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204201632353.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204201636328.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121455248.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121457563.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121507601.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121508668.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305142101981.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305142135040.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305142138981.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305142140806.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305150131419.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305150146459.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305150149642.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305150153931.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305150510333.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305151447578.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305151438513.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305151549318.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305160007452.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305152250030.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204281558130.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305170053416.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305170100384.png">
+<meta property="article:published_time" content="2023-05-16T17:07:47.000Z">
+<meta property="article:modified_time" content="2023-05-16T17:10:11.109Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="JS, 逆向, 验证码]">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204201632353.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向案例——极验滑块验证码新思路</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向案例——极验滑块验证码新思路</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2023-05-16T17:07:47.000Z" itemprop="datePublished" class="page-time">
+  2023-05-17
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E7%9B%AE%E6%A0%87"><span class="post-toc-number">1.</span> <span class="post-toc-text">逆向目标</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E8%BF%87%E7%A8%8B"><span class="post-toc-number">2.</span> <span class="post-toc-text">逆向过程</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E8%AF%B7%E6%B1%82%E5%85%B3%E7%B3%BB%E6%A2%B3%E7%90%86"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">请求关系梳理</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E8%AF%B7%E6%B1%82%E7%BD%97%E5%88%97"><span class="post-toc-number">2.1.1.</span> <span class="post-toc-text">请求罗列</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%85%B3%E7%B3%BB%E6%A2%B3%E7%90%86"><span class="post-toc-number">2.1.2.</span> <span class="post-toc-text">关系梳理</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F%E4%B8%8E%E6%BB%91%E5%8A%A8%E8%B7%9D%E7%A6%BB%E8%AE%A1%E7%AE%97"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">滑块验证码底图还原与滑动距离计算</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%BA%95%E5%9B%BE%E8%BF%98%E5%8E%9F"><span class="post-toc-number">2.2.1.</span> <span class="post-toc-text">底图还原</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E8%AE%A1%E7%AE%97%E6%BB%91%E5%8A%A8%E8%B7%9D%E7%A6%BB"><span class="post-toc-number">2.2.2.</span> <span class="post-toc-text">计算滑动距离</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#w%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E4%B8%8E%E6%BB%91%E5%9D%97%E8%BD%A8%E8%BF%B9%E6%A8%A1%E6%8B%9F"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">w参数逆向与滑块轨迹模拟</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#w%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91"><span class="post-toc-number">2.3.1.</span> <span class="post-toc-text">w参数逆向</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%80%86%E5%90%91r7z"><span class="post-toc-number">2.3.1.1.</span> <span class="post-toc-text">逆向r7z</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#%E9%80%86%E5%90%91H7z"><span class="post-toc-number">2.3.1.2.</span> <span class="post-toc-text">逆向H7z</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%BB%91%E5%9D%97%E8%BD%A8%E8%BF%B9%E6%A8%A1%E6%8B%9F"><span class="post-toc-number">2.3.2.</span> <span class="post-toc-text">滑块轨迹模拟</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81%E6%B5%8B%E8%AF%95%E5%8F%8A%E6%80%BB%E7%BB%93"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">完整代码测试及总结</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="post-toc-number">2.4.1.</span> <span class="post-toc-text">测试</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-number">2.4.2.</span> <span class="post-toc-text">总结</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向案例——极验滑块验证码新思路"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向案例——极验滑块验证码新思路</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2023-05-17 01:07:47" datetime="2023-05-16T17:07:47.000Z"  itemprop="datePublished">2023-05-17</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p> 免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
+</blockquote>
+<h2 id="逆向目标"><a href="#逆向目标" class="headerlink" title="逆向目标"></a>逆向目标</h2><ul>
+<li>目标：极验滑块验证码逆向</li>
+<li>主页：<a target="_blank" rel="noopener" href="https://www.tianyancha.com/">https://www.tianyancha.com/</a></li>
+<li>接口：<a target="_blank" rel="noopener" href="https://api.geetest.com/ajax.php">https://api.geetest.com/ajax.php</a></li>
+<li>逆向参数：<ul>
+<li>Get Param<ul>
+<li>gt: f5c10f395211c77e386566112c6abf21</li>
+<li>challenge: 156aa94ea88422263a3e9653f49dea52ln</li>
+<li>w: 太长，略</li>
+<li>callback: geetest_1683637194585</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="逆向过程"><a href="#逆向过程" class="headerlink" title="逆向过程"></a>逆向过程</h2><p>把要做的事情拆分为几个步骤，分别为梳理请求关系，滑块验证码底图还原，滑块验证码w参数逆向，补环境，自动过验证码。</p>
+<h3 id="请求关系梳理"><a href="#请求关系梳理" class="headerlink" title="请求关系梳理"></a>请求关系梳理</h3><h4 id="请求罗列"><a href="#请求罗列" class="headerlink" title="请求罗列"></a>请求罗列</h4><ul>
+<li><p>第一个请求：<code>https://napi-huawei.tianyancha.com/validate/init?_=1683636853751</code></p>
+<p>入参：当前时间戳；</p>
+<p>返回值：gt和challenge。</p>
+</li>
+<li><p>第二个请求：<code>https://api.geevisit.com/gettype.php?</code></p>
+<p>入参：第一个请求得到的gt和一个由时间戳拼接成的固定的参数callback；</p>
+<p>返回值：验证码的类型及其相关的资源文件。</p>
+</li>
+<li><p>第三个请求：<code>https://api.geevisit.com/get.php?</code></p>
+<p>入参：gt，challenge，callback以及第二个请求得到的资源文件信息。</p>
+<p>返回值：新的challenge，带缺口的乱序错位验证码底图，不带缺口的乱序错位验证码底图以及滑块图</p>
+</li>
+<li><p>第四个请求：<code>https://api.geetest.com/ajax.php?</code></p>
+<p>入参：gt，新的challenge，w值，callback</p>
+<p>返回值：滑块验证码是否验证通过</p>
+</li>
+</ul>
+<h4 id="关系梳理"><a href="#关系梳理" class="headerlink" title="关系梳理"></a>关系梳理</h4><p>为了描述方便分别把第一至四个请求命名为A~D。A从天眼查服务端拿到一个gt和challenge，B用拿到的gt，challenge以及当前时间戳向极验服务器请求并拿到验证码js文件，C利用B拿到的资源文件信息以及gt，challenge去请求极验服务器拿到滑块验证码带缺口和不带缺口的乱序底图，这些底图经过前段js文件渲染就呈现出我们看到的滑块验证码的样子；D请求通过传入gt，challenge，w值和callback请求极验服务器完成对滑块验证码的验证。</p>
+<h3 id="滑块验证码底图还原与滑动距离计算"><a href="#滑块验证码底图还原与滑动距离计算" class="headerlink" title="滑块验证码底图还原与滑动距离计算"></a>滑块验证码底图还原与滑动距离计算</h3><h4 id="底图还原"><a href="#底图还原" class="headerlink" title="底图还原"></a>底图还原</h4><p>要想计算滑块需要移动的距离，就需要先将乱序的验证码图片变成有序。</p>
+<p>先看下滑块的大小：</p>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204201632353.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220420163229256" style="zoom:50%;" />
+
+<p>图片大小 w &#x3D; 260px, h &#x3D; 116px。我们点击图片选择审查元素，可以看到底图是由52个div组成，每个div的w &#x3D; 10px，h &#x3D; 58px。分为上下两个半区，每个半区26个div。刚好组成260px * 116px的矩形验证码。如下图：</p>
+<img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202204201636328.png?watermark/2/text/5YWz5rOo5b6u5L-h5YWs5LyX5Y-377ya6YCG5ZCR5LiA5q2l5q2l/font/5a6L5L2T/fontsize/300" alt="image-20220420163621256" style="zoom: 35%;" />
+
+<p>可以看到第一个div，即上半区左上角的第一个div，background-position &#x3D; -157px -58px。表示将background-image向左偏移157个像素，向上偏移58个像素，作为第一个div放在上半区最左边。由于前面分析过，每个div的宽是10px，高是58px。所以第一个div四个顶点在background-image上的相对坐标是(157, 58), (167, 58), (157, 116), (167, 116)。</p>
+<p>同理，我们推测上半区第二个div的四个顶点的相对坐标分别是(145, 0), (155, 0), (145, 58), (155, 58)。</p>
+<p>此外，background-image就是我们抓包分析的第三步获取到的乱序图。</p>
+<p>知道了每一个个div的坐标，以及乱序的背景图，就可以通过从乱序图上裁剪出一个个div，然后再拼接到一起，这样不就构成了正确有序的图片。</p>
+<p>知道了原理，代码实现如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">div_offset = [</span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">157</span>, <span class="string">&quot;y&quot;</span>: -<span class="number">58</span>&#125;,</span><br><span class="line">    <span class="comment"># 省略若干行</span></span><br><span class="line">    &#123;<span class="string">&quot;x&quot;</span>: -<span class="number">205</span>, <span class="string">&quot;y&quot;</span>: <span class="number">0</span>&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">restore_pic</span>(<span class="params">pic_path, new_pic_path</span>):</span><br><span class="line">    unordered_pic = Image.<span class="built_in">open</span>(pic_path)</span><br><span class="line">    ordered_pic = unordered_pic.copy()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 裁剪并拼接</span></span><br><span class="line">    <span class="keyword">for</span> i, d <span class="keyword">in</span> <span class="built_in">enumerate</span>(div_offset):</span><br><span class="line">        im = unordered_pic.crop((math.fabs(d[<span class="string">&#x27;x&#x27;</span>]), math.fabs(d[<span class="string">&#x27;y&#x27;</span>]), math.fabs(d[<span class="string">&#x27;x&#x27;</span>]) + <span class="number">10</span>, math.fabs(d[<span class="string">&#x27;y&#x27;</span>]) + <span class="number">58</span>))</span><br><span class="line">        <span class="comment"># 上半区</span></span><br><span class="line">        <span class="keyword">if</span> d[<span class="string">&#x27;y&#x27;</span>] != <span class="number">0</span>:</span><br><span class="line">            ordered_pic.paste(im, (<span class="number">10</span> * (i % (<span class="built_in">len</span>(div_offset) // <span class="number">2</span>)), <span class="number">0</span>), <span class="literal">None</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ordered_pic.paste(im, (<span class="number">10</span> * (i % (<span class="built_in">len</span>(div_offset) // <span class="number">2</span>)), <span class="number">58</span>), <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    ordered_pic.save(new_pic_path)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    restore_pic(<span class="string">&quot;img.png&quot;</span>, <span class="string">&quot;new_img.png&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>解释一下上面用到的PIL库的几个方法：copy表示复制一张图片；crop表示以矩形区域裁剪，入参是一个四个元素的元组，分别是矩形左上角顶点的x坐标，左上角顶点的y坐标，右下角顶点的x坐标，右下角顶点的y坐标；paste表示粘贴图片。</p>
+<p>测试效果如下：</p>
+<p>不带缺口的乱序背景图以及还原后的图片：</p>
+<p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121455248.jpg" alt="不带缺口的乱序背景图">					<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121457563.jpg" alt="new_1"></p>
+<p>带缺口的乱序背景图以及还原后的图片：</p>
+<p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121507601.jpg" alt="2">					<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305121508668.jpg" alt="new_2"></p>
+<p>还原图后边依然存在乱序的部分，但是这些乱序的地方已经超出260px，实际上不会展示到页面上，也即没有影响。</p>
+<h4 id="计算滑动距离"><a href="#计算滑动距离" class="headerlink" title="计算滑动距离"></a>计算滑动距离</h4><p>既然底图已经还原了，接下来就是缺口位置的计算，从而得到滑块需要滑动的距离。缺口计算有2种方式，一种是采用深度模型识别缺口坐标，参考文章<a target="_blank" rel="noopener" href="https://lyy077.github.io/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/">如何利用深度学习识别滑块验证码缺口位置</a>。</p>
+<p>第二种是计算图片的每个像素点位置的色差去判断缺口，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">diff_rgb</span>(<span class="params">rgb1, rgb2</span>):</span><br><span class="line">    <span class="keyword">return</span> math.fabs(rgb1[<span class="number">0</span>] - rgb2[<span class="number">0</span>]) + math.fabs(rgb1[<span class="number">1</span>] - rgb2[<span class="number">1</span>]) + math.fabs(rgb1[<span class="number">2</span>] - rgb2[<span class="number">2</span>]) &gt; <span class="number">255</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_moving_dst</span>(<span class="params">complete_pic_path, incomplete_pic_path</span>):</span><br><span class="line">    complete_pic = Image.<span class="built_in">open</span>(complete_pic_path)</span><br><span class="line">    incomplete_pic = Image.<span class="built_in">open</span>(incomplete_pic_path)</span><br><span class="line"></span><br><span class="line">    w, h = complete_pic.size</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, w):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, h):</span><br><span class="line">            complete_pic_pixel_rgb = complete_pic.getpixel((i, j))</span><br><span class="line">            incomplete_pic_pixel_rgb = incomplete_pic.getpixel((i, j))</span><br><span class="line">            <span class="keyword">if</span> diff_rgb(complete_pic_pixel_rgb, incomplete_pic_pixel_rgb):</span><br><span class="line">                <span class="keyword">return</span> i</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="w参数逆向与滑块轨迹模拟"><a href="#w参数逆向与滑块轨迹模拟" class="headerlink" title="w参数逆向与滑块轨迹模拟"></a>w参数逆向与滑块轨迹模拟</h3><p>首先对geetest.6.0.9.js这个文件进行反混淆，将二进制数字转化为十进制数，将base64编码的字符串转化为ASCII码字符，最后将字面量还原。将Js文件进行反混淆处理后在浏览器中进行override，覆盖线上版本，进行本地调试。</p>
+<h4 id="w参数逆向"><a href="#w参数逆向" class="headerlink" title="w参数逆向"></a>w参数逆向</h4><p>前面分析过，最终向极验后端提交的四个参数中，gt和challenge都是通过其它接口返回的，callback参数是当前时间戳生成的，只有w参数需要逆向。</p>
+<p>全局搜索<code>&quot;w&quot;:</code>，发现如下代码：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305142101981.png" alt="image-20230514210118875" style="zoom: 67%;" />
+
+<p>可以看到，w是由r7z和H7z拼接而成。</p>
+<h5 id="逆向r7z"><a href="#逆向r7z" class="headerlink" title="逆向r7z"></a>逆向r7z</h5><p>整理下代码逻辑如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">r7z = p7B.<span class="title class_">Ha</span>(n0B.<span class="title function_">encrypt</span>(h7B.<span class="title function_">stringify</span>(Y7z), v7z.<span class="title function_">wb</span>()))</span><br></pre></td></tr></table></figure>
+
+
+
+<p>先看最里面的，全局搜索wb，发现wb实际上调用的是C7B方法，如下图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305142135040.png" alt="image-20230514213545968" style="zoom:67%;" />
+
+<p>再全局搜索下C7B(搜索的时候注意区分大小写，这样排除了很多干扰项)，发现C7B实际上是四次调用H1W方法，并把四次返回结果拼接在一起，如下图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305142138981.png" alt="image-20230514213850874" style="zoom:67%;" />
+
+<p>再看下H1W方法的源码，如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305142140806.png" alt="image-20230514214049697" style="zoom:67%;" />
+
+<p>不再调用其它封装的方法，综上，整理出来wb方法，如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="variable constant_">H1W</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (<span class="number">65536</span> * (<span class="number">1</span> + <span class="title class_">Math</span>.<span class="title function_">random</span>()) | <span class="number">0</span>).<span class="title function_">toString</span>(<span class="number">16</span>).<span class="title function_">substring</span>(<span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wb = <span class="title function_">H1W</span>() + <span class="title function_">H1W</span>() + <span class="title function_">H1W</span>() + <span class="title function_">H1W</span>();</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后是h7B.stringify，经过测试，h7B.stringify这个方法的作用等同于JSON.stringify。</p>
+<p>接着看下n0B.encrypt，定位到代码如图所示：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305150131419.png" alt="image-20230515013105304" style="zoom:67%;" />
+
+<p>传入的三个参数，第一个r7W是JSON.stringify(Y7z)，第二个m7W是随机的字符串即上边的wb，第三个变量P7W未使用。简单分析下代码，不难看出这个encrypt方法实际上是对AES加密算法做了一个封装，然后自定义了一些逻辑。其中，m7W用作生成key，0000000000000000用作生成iv。</p>
+<p>代码修改如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">CryptoJS</span> = <span class="built_in">require</span>(<span class="string">&#x27;crypto-js&#x27;</span>); </span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Encrypt</span>(<span class="params">word, key, iv</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> srcs = <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(word);</span><br><span class="line">    <span class="keyword">let</span> encrypted = <span class="title class_">CryptoJS</span>.<span class="property">AES</span>.<span class="title function_">encrypt</span>(srcs, key, &#123; <span class="attr">iv</span>: iv, <span class="attr">mode</span>: <span class="title class_">CryptoJS</span>.<span class="property">mode</span>.<span class="property">CBC</span>, <span class="attr">padding</span>: <span class="title class_">CryptoJS</span>.<span class="property">pad</span>.<span class="property">Pkcs7</span> &#125;);</span><br><span class="line">    <span class="keyword">return</span> encrypted.<span class="property">ciphertext</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">encrypt</span>(<span class="params">r7W, m7W, P7W</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> p2r = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> key = <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(m7W);</span><br><span class="line">    <span class="keyword">const</span> iv = <span class="title class_">CryptoJS</span>.<span class="property">enc</span>.<span class="property">Utf8</span>.<span class="title function_">parse</span>(<span class="string">&#x27;0000000000000000&#x27;</span>);   <span class="comment">//十六位十六进制数作为密钥偏移量</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> <span class="variable constant_">W7W</span> = <span class="title class_">Encrypt</span>(r7W, key, iv), <span class="variable constant_">Z7W</span> = <span class="variable constant_">W7W</span>.<span class="property">words</span>, <span class="variable constant_">H7W</span> = <span class="variable constant_">W7W</span>.<span class="property">sigBytes</span>, d7W = [], l7W = <span class="number">0</span>; p2r * (p2r + <span class="number">1</span>) * p2r % <span class="number">2</span> == <span class="number">0</span> &amp;&amp; l7W &lt; <span class="variable constant_">H7W</span>; l7W++) &#123;</span><br><span class="line">        <span class="keyword">var</span> q7W = <span class="variable constant_">Z7W</span>[l7W &gt;&gt;&gt; <span class="number">2</span>] &gt;&gt;&gt; <span class="number">24</span> - l7W % <span class="number">4</span> * <span class="number">8</span> &amp; <span class="number">255</span>;</span><br><span class="line">        d7W[<span class="string">&quot;push&quot;</span>](q7W);</span><br><span class="line">        p2r = p2r &gt; <span class="number">33997</span> ? p2r / <span class="number">5</span> : p2r * <span class="number">5</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d7W;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码用到了<code>crypto-js</code>包，需要用命令<code>npm install crypto-js</code>安装。</p>
+<p>再接着看下p7B.Ha这个方法，代码如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305150146459.png" alt="image-20230515014645346" style="zoom: 67%;" />
+
+<p>Ha调用T6B.Ga方法，跟进去：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305150149642.png" alt="image-20230515014959508" style="zoom:50%;" />
+
+<p>代码如图，直接抠出来整个Ga代码，只不过图中圈出的this在node环境中需要补一下，经过调试，this中包含如下的方法和值友用到：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305150153931.png" alt="image-20230515015327784" style="zoom:50%;" />
+
+<p>经过流程平坦化之后，完整代码为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">Ga</span> = <span class="keyword">function</span> (<span class="params">o6B, t6B</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> D5r = <span class="number">27</span>;</span><br><span class="line">    <span class="keyword">var</span> I9z = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">var</span> <span class="variable constant_">X6B</span> = &#123;</span><br><span class="line">        <span class="string">&quot;wa&quot;</span>: <span class="number">7274496</span>,</span><br><span class="line">        <span class="string">&quot;xa&quot;</span>: <span class="number">9483264</span>,</span><br><span class="line">        <span class="string">&quot;ya&quot;</span>: <span class="number">19220</span>,</span><br><span class="line">        <span class="string">&quot;za&quot;</span>: <span class="number">235</span>,</span><br><span class="line">        <span class="string">&quot;Aa&quot;</span>: <span class="number">24</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable constant_">X6B</span>.<span class="property">Da</span> = <span class="keyword">function</span>(<span class="params">r0B</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> v9z = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">var</span> h0B = <span class="string">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> (r0B &lt; <span class="number">0</span> || r0B &gt;= h0B[<span class="string">&quot;length&quot;</span>]) &amp;&amp; v9z * (v9z + <span class="number">1</span>) % <span class="number">2</span> + <span class="number">8</span> ? <span class="string">&quot;.&quot;</span> : h0B[<span class="string">&quot;charAt&quot;</span>](r0B);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable constant_">X6B</span>.<span class="property">Fa</span> = <span class="keyword">function</span>(<span class="params">R0B, C0B</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable constant_">R0B</span> &gt;&gt; <span class="variable constant_">C0B</span> &amp; <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    t6B || (t6B = <span class="variable constant_">X6B</span>);</span><br><span class="line">    <span class="keyword">var</span> <span class="variable constant_">N6B</span> = <span class="keyword">function</span> (<span class="params">Q6B, x6B</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> <span class="variable constant_">I6B</span> = <span class="number">0</span>, v6B = t6B[<span class="string">&quot;Aa&quot;</span>] - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (v6B &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (v6B &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="number">1</span> === <span class="variable constant_">X6B</span>[<span class="string">&quot;Fa&quot;</span>](x6B, v6B) &amp;&amp; (<span class="variable constant_">I6B</span> = (<span class="variable constant_">I6B</span> &lt;&lt; <span class="number">1</span>) + <span class="variable constant_">X6B</span>[<span class="string">&quot;Fa&quot;</span>](<span class="variable constant_">Q6B</span>, v6B));</span><br><span class="line">                v6B -= <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="variable constant_">I6B</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable constant_">I6B</span>;</span><br><span class="line">    &#125;,</span><br><span class="line">    j6B = <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="variable constant_">K6B</span> = <span class="string">&quot;&quot;</span>,</span><br><span class="line">    c6B = o6B[<span class="string">&quot;length&quot;</span>],</span><br><span class="line">    f6B = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (f6B &lt; c6B &amp;&amp; I9z * (I9z + <span class="number">1</span>) % <span class="number">2</span> + <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> <span class="variable constant_">B6B</span>;</span><br><span class="line">        <span class="keyword">if</span> (f6B + <span class="number">2</span> &lt; c6B) &#123;</span><br><span class="line">            <span class="variable constant_">B6B</span> = (o6B[f6B] &lt;&lt; <span class="number">16</span>) + (o6B[f6B + <span class="number">1</span>] &lt;&lt; <span class="number">8</span>) + o6B[f6B + <span class="number">2</span>], j6B += <span class="variable constant_">X6B</span>[<span class="string">&quot;Da&quot;</span>](<span class="title function_">N6B</span>(<span class="variable constant_">B6B</span>, t6B[<span class="string">&quot;wa&quot;</span>])) + <span class="variable constant_">X6B</span>[<span class="string">&quot;Da&quot;</span>](<span class="title function_">N6B</span>(<span class="variable constant_">B6B</span>, t6B[<span class="string">&quot;xa&quot;</span>])) + <span class="variable constant_">X6B</span>[<span class="string">&quot;Da&quot;</span>](<span class="title function_">N6B</span>(<span class="variable constant_">B6B</span>, t6B[<span class="string">&quot;ya&quot;</span>])) + <span class="variable constant_">X6B</span>[<span class="string">&quot;Da&quot;</span>](<span class="title function_">N6B</span>(<span class="variable constant_">B6B</span>, t6B[<span class="string">&quot;za&quot;</span>]));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">var</span> n6B = c6B % <span class="number">3</span>;</span><br><span class="line">            <span class="number">2</span> === n6B ? (<span class="variable constant_">B6B</span> = (o6B[f6B] &lt;&lt; <span class="number">16</span>) + (o6B[f6B + <span class="number">1</span>] &lt;&lt; <span class="number">8</span>), j6B += <span class="variable constant_">X6B</span>[<span class="string">&quot;Da&quot;</span>](<span class="title function_">N6B</span>(<span class="variable constant_">B6B</span>, t6B[<span class="string">&quot;wa&quot;</span>])) + <span class="variable constant_">X6B</span>[<span class="string">&quot;Da&quot;</span>](<span class="title function_">N6B</span>(<span class="variable constant_">B6B</span>, t6B[<span class="string">&quot;xa&quot;</span>])) + <span class="variable constant_">X6B</span>[<span class="string">&quot;Da&quot;</span>](<span class="title function_">N6B</span>(<span class="variable constant_">B6B</span>, t6B[<span class="string">&quot;ya&quot;</span>])), <span class="variable constant_">K6B</span> = t6B[<span class="string">&quot;r&quot;</span>]) : <span class="number">1</span> === n6B &amp;&amp; (<span class="variable constant_">B6B</span> = o6B[f6B] &lt;&lt; <span class="number">16</span>, j6B += <span class="variable constant_">X6B</span>[<span class="string">&quot;Da&quot;</span>](<span class="title function_">N6B</span>(<span class="variable constant_">B6B</span>, t6B[<span class="string">&quot;wa&quot;</span>])) + <span class="variable constant_">X6B</span>[<span class="string">&quot;Da&quot;</span>](<span class="title function_">N6B</span>(<span class="variable constant_">B6B</span>, t6B[<span class="string">&quot;xa&quot;</span>])), <span class="variable constant_">K6B</span> = t6B[<span class="string">&quot;r&quot;</span>] + t6B[<span class="string">&quot;r&quot;</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        I9z = I9z &gt; <span class="number">53617</span> ? I9z - <span class="number">7</span> : I9z + <span class="number">7</span>;</span><br><span class="line">        f6B += <span class="number">3</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;res&quot;</span>: j6B,</span><br><span class="line">        <span class="string">&quot;end&quot;</span>: <span class="variable constant_">K6B</span></span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Ha</span> = <span class="keyword">function</span> (<span class="params">M6B</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> <span class="variable constant_">L6B</span> = <span class="title class_">Ga</span>(<span class="variable constant_">M6B</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="variable constant_">L6B</span>[<span class="string">&quot;res&quot;</span>] + <span class="variable constant_">L6B</span>[<span class="string">&quot;end&quot;</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>最后看下压轴部分，Y7z的代码：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305150510333.png" alt="image-20230515051007195" style="zoom:67%;" />
+
+<p>可以看到Y7z的属性有userresponse, passtime, imgload, aa, ep, rp。</p>
+<p>先看下i7B.C方法，直接将这个方法扣下来拿来用即可，在node中测试不需要补环境。</p>
+<p>接着看下c7B[“a”]这个方法，实际上是取得c7B[“Na”]这个对象的属性，为了方便跟踪这个对象，在浏览器watch栏中添加这个对象，然后给滑块添加一个断点，如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305151447578.png" alt="image-20230515144736431" style="zoom: 50%;" />
+
+<p>拖动滑块，进入单步调试，调试结果如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305151438513.png" alt="image-20230515143849349" style="zoom: 50%;" />
+
+<p>可以看到c7B[“Na”]对象的相关属性来自于L7z这个光标事件。其中有一个数组arr，里面每一个元素都是一个三维向量，分别代表x轴坐标，y轴坐标和经过的时间，这个数组即用来保存滑块的移动轨迹。</p>
+<p>其中passtime是滑块滑动所需的时间，可以由轨迹数组计算出来。ep是版本号，这里写死为<code>&#123;v: &quot;6.0.9&quot;&#125;</code>即可。aa则是由轨迹数组经过加密生成的字符串。imgload是加载的图片数量，经过测试，给一个随机值即可。userresponse是调用i7B[“C”]生成的，这个方法已经扣下来了，参数g7z和challenge，challenge是由接口返回，所以只需要计算g7z即可。</p>
+<p>经过调试，passtime和g7z的计算方法为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> passtime = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">let</span> g7z = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> index = <span class="number">0</span>; index &lt; X1z.<span class="property">length</span>; index++) &#123;</span><br><span class="line">    passtime += X1z[index][<span class="number">2</span>];</span><br><span class="line">    g7z += X1z[index][<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line">g7z -= X1z[<span class="number">0</span>][<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+
+
+
+<p>紧接着看下aa，断点进入，代码如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305151549318.png" alt="image-20230515154908221" style="zoom:67%;" />
+
+<p>整理下这个t方法，并且抠出其调用的方法，如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">O6z = <span class="keyword">function</span> (<span class="params">r6z</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> d6z = <span class="string">&quot;()*,-./0123456789:?@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqr&quot;</span>,</span><br><span class="line">        m6z = d6z[<span class="string">&quot;length&quot;</span>],</span><br><span class="line">        Z6z = <span class="string">&quot;&quot;</span>,</span><br><span class="line">        H6z = <span class="title class_">Math</span>[<span class="string">&quot;abs&quot;</span>](r6z),</span><br><span class="line">        W6z = <span class="built_in">parseInt</span>(H6z / m6z);</span><br><span class="line">    W6z &gt;= m6z &amp;&amp; (W6z = m6z - <span class="number">1</span>), W6z &amp;&amp; (Z6z = d6z[<span class="string">&quot;charAt&quot;</span>](W6z)), H6z %= m6z;</span><br><span class="line">    <span class="keyword">var</span> q6z = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> r6z &lt; <span class="number">0</span> &amp;&amp; (q6z += <span class="string">&quot;!&quot;</span>), Z6z &amp;&amp; (q6z += <span class="string">&quot;$&quot;</span>), q6z + Z6z + d6z[<span class="string">&quot;charAt&quot;</span>](H6z);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">u6z = <span class="keyword">function</span> (<span class="params">R6z</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> t8r = <span class="number">27</span>;</span><br><span class="line">    <span class="keyword">var</span> f5r = <span class="number">9</span>;</span><br><span class="line">    <span class="keyword">var</span> z6z = [[<span class="number">1</span>, <span class="number">0</span>], [<span class="number">2</span>, <span class="number">0</span>], [<span class="number">1</span>, -<span class="number">1</span>], [<span class="number">1</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, -<span class="number">1</span>], [<span class="number">3</span>, <span class="number">0</span>], [<span class="number">2</span>, -<span class="number">1</span>], [<span class="number">2</span>, <span class="number">1</span>]],</span><br><span class="line">        h6z = <span class="number">0</span>,</span><br><span class="line">        C6z = z6z[<span class="string">&quot;length&quot;</span>];</span><br><span class="line">    <span class="keyword">while</span> (h6z &lt; C6z &amp;&amp; f5r * (f5r + <span class="number">1</span>) % <span class="number">2</span> + <span class="number">7</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (R6z[<span class="number">0</span>] === z6z[h6z][<span class="number">0</span>] &amp;&amp; R6z[<span class="number">1</span>] === z6z[h6z][<span class="number">1</span>]) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;stuvwxyz~&quot;</span>[h6z];</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            f5r = f5r &gt;= <span class="number">62252</span> ? f5r - <span class="number">6</span> : f5r + <span class="number">6</span>;</span><br><span class="line">            h6z++;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> t = <span class="keyword">function</span> (<span class="params">X1z</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> o5r = <span class="number">6</span>;</span><br><span class="line">    <span class="keyword">var</span> N1z,</span><br><span class="line">        f1z = [],</span><br><span class="line">        B1z = [],</span><br><span class="line">        o1z = [],</span><br><span class="line">        t1z = <span class="number">0</span>,</span><br><span class="line">        j1z = X1z[<span class="string">&quot;length&quot;</span>];</span><br><span class="line">    <span class="keyword">while</span> (o5r * (o5r + <span class="number">1</span>) % <span class="number">2</span> + <span class="number">8</span> &amp;&amp; t1z &lt; j1z) &#123;</span><br><span class="line">        N1z = <span class="title function_">u6z</span>(X1z[t1z]), N1z ? B1z[<span class="string">&quot;push&quot;</span>](N1z) : (f1z[<span class="string">&quot;push&quot;</span>](<span class="title function_">O6z</span>(X1z[t1z][<span class="number">0</span>])), B1z[<span class="string">&quot;push&quot;</span>](<span class="title function_">O6z</span>(X1z[t1z][<span class="number">1</span>]))), o1z[<span class="string">&quot;push&quot;</span>](<span class="title function_">O6z</span>(X1z[t1z][<span class="number">2</span>]));</span><br><span class="line">        o5r = o5r &gt;= <span class="number">17705</span> ? o5r / <span class="number">3</span> : o5r * <span class="number">3</span>;</span><br><span class="line">        t1z++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f1z[<span class="string">&quot;join&quot;</span>](<span class="string">&quot;&quot;</span>) + <span class="string">&quot;!!&quot;</span> + B1z[<span class="string">&quot;join&quot;</span>](<span class="string">&quot;&quot;</span>) + <span class="string">&quot;!!&quot;</span> + o1z[<span class="string">&quot;join&quot;</span>](<span class="string">&quot;&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>t方法调用传入的X1z就是滑块滑动产生的轨迹数组。</p>
+<p>这里调试会发现，生成的aa与页面上的不一致，实际上F7z除了由上边的t方法修改之外，还有一个地方也修改了，如图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305160007452.png" alt="image-20230516000744285" style="zoom:67%;" />
+
+<p>调用了e7B.u方法，接收3个参数，第一个是上面t方法生成的初步的F7z，第二个是c，第三个是s，其中c和s都是通过接口拿到。所以这里的重点工作是抠出e7B.u方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> e7B = &#123;&#125;;</span><br><span class="line">e7B.<span class="property">u</span> = <span class="keyword">function</span> (<span class="params">Q1z, v1z, T1z</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> K5r = <span class="number">2</span>, j5r = <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">if</span> ((!v1z || !T1z) &amp;&amp; j5r * (j5r + <span class="number">1</span>) * j5r % <span class="number">2</span> === <span class="number">0</span> )</span><br><span class="line">        <span class="keyword">return</span> Q1z;</span><br><span class="line">    <span class="keyword">var</span> i1z, x1z = <span class="number">0</span>, c1z = Q1z, y1z = v1z[<span class="number">0</span>], k1z = v1z[<span class="number">2</span>], L1z = v1z[<span class="number">4</span>];</span><br><span class="line">    <span class="keyword">while</span> ((i1z = T1z[<span class="string">&quot;substr&quot;</span>](x1z, <span class="number">2</span>)) &amp;&amp; K5r * (K5r + <span class="number">1</span>) * K5r % <span class="number">2</span> === <span class="number">0</span>) &#123;</span><br><span class="line">        x1z += <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">var</span> n1z = <span class="built_in">parseInt</span>(i1z, <span class="number">16</span>),</span><br><span class="line">            M1z = <span class="title class_">String</span>[<span class="string">&quot;fromCharCode&quot;</span>](n1z),</span><br><span class="line">            I1z = (y1z * n1z * n1z + k1z * n1z + L1z) % Q1z[<span class="string">&quot;length&quot;</span>];</span><br><span class="line">        c1z = c1z[<span class="string">&quot;substr&quot;</span>](<span class="number">0</span>, I1z) + M1z + c1z[<span class="string">&quot;substr&quot;</span>](I1z);</span><br><span class="line">        K5r = K5r &gt; <span class="number">10375</span> ? K5r / <span class="number">8</span> : K5r * <span class="number">8</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> c1z;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>最后看下rp属性，不难看出rp是由gt，challenge的前32位，passtime经过md5加密算法生成。代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> crypto = <span class="built_in">require</span>(<span class="string">&#x27;crypto&#x27;</span>);</span><br><span class="line"><span class="keyword">var</span> md5 = crypto.<span class="title function_">createHash</span>(<span class="string">&#x27;md5&#x27;</span>);</span><br><span class="line"></span><br><span class="line">Y7z[<span class="string">&quot;rp&quot;</span>] = md5.<span class="title function_">update</span>(gt + challenge.<span class="title function_">slice</span>(<span class="number">0</span>, <span class="number">32</span>) + passtime).<span class="title function_">digest</span>(<span class="string">&#x27;hex&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>至此，w参数的前半部分r7z剖析完了。</p>
+<h5 id="逆向H7z"><a href="#逆向H7z" class="headerlink" title="逆向H7z"></a>逆向H7z</h5><p>进入断点调试，可以看到H7z是调用V7z.Ub方法生成。</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305152250030.png" alt="image-20230515225024832" style="zoom:67%;" />
+
+<p>抠出V7z.Ub方法，并补全其中用到的RSA算法，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> jsbn <span class="keyword">import</span> <span class="title class_">RSAKey</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def <span class="title function_">get_H7z</span>(wb):</span><br><span class="line">    rsa = <span class="title class_">RSAKey</span>()</span><br><span class="line">    rsa.<span class="title function_">setPublic</span>(<span class="string">&quot;00C1E3934D1614465B33053E7F48EE4EC87B14B95EF88947713D25EECBFF7E74C7977D02DC1D9451F79DD&quot;</span></span><br><span class="line">                  <span class="string">&quot;5D1C10C29ACB6A9B4D6FB7D0A0279B6719E1772565F09AF627715919221AEF91899CAE08C0D686D748B20&quot;</span></span><br><span class="line">                  <span class="string">&quot;A3603BE2318CA6BC2B59706592A9219D0BF05C9F65023A21D2330807252AE0066D59CEEFA5F2748EA80BAB81&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;10001&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> rsa.<span class="title function_">encrypt</span>(wb)</span><br></pre></td></tr></table></figure>
+
+<p>代码说明：需要安装RSA库，用<code>pip install pyjsbn-rsa</code>命令安装即可，因为没有找到合适的Node库，所以采用Python库。其中的RSA public key相关信息单步调试的时候可以拿到，wb是一个随机生成的字符串，产生随机字符串的代码在r7z部分已经逆向完成。<strong>特别注意：r7z和H7z通过这个随机字符串关联起来，生成r7z和H7z用到的随机字符串必须是同一个，所以wb最好定义为全局变量，并且全局生成一次。</strong></p>
+<h4 id="滑块轨迹模拟"><a href="#滑块轨迹模拟" class="headerlink" title="滑块轨迹模拟"></a>滑块轨迹模拟</h4><p>极验滑块的轨迹主要有三种方式，一种是直接用网上现有的滑动轨迹模型，另一种是自己搭建模型自己训练。这里介绍第三种，手动滑动滑块得到正确的拼图，同时保存滑块轨迹，数据结构采用key-value形式，key是滑块需要的滑动的距离，value是轨迹数组，通过上百次的滑动，预先建立一个轨迹字典，下次滑动时通过距离从这个字典中直接拿到轨迹数组。</p>
+<p>具体实现如下：</p>
+<ol>
+<li>用Flask搭建一个轨迹收集服务</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</span><br><span class="line"><span class="keyword">from</span> flask_cors <span class="keyword">import</span> cross_origin</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/track&quot;</span></span>)</span></span><br><span class="line"><span class="meta">@cross_origin(<span class="params">supports_credentials=<span class="literal">True</span>, methods=<span class="string">&quot;*&quot;</span>, allow_headers=<span class="string">&quot;*&quot;</span></span>)</span></span><br><span class="line"><span class="meta">@cross_origin()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">track</span>():</span><br><span class="line">    tracks = pickle.load(<span class="built_in">open</span>(<span class="string">&quot;tracks.pkl&quot;</span>, <span class="string">&quot;rb&quot;</span>))</span><br><span class="line">    d = json.loads(request.data.decode())</span><br><span class="line">    <span class="built_in">print</span>(d)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 下载乱序的缺口图和完整图</span></span><br><span class="line">    download_image(d[<span class="string">&#x27;bg&#x27;</span>], <span class="string">&quot;bg.png&quot;</span>)</span><br><span class="line">    download_image(d[<span class="string">&#x27;fullbg&#x27;</span>], <span class="string">&quot;fullbg.png&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 还原乱序的缺口图和完整图</span></span><br><span class="line">    restore_pic(<span class="string">&quot;bg.png&quot;</span>, <span class="string">&quot;new_bg.png&quot;</span>)</span><br><span class="line">    restore_pic(<span class="string">&quot;fullbg.png&quot;</span>, <span class="string">&quot;new_fullbg.png&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 获取缺口的位置</span></span><br><span class="line">    x = get_moving_dst(<span class="string">&quot;new_bg.png&quot;</span>, <span class="string">&quot;new_fullbg.png&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> tracks.get(x):</span><br><span class="line">        tracks[x].append(&#123;<span class="string">&#x27;track&#x27;</span>: d[<span class="string">&#x27;track&#x27;</span>], <span class="string">&#x27;g7z&#x27;</span>: d[<span class="string">&#x27;g7z&#x27;</span>]&#125;)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        tracks[x] = [&#123;<span class="string">&#x27;track&#x27;</span>: d[<span class="string">&#x27;track&#x27;</span>], <span class="string">&#x27;g7z&#x27;</span>: d[<span class="string">&#x27;g7z&#x27;</span>]&#125;]</span><br><span class="line">    pickle.dump(tracks, <span class="built_in">open</span>(<span class="string">&quot;tracks.pkl&quot;</span>, <span class="string">&quot;wb&quot;</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;ok&#x27;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download_image</span>(<span class="params">url, image_file</span>):</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(image_file, <span class="string">&quot;wb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(requests.get(url).content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    track_data = &#123;&#125;</span><br><span class="line">    pickle.dump(track_data, <span class="built_in">open</span>(<span class="string">&quot;tracks.pkl&quot;</span>, <span class="string">&quot;wb&quot;</span>))</span><br><span class="line">    app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">8088</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>注入Js代码</li>
+</ol>
+<p>注入Js代码，每次滑动时向收集服务发送请求，将轨迹数组传递过去。代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Http</span> = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line"><span class="keyword">const</span> url=<span class="string">&#x27;http://127.0.0.1:8088/track&#x27;</span>;</span><br><span class="line"><span class="title class_">Http</span>.<span class="title function_">open</span>(<span class="string">&quot;POST&quot;</span>, url);</span><br><span class="line"><span class="title class_">Http</span>.<span class="property">onload</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;请求成功, track: &quot;</span> + <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(X1z));</span><br><span class="line">	<span class="comment">// 请求结束后,在此处写处理代码</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="title class_">Http</span>.<span class="title function_">send</span>(<span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123;</span><br><span class="line">	<span class="attr">track</span>: X1z,</span><br><span class="line">    <span class="attr">bg</span>: <span class="regexp">/\&quot;(.*?)\&quot;/g</span>.<span class="title function_">exec</span>(<span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&quot;gt_cut_bg_slice&quot;</span>)[<span class="number">0</span>].<span class="property">style</span>.<span class="property">backgroundImage</span>)[<span class="number">1</span>],</span><br><span class="line">	<span class="attr">fullbg</span>: <span class="regexp">/\&quot;(.*?)\&quot;/g</span>.<span class="title function_">exec</span>(<span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&quot;gt_cut_fullbg_slice&quot;</span>)[<span class="number">0</span>].<span class="property">style</span>.<span class="property">backgroundImage</span>)[<span class="number">1</span>],</span><br><span class="line">    g7z</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure>
+
+<p>代码插入位置如图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202204281558130.png" alt="image-20220428155854981" style="zoom: 50%;" />
+
+<p>通过手动过滑块就可以把轨迹数组收集到tracks.pkl文件了。</p>
+<h3 id="完整代码测试及总结"><a href="#完整代码测试及总结" class="headerlink" title="完整代码测试及总结"></a>完整代码测试及总结</h3><h4 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h4><p>测试结果如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305170053416.png" alt="image-20230517005330218" style="zoom: 33%;" />
+
+
+
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>极验滑块之前发过相关的文章了，当时用到的方法是将整个Js文件抠下来然后补环境，整个代码有大几千行，这次换了个思路，只是抠调用到的代码，整个下来也就300行左右。</p>
+<p>若需要完整代码，扫描加微信。</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305170100384.png" alt="image-20230517010053227" style="zoom:25%;" />
+
+
+
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-16T17:10:11.109Z" itemprop="dateUpdated">2023-05-17 01:10:11</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS-%E9%80%86%E5%90%91-%E9%AA%8C%E8%AF%81%E7%A0%81/" rel="tag">JS, 逆向, 验证码]</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/&title=《JS逆向案例——极验滑块验证码新思路》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/&title=《JS逆向案例——极验滑块验证码新思路》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——极验滑块验证码新思路》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">如何利用深度学习识别滑块验证码缺口位置</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/&title=《JS逆向案例——极验滑块验证码新思路》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/&title=《JS逆向案例——极验滑块验证码新思路》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——极验滑块验证码新思路》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E6%96%B0%E6%80%9D%E8%B7%AF/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAT4AAAE+CAAAAAAxUyPsAAAFOUlEQVR42u3a0WrrWBQD0P7/T98L8za0TSVtpwPD8lNI3dheDmQfyR8f8fbn5fbd/p9ff/605L8+758cPT+31/s/sOHDhw8fPnwlTUKQXExO8N0FJxDJX5Nrib4u+PDhw4cP38R3P7lkKLmMO+3o015L/lXAhw8fPnz4fpNviwM2iHzgyLc8pMCHDx8+fPj+W76NLBlxngoOkvfzOAMfPnz48OF7H18S1l/q5230aVmTMagtEh7rOvDhw4cPH754y2P6/8frhzd8+PDhw4fvEHYnkfclBN+GiWcfoYuOhQ8fPnz48E0C+Y/65fDbheW1ehvQb7fti6Pgw4cPHz58MV9+YfdqvAVto/z7UFKXB/jw4cOHD9/Ed/mIdkn/erBoP397TC2vzH8Yg/Dhw4cPH76J73IB20BzuRmXh9Lu1zVGBvjw4cOHD9+nq0t+sLfF9jYWFEv3Mqy/jzv48OHDhw/fdvQ27N5O6KmwPqmu3/F+VJPjw4cPHz58MV9eOec/+cnJ5fTJWW1F+2n0wYcPHz58+Ca+/HUShedYyfnkdftWh59Kenz48OHDh29/vmtc2F8eF2vD+i1kv0T2xT748OHDhw9fvE9SdW/xertQb8eRIlgvXxelPj58+PDhw1fyJfF9Hu4nIUISzV/eyWOIpwYmfPjw4cOHL+G7h+N5dZ2H+9v53HvteujBhw8fPnz4lvXyR/6jfhkO2vr8Po5s9fxbJj58+PDhw4dvCtC3sDup2LdiPg/rn3ofHz58+PDhu/BdIux7sd0u7NshYws78ooCHz58+PDh2/ju/7zV4e8O65OzvT/chg8fPnz48N173i2ab4eGreq+hxeXI0bBAT58+PDhw/eNz+sFeRslJCFCMj3lMfoW07c3/oesBR8+fPjw4Sv5tiK8jQDuxHm8fuErzgEfPnz48OGb+NqyOR8Xtti9/eQWbvsSfHFcfPjw4cOHbzrub9bPdW9/6B8uQ09xLHz48OHDh2+qydvIvqV5HRNsI0U7SN2jjbHDx4cPHz58+M6jQLuMf6oabwP3vPYev2v48OHDhw/fmeyymM/L5mcL7BwiGUqKrwU+fPjw4cM38eUX1sb0+YCy3bynCobxTPDhw4cPH774TN5RJF9wnwoCNo46RMCHDx8+fPjOfHnUvtXSOVlbV29Ffl6cf/E+Pnz48OHDN/FdyJ7anhqJ2rA+fyzg28gAHz58+PDhK/kugUIbPWwL+8vQ0447RXyADx8+fPjwHZLnbeHdDjdtENBGFfmtvTzEVj/rhw8fPnz48P3zfl4235foLUdSmW/Fef7JD4wp+PDhw4cPX7yYz8eOLQ5oh5V2n0v1XtwMfPjw4cOHb+LLw/FLnJ3fjEthsBXt+PDhw4cP3+/wtfV2svhvL+CpsH67Me1xx/uDDx8+fPjwnX/4t5HlHk+0w1A+Qo2BPj58+PDhwxfsk1TOeS2djwv3T8gHiwSoxf3XA2r48OHDhw9fyZf/8G/755/QBv1tqPHsyIUPHz58+PDd+fJlfBIEXGL9y2NwedXd1gDjk3348OHDhw9fubWn0g4N7esLd1LYX8p1fPjw4cOH7/U5tHV1e4r50LM9EtdWAvfzKaY/fPjw4cOH7xu+/Ie8iLPjIWMbpJ4N5dvIHh8+fPjw4Xs337NB9mUBn5TlW8xR3wB8+PDhw4fvbXztGHGP3fO6vS3m85v3wy3Hhw8fPnz4Jr78J/9Som8XkAwZ24DSRvlf4OLDhw8fPnxveEytDcfz/8pp7vFEPZTEZ4gPHz58+PAF7/8FO+sgT7hotpkAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

@@ -156,6 +156,61 @@
     <ul class="post-list">
     
         <li class="post-list-item fade">
+            <article id="post-AST解JS混淆之删除空行与空语句"
+  class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2022-05-27 21:59:20" datetime="2022-05-27T13:59:20.000Z"  itemprop="datePublished">2022-05-27</time>
+
+        
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/">AST反混淆</a></li></ul></li></ul>
+
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E7%A9%BA%E8%A1%8C%E4%B8%8E%E7%A9%BA%E8%AF%AD%E5%8F%A5/">AST解JS混淆之删除空行与空语句</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        本文介绍如何删除空语句。有时候将源代码利用AST调整后，会有很多类似这样的代码:
+123var a = 123;;var b = 456;
+
+其中，中间的 ; 这一行是没必要存在了，那如何编写插件删除没啥用的这行呢？
+同样的方法，先将这段代码放入 https://astexplorer.net/ 解析网站看看：
+
+                
+                    
+ ...
+    
+
+        <a href="/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E7%A9%BA%E8%A1%8C%E4%B8%8E%E7%A9%BA%E8%AF%AD%E5%8F%A5/" class="post-more waves-effect waves-button">
+            Continue reading...
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AST/" rel="tag">AST</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
             <article id="post-AST解JS混淆之处理数值与字符串"
   class="article-card article-type-post" itemprop="blogPost">
 
@@ -593,57 +648,6 @@
     
 
         <a href="/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/" class="post-more waves-effect waves-button">
-            Continue reading...
-        </a>
-    </div>
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
-
-    </div>
-    
-</article>
-
-        </li>
-    
-        <li class="post-list-item fade">
-            <article id="post-JS逆向案例——问财网补环境"
-  class="article-card article-type-post" itemprop="blogPost">
-
-    <div class="post-meta">
-        <time class="post-time" title="2022-04-10 12:43:49" datetime="2022-04-10T04:43:49.000Z"  itemprop="datePublished">2022-04-10</time>
-
-        
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
-
-
-
-    </div>
-
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/">JS逆向案例——问财网补环境</a>
-    </h3>
-  
-
-
-
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        
-免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！
-
-前言本篇文章通过一个案例介绍JS逆向过程中抠JS之后的补环境工作。
-逆向过程目标网址：aHR0cDovL3d3dy5pd2VuY2FpLmNvbS91bmlmaWVkd2FwL3Jlc3VsdD93PSVFNyV...
-    
-
-        <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E9%97%AE%E8%B4%A2%E7%BD%91%E8%A1%A5%E7%8E%AF%E5%A2%83/" class="post-more waves-effect waves-button">
             Continue reading...
         </a>
     </div>
