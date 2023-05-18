@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向之浏览器内存漫游解决方案 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="JS,浏览器,内存漫游">
+    <meta name="description" content="浏览器内存漫游所谓浏览器内存漫游就是通过内存中变量级别的抓包监控，把浏览器中js加载过程中的变量值全部存储下来，从而达到可以随意检索浏览器内存中的数据。 有了浏览器内存漫游，就可以通过某个接口的变量的值反查变量生成的地方，从而快速定位接口参数，这在JS逆向这一块非常方便。 在JS逆向之Fiddler编程猫插件使用一文中提到过一种浏览器内存漫游的方案，那就是使用Fiddler+编程猫插件，然而编程猫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向之浏览器内存漫游解决方案">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="浏览器内存漫游所谓浏览器内存漫游就是通过内存中变量级别的抓包监控，把浏览器中js加载过程中的变量值全部存储下来，从而达到可以随意检索浏览器内存中的数据。 有了浏览器内存漫游，就可以通过某个接口的变量的值反查变量生成的地方，从而快速定位接口参数，这在JS逆向这一块非常方便。 在JS逆向之Fiddler编程猫插件使用一文中提到过一种浏览器内存漫游的方案，那就是使用Fiddler+编程猫插件，然而编程猫">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182321395.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182324900.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182327693.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182331135.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182332762.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182337106.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182340970.png">
+<meta property="og:image" content="http://example.com/Users/bird/Library/Application%20Support/typora-user-images/image-20230518234233992.png">
+<meta property="article:published_time" content="2023-04-12T14:40:21.000Z">
+<meta property="article:modified_time" content="2023-05-18T15:43:54.491Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="JS">
+<meta property="article:tag" content="浏览器">
+<meta property="article:tag" content="内存漫游">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182321395.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向之浏览器内存漫游解决方案</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向之浏览器内存漫游解决方案</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2023-04-12T14:40:21.000Z" itemprop="datePublished" class="page-time">
+  2023-04-12
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8"><span class="post-toc-number">1.</span> <span class="post-toc-text">浏览器内存漫游</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="post-toc-number">2.</span> <span class="post-toc-text">安装配置</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="post-toc-number">3.</span> <span class="post-toc-text">测试</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向之浏览器内存漫游解决方案"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向之浏览器内存漫游解决方案</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2023-04-12 22:40:21" datetime="2023-04-12T14:40:21.000Z"  itemprop="datePublished">2023-04-12</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h3 id="浏览器内存漫游"><a href="#浏览器内存漫游" class="headerlink" title="浏览器内存漫游"></a>浏览器内存漫游</h3><p>所谓浏览器内存漫游就是通过内存中变量级别的抓包监控，把浏览器中js加载过程中的变量值全部存储下来，从而达到可以随意检索浏览器内存中的数据。</p>
+<p>有了浏览器内存漫游，就可以通过某个接口的变量的值反查变量生成的地方，从而快速定位接口参数，这在JS逆向这一块非常方便。</p>
+<p>在<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E4%B9%8BFiddler%E7%BC%96%E7%A8%8B%E7%8C%AB%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8/">JS逆向之Fiddler编程猫插件使用</a>一文中提到过一种浏览器内存漫游的方案，那就是使用Fiddler+编程猫插件，然而编程猫插件只支持windows平台，而且两个软件配置起来有点麻烦。这里介绍一个新的库：<a target="_blank" rel="noopener" href="https://github.com/JSREI/ast-hook-for-js-RE%EF%BC%8C%E8%BF%99%E4%B8%AA%E5%B7%A5%E5%85%B7%E8%B7%A8%E5%B9%B3%E5%8F%B0%EF%BC%8C%E5%B9%B6%E4%B8%94%E9%85%8D%E7%BD%AE%E7%AE%80%E5%8D%95%E3%80%82">https://github.com/JSREI/ast-hook-for-js-RE，这个工具跨平台，并且配置简单。</a></p>
+<h3 id="安装配置"><a href="#安装配置" class="headerlink" title="安装配置"></a>安装配置</h3><p>以mac环境为例，其它环境大同小异。</p>
+<ol>
+<li>克隆项目到本地文件夹</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/CC11001100/ast-hook-for-js-RE.git</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>安装依赖</li>
+</ol>
+<p>进入项目文件夹，并安装依赖</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ast-hook-for-js-RE</span><br><span class="line">npm i</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="3">
+<li>安装anyproxy并安装证书</li>
+</ol>
+<p>由于ast-hook-for-js是依赖于anyproxy抓包的，所以需要先安装anyproxy：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install -g anyproxy</span><br></pre></td></tr></table></figure>
+
+<p>通过命令安装anyproxy。</p>
+<p>要代理https，还需生成CA证书并添加信任，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anyproxy-ca</span><br></pre></td></tr></table></figure>
+
+<p>会在当前目录下生成一个rootCA.crt文件，双击这个文件，然后选择系统，如下图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182321395.png" style="zoom: 33%;" />
+
+<p>进入到系统，刚才添加的证书默认是不信任，如图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182324900.png" alt="image-20230518232430790" style="zoom:33%;" />
+
+<p>双击这个文件，展开信任栏，选择始终信任，如下图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182327693.png" style="zoom:33%;" />
+
+<p>然后退出保存修改即可。</p>
+<ol start="4">
+<li>启动项目</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd src/proxy-server</span><br><span class="line">node proxy-server.js</span><br></pre></td></tr></table></figure>
+
+<p>注：<strong>一定要进入到proxy-server.js所在的目录后再运行proxy-server.js，否则会出现莫名的错误</strong>。</p>
+<ol start="5">
+<li>配置系统代理</li>
+</ol>
+<p>打开设置，搜索代理：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182331135.png" alt="image-20230518233138014" style="zoom:33%;" />
+
+<p>点击代理，配置如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182332762.png" alt="image-20230518233258653" style="zoom:33%;" />
+
+<p>至此，安装配置完成。</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>以极验为例，浏览器中打开<a target="_blank" rel="noopener" href="https://gt4.geetest.com/%EF%BC%8C%E5%B9%B6%E4%B8%94%E6%89%93%E5%BC%80%E6%8E%A7%E5%88%B6%E5%8F%B0%EF%BC%8C%E8%BF%9B%E5%85%A5network%E6%A0%8F%E3%80%82%E6%89%BE%E5%88%B0%E5%8A%A0%E8%BD%BD%E9%AA%8C%E8%AF%81%E7%A0%81%E7%9A%84%E8%AF%B7%E6%B1%82%EF%BC%8C%E5%B9%B6%E9%9A%8F%E4%BE%BF%E5%A4%8D%E5%88%B6%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%EF%BC%8C%E6%AF%94%E5%A6%82challenge%EF%BC%8C%E5%A6%82%E4%B8%8B%E5%9B%BE%EF%BC%9A">https://gt4.geetest.com/，并且打开控制台，进入network栏。找到加载验证码的请求，并随便复制一个请求参数，比如challenge，如下图：</a></p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182337106.png" alt="image-20230518233753024" style="zoom: 50%;" />
+
+<p>然后切换到console控制台，输入如下代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hook.<span class="title function_">search</span>(<span class="string">&quot;e7116cce-9779-4cad-be71-f0117681e781&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>执行结果如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305182340970.png" alt="image-20230518234009822" style="zoom: 39%;" />
+
+<p>这样就根据值查找到了需要逆向的入参，点击最后的一个代码位置，进入到相关代码位置，如下：</p>
+<img src="/Users/bird/Library/Application%20Support/typora-user-images/image-20230518234233992.png" alt="image-20230518234233992" style="zoom:67%;" />
+
+<p>可以看到challenge是由uuid方法生成。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-18T15:43:54.491Z" itemprop="dateUpdated">2023-05-18 23:43:54</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8/" rel="tag">内存漫游</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" rel="tag">浏览器</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/&title=《JS逆向之浏览器内存漫游解决方案》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/&title=《JS逆向之浏览器内存漫游解决方案》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之浏览器内存漫游解决方案》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%AF%86%E5%88%AB%E6%BB%91%E5%9D%97%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BC%BA%E5%8F%A3%E4%BD%8D%E7%BD%AE/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">如何利用深度学习识别滑块验证码缺口位置</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E8%B0%83%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">AST解JS混淆之去掉未被调用的函数</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/&title=《JS逆向之浏览器内存漫游解决方案》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/&title=《JS逆向之浏览器内存漫游解决方案》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向之浏览器内存漫游解决方案》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E4%B9%8B%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E5%AD%98%E6%BC%AB%E6%B8%B8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAAEmCAAAAADqr2IGAAAEiUlEQVR42u3a0W4bMQwEQP//T6dAn1okdnbJa2Fd5p4Cw9ZJowAUST0e8fPx+/nz72fP5+9//tWzT17/tv3k9Xsf/+LBhAkTJkxvyZQvO3lBMqF2oq+XmnPPthwTJkyYMN2DKR+uDfAJYh7yXy+m5Ss2EhMmTJgw/QCmNjHO0+D9xiQbkKfBmDBhwoTpJzN9kyLGyW2eAG/Kvm0xGhMmTJgw3ZUpHy5PJmehOm+FtluSHCkuqIVjwoQJE6Y3Y2pD8p3+vvjBhAkTJkxvxvRRPvkI+RWZPGDPtrBNib+YCSZMmDBhOpYpbwq2Jdo8iZ2lrO0bZ9G/yJ4xYcKECdMbM+0v4rQj5Ono/qjRHjiKUi8mTJgwYXp7ptnlmzZlnUFfdbVotg1//QoTJkyYMB3ONCPYJLrt4aA9Xuwv/XxxIMCECRMmTAcytcu+KgxvUt/8+HLV3DBhwoQJ07lMm0CbL3VWbM0/n10zKkrJmDBhwoTpcKa25zlLUzeXb64Cyt/7TTsTEyZMmDAdy5SnnbOgO2thblqVSXr/zQiYMGHChOlYpvoKy6id2bYwZ0eK2ZbXo2HChAkTpmOZksW0bcjZ+PugPrvEk6ffmDBhwoTpFKZZkTcJ20UJdX2k2N9d+mbOmDBhwoTpFkx58tkWSfNDQP6uhHhTtsaECRMmTPdjalPEdoqbi0Ht+HmK/mgnjQkTJkyYjmLKy6Cz8Jy3MzdF3n2du94YTJgwYcJ0FNMscCZXYa4Nz/ny9uM/bWpiwoQJE6YDmTZpahvsZ8eI5Lm2CYoJEyZMmO7HdO3LNmlqO1o7/9V/ECZMmDBhOoopv3bTXuu5NnGdlWXbdT1FxIQJEyZMt2DaXMFJlj17V4u7X9EXn2DChAkTpmOZNoufFYXz8u4sSZ6tKPkVJkyYMGE6kalNGtvv5NPNk+G2Fbpvr2LChAkTpnOZ2mRydkSYtUvb40JbYq6vK2HChAkTpmOZ6hJneWjYlIPbazpXpd+YMGHChOmuTEmZtQ3hOUT+9vbYMTtMYMKECROm05nyANymo1elwf+TKerxYsKECROmA5nyxl4L1Kav+VKTGc4S+y/GwYQJEyZMxzLtp5J/v01x29y9fctlFQJMmDBhwvTGTLPGYV6EbZedX8SZtSeHCTkmTJgwYTqcKS+ebpY9S3HbS0KbtTydCSZMmDBhOpZpP9x+urNUNk9085nnG4wJEyZMmE5hSsqys0nP2pNt6ruHi1aNCRMmTJhuwZS3/fbLno0/S4+H3V1MmDBhwnQLpv2gm0XmIT9vqebHlNV7MWHChAnTIUwf5bNn2vBdtQHtpmLChAkTpnOZ2gDZXuhJ0tG8zTkrH1/VUsWECRMmTOcy5YeAfaG2LcW2h5V8S9qNxIQJEyZMpzPlgTMP6rOUOMFtP6lPQLOeJyZMmDBhOpxpdl2mvcqTl3eTI0ty+IhAMWHChAnTj2HKS6ib386OES19cZEIEyZMmDAdzpQH7E3JdRbsN2lwMlo0MiZMmDBhOpZpU+HMy7JtGG5LtPuy72ybMWHChAnTGzP9AjfsLn+E4cNUAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
