@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向案例——极验五子棋验证码逆向分析 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS,验证码,AES,RSA,MD5">
+    <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  逆向目标 目标：极验五子棋验证码逆向  主页：https:&#x2F;&#x2F;gt4.geetest.com&#x2F;  接口：  https:&#x2F;&#x2F;gcaptcha4.geetest.com&#x2F;load https:&#x2F;&#x2F;gcaptcha4.ge">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向案例——极验五子棋验证码逆向分析">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  逆向目标 目标：极验五子棋验证码逆向  主页：https:&#x2F;&#x2F;gt4.geetest.com&#x2F;  接口：  https:&#x2F;&#x2F;gcaptcha4.geetest.com&#x2F;load https:&#x2F;&#x2F;gcaptcha4.ge">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305231036728.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305231400262.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305222343422.png">
+<meta property="article:published_time" content="2023-05-23T02:04:47.000Z">
+<meta property="article:modified_time" content="2023-05-23T06:06:59.118Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta property="article:tag" content="验证码">
+<meta property="article:tag" content="AES">
+<meta property="article:tag" content="RSA">
+<meta property="article:tag" content="MD5">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305231036728.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向案例——极验五子棋验证码逆向分析</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向案例——极验五子棋验证码逆向分析</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2023-05-23T02:04:47.000Z" itemprop="datePublished" class="page-time">
+  2023-05-23
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E7%9B%AE%E6%A0%87"><span class="post-toc-number">1.</span> <span class="post-toc-text">逆向目标</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E8%BF%87%E7%A8%8B"><span class="post-toc-number">2.</span> <span class="post-toc-text">逆向过程</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E8%8E%B7%E5%8F%96%E9%AA%8C%E8%AF%81%E7%A0%81%E6%8E%A5%E5%8F%A3"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">获取验证码接口</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%85%A5%E5%8F%82"><span class="post-toc-number">2.1.1.</span> <span class="post-toc-text">入参</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%8E%A5%E5%8F%A3%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="post-toc-number">2.1.2.</span> <span class="post-toc-text">接口返回值</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E9%AA%8C%E8%AF%81%E7%A0%81%E9%AA%8C%E8%AF%81%E6%8E%A5%E5%8F%A3"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">验证码验证接口</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%85%A5%E5%8F%82-1"><span class="post-toc-number">2.2.1.</span> <span class="post-toc-text">入参</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%BA%94%E5%AD%90%E6%A3%8B%E7%AE%97%E6%B3%95"><span class="post-toc-number">2.2.2.</span> <span class="post-toc-text">五子棋算法</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%BF%90%E8%A1%8C%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="post-toc-number">3.</span> <span class="post-toc-text">运行与测试</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向案例——极验五子棋验证码逆向分析"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向案例——极验五子棋验证码逆向分析</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2023-05-23 10:04:47" datetime="2023-05-23T02:04:47.000Z"  itemprop="datePublished">2023-05-23</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p>免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
+</blockquote>
+<h2 id="逆向目标"><a href="#逆向目标" class="headerlink" title="逆向目标"></a>逆向目标</h2><ul>
+<li><p>目标：极验五子棋验证码逆向</p>
+</li>
+<li><p>主页：<a target="_blank" rel="noopener" href="https://gt4.geetest.com/">https://gt4.geetest.com/</a></p>
+</li>
+<li><p>接口：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://gcaptcha4.geetest.com/load">https://gcaptcha4.geetest.com/load</a></li>
+<li><a target="_blank" rel="noopener" href="https://gcaptcha4.geetest.com/verify">https://gcaptcha4.geetest.com/verify</a></li>
+</ul>
+</li>
+<li><p>逆向参数：</p>
+<ul>
+<li>Get Param<ul>
+<li>captcha_id: 54088bb07d2df3c46b79f80300b0abbe</li>
+<li>challenge: e924d75f-7817-4ecc-9387-57eeefd060ce</li>
+<li>lot_number: 56076d56745d43489287d7465d4d0101</li>
+<li>payload: 太长，略</li>
+<li>process_token：太长，略</li>
+<li>w：太长，略</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="逆向过程"><a href="#逆向过程" class="headerlink" title="逆向过程"></a>逆向过程</h2><p>抓包分析有2个接口，一个是获取验证码的接口<a target="_blank" rel="noopener" href="https://gcaptcha4.geetest.com/load">https://gcaptcha4.geetest.com/load</a>，一个是进行验证的接口<a target="_blank" rel="noopener" href="https://gcaptcha4.geetest.com/verify">https://gcaptcha4.geetest.com/verify</a>。</p>
+<h3 id="获取验证码接口"><a href="#获取验证码接口" class="headerlink" title="获取验证码接口"></a>获取验证码接口</h3><h4 id="入参"><a href="#入参" class="headerlink" title="入参"></a>入参</h4><p>参数如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;captcha_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;54088bb07d2df3c46b79f80300b0abbe&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;challenge&quot;</span><span class="punctuation">:</span> <span class="string">&quot;10cea755-08d2-4c7f-900f-d30d81301aa5&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;client_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;web&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;risk_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;winlinze&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lang&quot;</span><span class="punctuation">:</span> <span class="string">&quot;zh&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;callback&quot;</span><span class="punctuation">:</span> <span class="string">&quot;geetest_1684505012579&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>入参除了risk_type与消消乐不同外，其它都一样，消消乐的risk_type为match，这里为winlinze。消消乐验证码逆向分析见<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%B6%88%E6%B6%88%E4%B9%90%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/">JS逆向案例——极验消消乐验证码逆向分析</a></p>
+<h4 id="接口返回值"><a href="#接口返回值" class="headerlink" title="接口返回值"></a>接口返回值</h4><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  	<span class="attr">&quot;lot_number&quot;</span><span class="punctuation">:</span> <span class="string">&quot;5a1ad5b0399c4a55b416f81d94e112e5&quot;</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;payload&quot;</span><span class="punctuation">:</span> <span class="string">&quot;11-UPJ-Jb2g3IpmYoaJlOw5fEieqchiSh9mIS5Ifj...&quot;</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;process_token&quot;</span><span class="punctuation">:</span> <span class="string">&quot;50e908f0ea51c1a16ac0f8a1af6270903d45a4c68572760378125e308c5d8727&quot;</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;ques&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">[</span><span class="number">0</span><span class="punctuation">,</span> <span class="number">0</span><span class="punctuation">,</span> <span class="number">3</span><span class="punctuation">,</span> <span class="number">4</span><span class="punctuation">,</span> <span class="number">3</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">2</span><span class="punctuation">,</span> <span class="number">4</span><span class="punctuation">,</span> <span class="number">4</span><span class="punctuation">,</span> <span class="number">4</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">2</span><span class="punctuation">,</span> <span class="number">4</span><span class="punctuation">,</span> <span class="number">3</span><span class="punctuation">,</span> <span class="number">4</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">2</span><span class="punctuation">,</span> <span class="number">4</span><span class="punctuation">,</span> <span class="number">2</span><span class="punctuation">,</span> <span class="number">0</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="punctuation">[</span><span class="number">0</span><span class="punctuation">,</span> <span class="number">2</span><span class="punctuation">,</span> <span class="number">4</span><span class="punctuation">,</span> <span class="number">0</span><span class="punctuation">,</span> <span class="number">3</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>接口返回与五子棋基本一致，只是ques数组第二维里面的元素个数不一样，代表的含义也不一样。</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305231036728.png" alt="image-20230523103653587" style="zoom:50%;" />
+
+<p>如上图，0代表空格，1～4代表4种棋子。</p>
+<h3 id="验证码验证接口"><a href="#验证码验证接口" class="headerlink" title="验证码验证接口"></a>验证码验证接口</h3><h4 id="入参-1"><a href="#入参-1" class="headerlink" title="入参"></a>入参</h4><p>参数如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  	<span class="attr">&quot;lot_number&quot;</span><span class="punctuation">:</span> <span class="string">&quot;224a2186c59f470cb73897f377843df5&quot;</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;payload&quot;</span><span class="punctuation">:</span> <span class="string">&quot;11-UPJ-Jb2g3IpmYoaJlOw5fEieqchiSh9mIS5Ifj...&quot;</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;process_token&quot;</span><span class="punctuation">:</span> <span class="string">&quot;d4a636b32cee705e5314b90bce43f71ead1f2b6a0b5cb44c50b71bf28f6f9423&quot;</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;w&quot;</span><span class="punctuation">:</span> <span class="string">&quot;73bfc2bde060aac064f99128586dc53c9ee05cc25840aa1dc77445727e2e86c342b8cde...&quot;</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;callback&quot;</span><span class="punctuation">:</span> <span class="string">&quot;geetest_1684505905348&quot;</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;client_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;web&quot;</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;risk_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;winlinze&quot;</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;payload_protocol&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">  	<span class="attr">&quot;pt&quot;</span><span class="punctuation">:</span> <span class="number">1</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中入参与消消乐的都一模一样，同样只是risk_type不是match而是winlinze。</p>
+<p>另外所有加密方法与对象都与消消乐一致，就连对象e都一模一样，对比消消乐e结构和五子棋的e结构：</p>
+<p>五子棋的：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;passtime&quot;</span><span class="punctuation">:</span><span class="number">450</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;userresponse&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">3</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="punctuation">[</span><span class="number">0</span><span class="punctuation">,</span><span class="number">3</span><span class="punctuation">]</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;device_id&quot;</span><span class="punctuation">:</span><span class="string">&quot;9f5faf6dc7a77e1d394c8634f0893812&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lot_number&quot;</span><span class="punctuation">:</span><span class="string">&quot;5553a2835b7046d2abd595e82fc62703&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pow_msg&quot;</span><span class="punctuation">:</span><span class="string">&quot;1|0|md5|2023-05-23T10:41:08.568519+08:00|54088bb07d2df3c46b79f80300b0abbe|5553a2835b7046d2abd595e82fc62703||a19a8f9a8bdc0db7&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pow_sign&quot;</span><span class="punctuation">:</span><span class="string">&quot;ab3742f987977542c73a36692fdd5a08&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;geetest&quot;</span><span class="punctuation">:</span><span class="string">&quot;captcha&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lang&quot;</span><span class="punctuation">:</span><span class="string">&quot;zh&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ep&quot;</span><span class="punctuation">:</span><span class="string">&quot;123&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;e0vm&quot;</span><span class="punctuation">:</span><span class="string">&quot;2135175515&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;em&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;ph&quot;</span><span class="punctuation">:</span><span class="number">0</span><span class="punctuation">,</span><span class="attr">&quot;cp&quot;</span><span class="punctuation">:</span><span class="number">0</span><span class="punctuation">,</span><span class="attr">&quot;ek&quot;</span><span class="punctuation">:</span><span class="string">&quot;11&quot;</span><span class="punctuation">,</span><span class="attr">&quot;wd&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span><span class="attr">&quot;nt&quot;</span><span class="punctuation">:</span><span class="number">0</span><span class="punctuation">,</span><span class="attr">&quot;si&quot;</span><span class="punctuation">:</span><span class="number">0</span><span class="punctuation">,</span><span class="attr">&quot;sc&quot;</span><span class="punctuation">:</span><span class="number">0</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>消消乐的：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;passtime&quot;</span><span class="punctuation">:</span> <span class="number">550</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;userresponse&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">0</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="punctuation">[</span><span class="number">2</span><span class="punctuation">,</span> <span class="number">0</span><span class="punctuation">]</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;device_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;9f5faf6dc7a77e1d394c8634f0893812&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lot_number&quot;</span><span class="punctuation">:</span> <span class="string">&quot;224a2186c59f470cb73897f377843df5&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pow_msg&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1|0|md5|2023-05-22T11:10:02.686802+08:00|54088bb07d2df3c46b79f80300b0abbe|224a2186c59f470cb73897f377843df5||62b052493785e2b7&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pow_sign&quot;</span><span class="punctuation">:</span> <span class="string">&quot;506fe742ff81d4bb3bf34892714fa2fc&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;geetest&quot;</span><span class="punctuation">:</span> <span class="string">&quot;captcha&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lang&quot;</span><span class="punctuation">:</span> <span class="string">&quot;zh&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ep&quot;</span><span class="punctuation">:</span> <span class="string">&quot;123&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;e0vm&quot;</span><span class="punctuation">:</span> <span class="string">&quot;915661778&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;em&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;ph&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span> <span class="attr">&quot;cp&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span> <span class="attr">&quot;ek&quot;</span><span class="punctuation">:</span> <span class="string">&quot;11&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;wd&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span> <span class="attr">&quot;nt&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span> <span class="attr">&quot;si&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span> <span class="attr">&quot;sc&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>两者结构虽然一致，但是userresponse的逻辑含义有区别，五子棋是将一个棋子移动到空格位置的坐标信息，而消消乐则是要交换的两个图案信息。</p>
+<h4 id="五子棋算法"><a href="#五子棋算法" class="headerlink" title="五子棋算法"></a>五子棋算法</h4><p>由于是5x5的五子棋棋盘，并且只需要交换一对棋子就可完成五子连珠，所以直接采取暴力穷举即可。算法代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">winlinze_by_row</span>(<span class="params">ques</span>) &#123;</span><br><span class="line">    <span class="comment">// 统计每一个数字出现的次数</span></span><br><span class="line">    <span class="keyword">let</span> count = <span class="keyword">function</span> (<span class="params">arr, target</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> c = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; arr.<span class="property">length</span>; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (arr[j] === target)</span><br><span class="line">                c++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> c;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查找除指定行之外相同元素的位置</span></span><br><span class="line">    <span class="keyword">let</span> checkRow = <span class="keyword">function</span> (<span class="params">arr, besides, target</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; arr.<span class="property">length</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i === besides)</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; arr[i].<span class="property">length</span>; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (arr[i][j] === target)</span><br><span class="line">                    <span class="keyword">return</span> [i, j]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查找指定行的空格位置</span></span><br><span class="line">    <span class="keyword">let</span> checkEmpty = <span class="keyword">function</span> (<span class="params">arr, row</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; arr[row].<span class="property">length</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (arr[row][i] === <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">return</span> [row, i]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 看每一行是否存在四颗一样的棋子</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; ques.<span class="property">length</span>; i ++)&#123;</span><br><span class="line">        <span class="keyword">let</span> c = [];</span><br><span class="line">        <span class="keyword">let</span> emptySite = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 统计1-4号棋子以及空格的个数</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> m = <span class="number">0</span>; m &lt; ques[i].<span class="property">length</span>; m++)</span><br><span class="line">            c[m] = <span class="title function_">count</span>(ques[i], m);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> m = <span class="number">0</span>; m &lt; ques[i].<span class="property">length</span>; m++) &#123;</span><br><span class="line">            <span class="comment">// 该行上有四颗颜色一样的棋子，并且有空格</span></span><br><span class="line">            <span class="keyword">if</span> (c[m] === <span class="number">4</span> &amp;&amp; c[<span class="number">0</span>] === <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="comment">// 查找指定</span></span><br><span class="line">                <span class="keyword">let</span> t = <span class="title function_">checkRow</span>(ques, i, m);</span><br><span class="line">                <span class="keyword">if</span> (t.<span class="property">length</span> !== <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">return</span> [t, <span class="title function_">checkEmpty</span>(ques, i)]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">winlinze_by_diagonal</span>(<span class="params">ques</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> leftSites = [[<span class="number">0</span>, <span class="number">0</span>], [<span class="number">1</span>, <span class="number">1</span>], [<span class="number">2</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">3</span>], [<span class="number">4</span>, <span class="number">4</span>]];</span><br><span class="line">    <span class="keyword">let</span> rightSites = [[<span class="number">0</span>, <span class="number">4</span>], [<span class="number">1</span>, <span class="number">3</span>], [<span class="number">2</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">1</span>], [<span class="number">4</span>, <span class="number">0</span>]];</span><br><span class="line">    <span class="keyword">let</span> checkEmpty = <span class="keyword">function</span> (<span class="params">ques, sites</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; sites.<span class="property">length</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (ques[sites[i][<span class="number">0</span>]][sites[i][<span class="number">1</span>]] === <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">return</span> [i, sites[i]]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> count = <span class="keyword">function</span> (<span class="params">ques, sites, target</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> c = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; sites.<span class="property">length</span>; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (ques[sites[j][<span class="number">0</span>]][sites[j][<span class="number">1</span>]] === target)</span><br><span class="line">                c++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> c;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> indexOf = <span class="keyword">function</span> (<span class="params">sites, i, j</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> k = <span class="number">0</span>; k &lt; sites.<span class="property">length</span>; k++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (sites[k][<span class="number">0</span>] === i &amp;&amp; sites[k][<span class="number">1</span>] === j)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> search = <span class="keyword">function</span> (<span class="params">ques, sites, target</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; ques.<span class="property">length</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; ques[i].<span class="property">length</span>; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (ques[i][j] === target &amp;&amp; !<span class="title function_">indexOf</span>(sites,i, j))</span><br><span class="line">                    <span class="keyword">return</span> [i, j]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> sites = [leftSites, rightSites];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; sites.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">let</span> e = <span class="title function_">checkEmpty</span>(ques, sites[i]);</span><br><span class="line">        <span class="keyword">let</span> s = <span class="keyword">new</span> <span class="title class_">Set</span>();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; sites[i].<span class="property">length</span>; j++)</span><br><span class="line">            s.<span class="title function_">add</span>(ques[sites[i][j][<span class="number">0</span>]][sites[i][j][<span class="number">1</span>]]);</span><br><span class="line">        <span class="keyword">if</span> (s.<span class="property">size</span> === <span class="number">2</span> &amp;&amp; <span class="title function_">count</span>(ques, sites[i], ques[e[<span class="number">1</span>][<span class="number">0</span>]][e[<span class="number">1</span>][<span class="number">1</span>]]) === <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">let</span> rand = (e[<span class="number">0</span>]+<span class="number">1</span>) % <span class="number">5</span>;</span><br><span class="line">            <span class="keyword">let</span> w = <span class="title function_">search</span>(ques, sites[i], ques[sites[i][rand][<span class="number">0</span>]][sites[i][rand][<span class="number">1</span>]]);</span><br><span class="line">            <span class="keyword">if</span> (w &amp;&amp; w.<span class="property">length</span> &gt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">return</span> [e[<span class="number">1</span>], w]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">get_userresponse</span>(<span class="params">ques</span>) &#123;</span><br><span class="line">    <span class="comment">// 根据行去判断是否可以五子连线</span></span><br><span class="line">    <span class="keyword">let</span> arr = <span class="title function_">winlinze_by_row</span>(ques);</span><br><span class="line">    <span class="keyword">if</span> (arr &amp;&amp; arr.<span class="property">length</span> &gt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> arr;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果按行不行，则按列</span></span><br><span class="line">    <span class="keyword">if</span> (arr === <span class="literal">undefined</span> || arr.<span class="property">length</span> === <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 行列互换</span></span><br><span class="line">        <span class="keyword">let</span> new_ques = [];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> index = <span class="number">0</span>; index &lt; ques.<span class="property">length</span>; index++)</span><br><span class="line">            new_ques[index] = [ques[<span class="number">0</span>][index], ques[<span class="number">1</span>][index], ques[<span class="number">2</span>][index], ques[<span class="number">3</span>][index], ques[<span class="number">4</span>][index]];</span><br><span class="line">        arr = <span class="title function_">winlinze_by_row</span>(new_ques);</span><br><span class="line">        <span class="comment">// 得到的结果再将列转化为行</span></span><br><span class="line">        <span class="keyword">let</span> new_arr = [];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> index = <span class="number">0</span>; arr &amp;&amp; index &lt; arr.<span class="property">length</span>; index++)</span><br><span class="line">            new_arr[index] = [arr[index][<span class="number">1</span>], arr[index][<span class="number">0</span>]]</span><br><span class="line">        <span class="keyword">if</span> (new_arr.<span class="property">length</span> &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> new_arr;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 按列也不行，查找对角线是否可以五子连线</span></span><br><span class="line">        <span class="keyword">return</span> <span class="title function_">winlinze_by_diagonal</span>(ques)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="运行与测试"><a href="#运行与测试" class="headerlink" title="运行与测试"></a>运行与测试</h2><p>运行结果如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305231400262.png" alt="image-20230523140001088" style="zoom: 33%;" />
+
+<p>同样的，只要五子棋算法没问题，五子棋验证的通过率就是百分百。</p>
+<p>若需要完整代码，扫描加微信。</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305222343422.png" alt="image-20230517010053227" style="zoom:25%;" />
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-23T06:06:59.118Z" itemprop="dateUpdated">2023-05-23 14:06:59</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AES/" rel="tag">AES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MD5/" rel="tag">MD5</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RSA/" rel="tag">RSA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/" rel="tag">验证码</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——极验五子棋验证码逆向分析》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——极验五子棋验证码逆向分析》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——极验五子棋验证码逆向分析》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%B6%88%E6%B6%88%E4%B9%90%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向案例——极验消消乐验证码逆向分析</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——极验五子棋验证码逆向分析》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——极验五子棋验证码逆向分析》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——极验五子棋验证码逆向分析》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAVYAAAFWCAAAAAAXxOpfAAAF6ElEQVR42u3awW7bSBAEUP//TzvAnhZILFR1jxCO8nQyJJqcecNDobu/vuLP93+f5Pufrmzv/Ps1/7/y7H+9/r7d0RdWrFixYsV6Fev3y89rvp+uzBeUbPX1evbc7XNfW2HFihUrVqw3siYPyJeY4L6maT+bkPeWiIYVK1asWLF+HGsbZfK7tYWb2Zo3cQorVqxYsWLF2pY5knLMrA0zK6AkxFixYsWKFeu/yZo0XdprEu4cqw1D+dPbvRzuZWHFihUrVqx/lXVWKPk3/z78wYoVK1asWP8q62bQIR+DeB168jtsWjLDcslICStWrFixYr2FtS18bBbdFkTeN9Ix+7UeQMGKFStWrFgvZG3bDEmjZTYcuQfaDGtuxkyxYsWKFSvWG1mT0kaylD39LAjOXohNzIoCFlasWLFixfp41hwrCTT5CGY+ZNlOO+RloOSo2hcOK1asWLFivYU1H6fYFFNavvb7tqHShrx8LCM6DaxYsWLFivXBrO0UwYxyfwBt4yQvsmyKPj8GLKxYsWLFivWRrO+Ay9shbXjK2yqnSi15S+bHmIUVK1asWLFexdqWXTblmNnfOXTeItocZ9HFwooVK1asWB/POmtUJL/mi5sNdrTFkfabfI9YsWLFihXrjaxtEMmHIdomR3vnU/GrHbOIAhZWrFixYsX6eNY8SG2YinZFOUKRvxCbBszslcKKFStWrFifz/odfGYQbZlmf7fkIDdxLb8bVqxYsWLF+nzWfWGlHXzcZMDZwMdwjHJzVFixYsWKFeslrKcGFNqRiPy/ZiEvX8/sJShWghUrVqxYsT6etY0O7VDmrEDzbqA8OA7HQLFixYoVK9ZLWIeJ7FBBZB/1kvHKdpA0OYDoblixYsWKFeuFrGfDU34MbQvk1DVnAyVWrFixYsV6F+ssuORRLDnV5Nd8WCSPbvmv9ZVYsWLFihXr41k3kah9ZPLNbA3vKwkN74YVK1asWLFeyJrHlzYq5XEtKcRsaPK9JCEyClhYsWLFihXr41lPPaa982zEYROw3tGk+bF/hRUrVqxYsV7IOgtYOfpmhOLYcOSilBM1hLBixYoVK9ZLWPeTA3lzZUaTb/v1E9tC0iyuYcWKFStWrPeytmMT7cDi6622BY782N4RoYoGElasWLFixfpg1llZJOdoU8cmlp2KdG2B6Q/XY8WKFStWrJew5jFiVph438baRs6mWJO/NFixYsWKFeu9rPttt4e0OZg2lp1tpQzvjxUrVqxYsT6M9WzIyLeUF1k2v+ZtkrbMhBUrVqxYsX4qa9tQ2Tds8uGJpNSyOf59vItqP1ixYsWKFetjWJNH7scy2l/zkseMaXaH4fgFVqxYsWLF+mDWFiJHTCJaTpAUSpJXoX0JhgEUK1asWLFivYR1VrCYlUg2Ixf5seVHkoe59mXCihUrVqxYb2HNiwtFpBhRbsYv8lCVHNKB0IkVK1asWLFexdpuL6dp41oepxKy9qjaF6vOqlixYsWKFevjWTdtlVnBor3PrOhTz6GMijJYsWLFihXrJ7G20eQUWTIqsW8FtVGyGLzAihUrVqxYL2RtpzY2Iw5twWW2hhwrb6gkV2LFihUrVqy3sG5u0fK1/9XGo7x9MoxN7ZqxYsWKFSvWq1hbuHYIo23wzDY8awK1DtHYB1asWLFixXoJ66YV0Uac2YBmTr8ZH5m1nYbDGVixYsWKFesDWDethWQMIm91bMor7WHnRztbCVasWLFixfpJrKeGFPMGRl6OmRG0K0kO/g9TLVixYsWKFevjWVcxomxC7Fs17xj93JRpDkQ0rFixYsWK9QGseallD92Guc1IaB6S8r0MxyywYsWKFSvWx7O2QWfWdEloZiEsb8NsQtuBTIoVK1asWLF+EOusfTJrrsz+3rRMVoEPK1asWLFi/TjWWVFmNuhwqgGTD47s1z8MWFixYsWKFesDWGfNj1lIalsp7Xo2TaNToxhYsWLFihXrLaxtmEiaHK+32o5FzrBy+qTdkt8HK1asWLFivYT1F7RwVxUWwOx5AAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
