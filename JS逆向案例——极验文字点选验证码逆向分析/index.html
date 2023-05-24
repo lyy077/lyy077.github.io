@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向案例——极验文字点选验证码逆向分析 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS,验证码,AES,RSA,MD5,极验">
+    <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  逆向目标 目标：极验五子棋验证码逆向  主页：https:&#x2F;&#x2F;gt4.geetest.com&#x2F;  接口：  https:&#x2F;&#x2F;gcaptcha4.geetest.com&#x2F;load https:&#x2F;&#x2F;gcaptcha4.ge">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向案例——极验文字点选验证码逆向分析">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  逆向目标 目标：极验五子棋验证码逆向  主页：https:&#x2F;&#x2F;gt4.geetest.com&#x2F;  接口：  https:&#x2F;&#x2F;gcaptcha4.geetest.com&#x2F;load https:&#x2F;&#x2F;gcaptcha4.ge">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305240016948.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305240128754.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305240137613.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241012360.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241746294.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241748483.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241750899.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241757270.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241908173.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241910130.png">
+<meta property="article:published_time" content="2023-05-23T16:05:07.000Z">
+<meta property="article:modified_time" content="2023-05-24T11:10:28.007Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta property="article:tag" content="验证码">
+<meta property="article:tag" content="AES">
+<meta property="article:tag" content="RSA">
+<meta property="article:tag" content="MD5">
+<meta property="article:tag" content="极验">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305240016948.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向案例——极验文字点选验证码逆向分析</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向案例——极验文字点选验证码逆向分析</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2023-05-23T16:05:07.000Z" itemprop="datePublished" class="page-time">
+  2023-05-24
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E7%9B%AE%E6%A0%87"><span class="post-toc-number">1.</span> <span class="post-toc-text">逆向目标</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E8%BF%87%E7%A8%8B"><span class="post-toc-number">2.</span> <span class="post-toc-text">逆向过程</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%BF%90%E8%A1%8C%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="post-toc-number">3.</span> <span class="post-toc-text">运行与测试</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向案例——极验文字点选验证码逆向分析"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向案例——极验文字点选验证码逆向分析</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2023-05-24 00:05:07" datetime="2023-05-23T16:05:07.000Z"  itemprop="datePublished">2023-05-24</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p>免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
+</blockquote>
+<h2 id="逆向目标"><a href="#逆向目标" class="headerlink" title="逆向目标"></a>逆向目标</h2><ul>
+<li><p>目标：极验五子棋验证码逆向</p>
+</li>
+<li><p>主页：<a target="_blank" rel="noopener" href="https://gt4.geetest.com/">https://gt4.geetest.com/</a></p>
+</li>
+<li><p>接口：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://gcaptcha4.geetest.com/load">https://gcaptcha4.geetest.com/load</a></li>
+<li><a target="_blank" rel="noopener" href="https://gcaptcha4.geetest.com/verify">https://gcaptcha4.geetest.com/verify</a></li>
+</ul>
+</li>
+<li><p>逆向参数：</p>
+<ul>
+<li>Get Param<ul>
+<li>captcha_id: 54088bb07d2df3c46b79f80300b0abbe</li>
+<li>challenge: e924d75f-7817-4ecc-9387-57eeefd060ce</li>
+<li>lot_number: 56076d56745d43489287d7465d4d0101</li>
+<li>payload: 太长，略</li>
+<li>process_token：太长，略</li>
+<li>w：太长，略</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="逆向过程"><a href="#逆向过程" class="headerlink" title="逆向过程"></a>逆向过程</h2><p>逆向过程基本上与消消乐与五子棋一致。说说不同的几点。</p>
+<ol>
+<li>关于验证码加载接口</li>
+</ol>
+<p>入参只有risk_type不一样，其余都一致。文字点选的risk_type为word，消消乐的为match，五子棋的是winlinze。接口返回的数据也基本一致，不同的是imgs对应的是点选验证码的底图，即要点击的图片，而ques这是要点击的文字的图片。如下图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305240016948.png" style="zoom:30%;" />
+
+<p>可以看到，ques中图片的顺序与要点击的文字的顺序一一对应。</p>
+<ol start="2">
+<li>关于验证码验证接口</li>
+</ol>
+<p>入参完全一致，生成w参数的e对象结构也一致，如下图：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;passtime&quot;</span><span class="punctuation">:</span><span class="number">2617</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;userresponse&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">993</span><span class="punctuation">,</span> <span class="number">1025</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="punctuation">[</span><span class="number">1793</span><span class="punctuation">,</span> <span class="number">5472</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="punctuation">[</span><span class="number">3793</span><span class="punctuation">,</span> <span class="number">1874</span><span class="punctuation">]</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;device_id&quot;</span><span class="punctuation">:</span><span class="string">&quot;9f5faf6dc7a77e1d394c8634f0893812&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lot_number&quot;</span><span class="punctuation">:</span><span class="string">&quot;dac26749dcc54f758675ffa7280d52b3&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pow_msg&quot;</span><span class="punctuation">:</span><span class="string">&quot;1|0|md5|2023-05-24T00:19:56.722398+08:00|54088bb07d2df3c46b79f80300b0abbe|dac26749dcc54f758675ffa7280d52b3||f1c8f88b905d4249&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pow_sign&quot;</span><span class="punctuation">:</span><span class="string">&quot;57c50f085e4c13fe6d23c870b96d5b1b&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;geetest&quot;</span><span class="punctuation">:</span><span class="string">&quot;captcha&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lang&quot;</span><span class="punctuation">:</span><span class="string">&quot;zh&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;ep&quot;</span><span class="punctuation">:</span><span class="string">&quot;123&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;mrc5&quot;</span><span class="punctuation">:</span><span class="string">&quot;103342051&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;em&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;ph&quot;</span><span class="punctuation">:</span><span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;cp&quot;</span><span class="punctuation">:</span><span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;ek&quot;</span><span class="punctuation">:</span><span class="string">&quot;11&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;wd&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;nt&quot;</span><span class="punctuation">:</span><span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;si&quot;</span><span class="punctuation">:</span><span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;sc&quot;</span><span class="punctuation">:</span><span class="number">0</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>userresponse正是点击背景图上三个文字产生的坐标，但是这个坐标数值比较大，而实际的背景图大小是宽为300px，高为200px的，所以这个坐标肯定是经过处理的。</p>
+<p>扒一扒userresponse的生成过程：</p>
+<p>添加如下断点：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305240128754.png" alt="image-20230524012849614" style="zoom: 35%;" />
+
+
+
+<p>一路跟踪到这里：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305240137613.png" alt="image-20230524013702426" style="zoom: 67%;" />
+
+<p>其中，t[left]，t[top]，t[width]，t[height]都是固定值，分别为：103，320，300， 200。简单分析一下知，r和i分别是点击的位置坐标在整个背景图上的横纵坐标所占百分比，也即是某个汉字在整个背景图上横纵坐标的占比。最后，把这个百分比扩大100倍取整即可。</p>
+<p>分析出来了userresponse坐标的生成过程，接下来就是文字点选最关键的目标检测与识别。</p>
+<ol start="3">
+<li>文字位置的检测与识别</li>
+</ol>
+<p>首先是底图文字位置的检测，使用ddddocr库，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ddddocr</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">det = ddddocr.DdddOcr(det=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;4138cab002ce453696bd84d92cc5322f.jpg&quot;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    image = f.read()</span><br><span class="line"></span><br><span class="line">poses = det.detection(image)</span><br><span class="line"><span class="built_in">print</span>(poses)</span><br><span class="line"></span><br><span class="line">im = cv2.imread(<span class="string">&quot;4138cab002ce453696bd84d92cc5322f.jpg&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> box <span class="keyword">in</span> poses:</span><br><span class="line">    x1, y1, x2, y2 = box</span><br><span class="line">    im = cv2.rectangle(im, (x1, y1), (x2, y2), color=(<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>), thickness=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">cv2.imwrite(<span class="string">&quot;result.jpg&quot;</span>, im)</span><br></pre></td></tr></table></figure>
+
+<p>输出三个坐标，同时标记了验证码图片上文字的位置。</p>
+<p>举例几张图片如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241012360.png" alt="image-20230524101252194" title="">
+                </div>
+                <div class="image-caption">image-20230524101252194</div>
+            </figure>
+
+<p>并输出坐标为：[[78, 18, 131, 71], [122, 102, 174, 152], [175, 89, 227, 139]]。</p>
+<p>接下来就是文字识别，根据每个文字的四个顶点坐标把文字依次裁剪下来，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">img = cv2.imread(<span class="string">&quot;4138cab002ce453696bd84d92cc5322f.jpg&quot;</span>)</span><br><span class="line">cropped = img[<span class="number">18</span>:<span class="number">71</span>, <span class="number">78</span>:<span class="number">131</span>]  <span class="comment"># 裁剪坐标为[y0:y1, x0:x1]</span></span><br></pre></td></tr></table></figure>
+
+<p>得到的图片依次为：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241746294.jpg" alt="result1](https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241745081.jpg)![result2](https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241746166.jpg)![result3" title="">
+                </div>
+                <div class="image-caption">result1](https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241745081.jpg)![result2](https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241746166.jpg)![result3</div>
+            </figure>
+
+
+
+<p>然后再用ddddocr依次对其做文字识别：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ddddocr</span><br><span class="line"></span><br><span class="line">ocr = ddddocr.DdddOcr()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;1.png&quot;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    image = f.read()</span><br><span class="line"></span><br><span class="line">res = ocr.classification(image)</span><br><span class="line"><span class="built_in">print</span>(res)</span><br></pre></td></tr></table></figure>
+
+<p>识别结果如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241748483.png" alt="image-20230524174831372" style="zoom: 33%;" />
+
+<p>识别还是挺准确的。</p>
+<p>除了底图的文字位置检测与识别，还有上边的标题需要识别，如下图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241750899.png" alt="image-20230524175041775" style="zoom: 33%;" />
+
+<p>这些文字都是比较规整，并且同一个汉子的图片的md5的文件名基本上是不变的，大约只有400多个汉字，所以提前跑一个脚本，把它们收集起来即可。如下图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241757270.png" alt="image-20230524175703147" style="zoom: 33%;" />
+
+<p>承载汉字的md5码名称的图片文件与汉字一一对应，并保存到data.pickle文件中。</p>
+<h2 id="运行与测试"><a href="#运行与测试" class="headerlink" title="运行与测试"></a>运行与测试</h2><p>运行与测试结果如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241908173.png" alt="image-20230524190803029" style="zoom: 33%;" />
+
+<p>识别2个或者3个汉字，才能验证成功。通过测试可知，汉字的识别率还是挺低的，还是需要自己收集数据训练。后边会专门出一篇文章介绍自己训练这一块。</p>
+<p>若需要完整代码，扫描加微信。</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305241910130.png" alt="image-20230517010053227" style="zoom:25%;" />
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-05-24T11:10:28.007Z" itemprop="dateUpdated">2023-05-24 19:10:28</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AES/" rel="tag">AES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MD5/" rel="tag">MD5</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RSA/" rel="tag">RSA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9E%81%E9%AA%8C/" rel="tag">极验</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/" rel="tag">验证码</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——极验文字点选验证码逆向分析》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——极验文字点选验证码逆向分析》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——极验文字点选验证码逆向分析》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E4%BA%94%E5%AD%90%E6%A3%8B%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向案例——极验五子棋验证码逆向分析</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: '5167adeb62c9c9a59956',
+          clientSecret: '8f4116c8b36633d863779e56e746184d2f795ae4',
+          repo: 'beyond-heshipeng.github.io',
+          owner: 'beyond-heshipeng',
+          admin: ['beyond-heshipeng'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——极验文字点选验证码逆向分析》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/beyond-heshipeng/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——极验文字点选验证码逆向分析》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——极验文字点选验证码逆向分析》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%96%87%E5%AD%97%E7%82%B9%E9%80%89%E9%AA%8C%E8%AF%81%E7%A0%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,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" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
