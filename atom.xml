@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2023-05-25T10:44:25.982Z</updated>
+  <updated>2023-05-25T14:18:55.334Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -17,22 +17,35 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>JS逆向案例——tiktok X-Bogus参数逆向分析</title>
-    <link href="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94tiktok-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/"/>
-    <id>http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94tiktok-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/</id>
+    <title>JS逆向案例——某音 X-Bogus参数逆向分析</title>
+    <link href="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/"/>
+    <id>http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/</id>
     <published>2023-05-25T10:43:27.000Z</published>
-    <updated>2023-05-25T10:44:25.982Z</updated>
+    <updated>2023-05-25T14:18:55.334Z</updated>
     
-    <content type="html"><![CDATA[<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305251844250.png" alt="image-20230525184408160" style="zoom: 50%;" />]]></content>
+    <content type="html"><![CDATA[<blockquote><p>免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p></blockquote><h2 id="逆向目标"><a href="#逆向目标" class="headerlink" title="逆向目标"></a>逆向目标</h2><ul><li>目标：抖音网页端用户信息接口 X-Bogus 参数</li><li>接口：<code>aHR0cHM6Ly93d3cuZG91eWluLmNvbS9hd2VtZS92MS93ZWIvdXNlci9wcm9maWxlL290aGVyLw==</code></li><li>参数：<ul><li>X-Bogus: DFSzswVYwR2ANJV5ttm-TDok&#x2F;RBL</li><li>msToken: XdvBn3ow8atTxF5IT6Nozn_D976Sh-fQQais1pUkC0U-…3iUKTT_yGo4Q1A9KBUXxYALyw&#x3D;&#x3D;</li><li>ttwid: 1%7CwRK6LHw2rKAyHM8EeD4WLyVctABf-…5f35595a6e1f587dcc9f09b4fe</li></ul></li></ul><p>虽然接口入参有很多，但是实际上必不可少且需要逆向的就只有X-Bogus，msToken和Cookie中的ttwid。本文主要介绍X-Bogus的逆向，关于msToken和ttwid，后续会发文。</p><h2 id="逆向过程"><a href="#逆向过程" class="headerlink" title="逆向过程"></a>逆向过程</h2><p>首先抓包定位到我们需要的接口，如图：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305252156680.png" alt="image-20230525215645569" style="zoom: 50%;" /><p>这个请求是一个XHR请求，我们打上一个XHR断点，选择URL中包含X-Bogus，然后刷新页面重新请求主页，如图：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305252207875.png" alt="image-20230525220757801" style="zoom:50%;" /><p>成功打上了断点，并且此时已经生成了msToken和X-Bogus参数。往前跟栈，来到一个叫 webmssdk.js 的 JS 文件，这里就是生成参数的主要 JS 逻辑了，也就是 JSVMP，整体上做了一个混淆如图：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305252216469.png" alt="image-20230525221623399" style="zoom: 40%;" /><p>我们用<a href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E7%A5%9E%E5%99%A8v-jstools%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/">v_jstools</a>做一个简单的还原，还原之后用浏览器的override功能替换加载，如图：</p><img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305251844250.png" alt="image-20230525184408160" style="zoom: 50%;" />]]></content>
     
     
       
       
-    <summary type="html">&lt;img src=&quot;https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305251844250.png&quot; alt=&quot;image-20230525184408160&quot; style=&quot;zoom: 50%;&quot; /&gt;</summary>
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;免责声明：&lt;strong&gt;本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+</summary>
       
     
     
     
+    <category term="JS逆向" scheme="http://example.com/categories/JS%E9%80%86%E5%90%91/"/>
+    
+    
+    <category term="逆向" scheme="http://example.com/tags/%E9%80%86%E5%90%91/"/>
+    
+    <category term="JS" scheme="http://example.com/tags/JS/"/>
+    
+    <category term="抖音" scheme="http://example.com/tags/%E6%8A%96%E9%9F%B3/"/>
+    
+    <category term="插桩" scheme="http://example.com/tags/%E6%8F%92%E6%A1%A9/"/>
     
   </entry>
   

@@ -14,27 +14,33 @@
     
     
     
-    <title>AST解JS混淆之删除所有注释 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <title>JS逆向案例——某音 X-Bogus参数逆向分析 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     <meta name="theme-color" content="#3F51B5">
     
     
-    <meta name="keywords" content="逆向,JS,AST">
-    <meta name="description" content="当代码中有成段成段的注释，但是我们又不需要的时候，可以采用如下代码去删除JS源代码中的注释： 1const output &#x3D; generator(ast, opts&#x3D;&amp;#123;&quot;comments&quot;: false&amp;#125;, code);    测试如下： 例如源代码为： 1234567891011121314151617&#x2F;*这是多行测试，第一行这是多行测试，第二行这是多行测">
+    <meta name="keywords" content="逆向,JS,抖音,插桩">
+    <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  逆向目标 目标：抖音网页端用户信息接口 X-Bogus 参数 接口：aHR0cHM6Ly93d3cuZG91eWluLmNvbS9hd2VtZS92MS93ZWIvdXNlci9wcm9maWxlL290aGVyLw&#x3D;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="AST解JS混淆之删除所有注释">
-<meta property="og:url" content="http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/index.html">
+<meta property="og:title" content="JS逆向案例——某音 X-Bogus参数逆向分析">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="何仕鹏的个人博客">
-<meta property="og:description" content="当代码中有成段成段的注释，但是我们又不需要的时候，可以采用如下代码去删除JS源代码中的注释： 1const output &#x3D; generator(ast, opts&#x3D;&amp;#123;&quot;comments&quot;: false&amp;#125;, code);    测试如下： 例如源代码为： 1234567891011121314151617&#x2F;*这是多行测试，第一行这是多行测试，第二行这是多行测">
+<meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  逆向目标 目标：抖音网页端用户信息接口 X-Bogus 参数 接口：aHR0cHM6Ly93d3cuZG91eWluLmNvbS9hd2VtZS92MS93ZWIvdXNlci9wcm9maWxlL290aGVyLw&#x3D;">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2022-05-27T15:20:29.000Z">
-<meta property="article:modified_time" content="2022-07-04T11:51:03.000Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305252156680.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305252207875.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305252216469.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305251844250.png">
+<meta property="article:published_time" content="2023-05-25T10:43:27.000Z">
+<meta property="article:modified_time" content="2023-05-25T14:18:55.334Z">
 <meta property="article:author" content="拾光的碎羽">
 <meta property="article:tag" content="逆向">
 <meta property="article:tag" content="JS">
-<meta property="article:tag" content="AST">
+<meta property="article:tag" content="抖音">
+<meta property="article:tag" content="插桩">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305252156680.png">
     
         <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
     
@@ -115,7 +121,7 @@
         <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
           <i class="icon icon-lg icon-navicon"></i>
         </a>
-        <div class="flex-col header-title ellipsis">AST解JS混淆之删除所有注释</div>
+        <div class="flex-col header-title ellipsis">JS逆向案例——某音 X-Bogus参数逆向分析</div>
         
         <div class="search-wrap" id="search-wrap">
             <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
@@ -137,15 +143,15 @@
 <header class="content-header post-header">
 
     <div class="container fade-scale">
-        <h1 class="title">AST解JS混淆之删除所有注释</h1>
+        <h1 class="title">JS逆向案例——某音 X-Bogus参数逆向分析</h1>
         <h5 class="subtitle">
             
-                <time datetime="2022-05-27T15:20:29.000Z" itemprop="datePublished" class="page-time">
-  2022-05-27
+                <time datetime="2023-05-25T10:43:27.000Z" itemprop="datePublished" class="page-time">
+  2023-05-25
 </time>
 
 
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/">AST反混淆</a></li></ul></li></ul>
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
 
             
         </h5>
@@ -159,17 +165,24 @@
 
 <div class="container body-wrap">
     
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E7%9B%AE%E6%A0%87"><span class="post-toc-number">1.</span> <span class="post-toc-text">逆向目标</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E8%BF%87%E7%A8%8B"><span class="post-toc-number">2.</span> <span class="post-toc-text">逆向过程</span></a></li></ol>
+        </nav>
+    </aside>
 
-<article id="post-AST解JS混淆之删除所有注释"
+
+<article id="post-JS逆向案例——某音-X-Bogus参数逆向分析"
   class="post-article article-type-post fade" itemprop="blogPost">
 
     <div class="post-card">
-        <h1 class="post-card-title">AST解JS混淆之删除所有注释</h1>
+        <h1 class="post-card-title">JS逆向案例——某音 X-Bogus参数逆向分析</h1>
         <div class="post-meta">
-            <time class="post-time" title="2022-05-27 23:20:29" datetime="2022-05-27T15:20:29.000Z"  itemprop="datePublished">2022-05-27</time>
+            <time class="post-time" title="2023-05-25 18:43:27" datetime="2023-05-25T10:43:27.000Z"  itemprop="datePublished">2023-05-25</time>
 
             
-	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a><ul class="article-category-list-child"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/AST%E5%8F%8D%E6%B7%B7%E6%B7%86/">AST反混淆</a></li></ul></li></ul>
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
 
 
 
@@ -181,22 +194,37 @@
 
         </div>
         <div class="post-content" id="post-content" itemprop="postContent">
-            <p>当代码中有成段成段的注释，但是我们又不需要的时候，可以采用如下代码去删除JS源代码中的注释：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> output = <span class="title function_">generator</span>(ast, opts=&#123;<span class="string">&quot;comments&quot;</span>: <span class="literal">false</span>&#125;, code);</span><br></pre></td></tr></table></figure>
+            <blockquote>
+<p>免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
+</blockquote>
+<h2 id="逆向目标"><a href="#逆向目标" class="headerlink" title="逆向目标"></a>逆向目标</h2><ul>
+<li>目标：抖音网页端用户信息接口 X-Bogus 参数</li>
+<li>接口：<code>aHR0cHM6Ly93d3cuZG91eWluLmNvbS9hd2VtZS92MS93ZWIvdXNlci9wcm9maWxlL290aGVyLw==</code></li>
+<li>参数：<ul>
+<li>X-Bogus: DFSzswVYwR2ANJV5ttm-TDok&#x2F;RBL</li>
+<li>msToken: XdvBn3ow8atTxF5IT6Nozn_D976Sh-fQQais1pUkC0U-…3iUKTT_yGo4Q1A9KBUXxYALyw&#x3D;&#x3D;</li>
+<li>ttwid: 1%7CwRK6LHw2rKAyHM8EeD4WLyVctABf-…5f35595a6e1f587dcc9f09b4fe</li>
+</ul>
+</li>
+</ul>
+<p>虽然接口入参有很多，但是实际上必不可少且需要逆向的就只有X-Bogus，msToken和Cookie中的ttwid。本文主要介绍X-Bogus的逆向，关于msToken和ttwid，后续会发文。</p>
+<h2 id="逆向过程"><a href="#逆向过程" class="headerlink" title="逆向过程"></a>逆向过程</h2><p>首先抓包定位到我们需要的接口，如图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305252156680.png" alt="image-20230525215645569" style="zoom: 50%;" />
 
 
 
-<p>测试如下：</p>
-<p>例如源代码为：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">这是多行测试，第一行</span></span><br><span class="line"><span class="comment">这是多行测试，第二行</span></span><br><span class="line"><span class="comment">这是多行测试，第三行</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> a = <span class="string">&quot;你好AST&quot;</span>; <span class="comment">// 这也是单行测试</span></span><br><span class="line"><span class="comment">// 这是单行测试</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> b = a + <span class="number">1</span>; <span class="comment">/*这也是单行测试*/</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="comment">/*这是代码之间的测试*/</span>b);</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">这也是多行测试，第一行</span></span><br><span class="line"><span class="comment">这也是多行测试，第二行</span></span><br><span class="line"><span class="comment">这也是多行测试，第三行</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p>这个请求是一个XHR请求，我们打上一个XHR断点，选择URL中包含X-Bogus，然后刷新页面重新请求主页，如图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305252207875.png" alt="image-20230525220757801" style="zoom:50%;" />
 
 
 
-<p>下面是输出：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="string">&quot;你好AST&quot;</span>;</span><br><span class="line"><span class="keyword">let</span> b = a + <span class="number">1</span>;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(b);</span><br></pre></td></tr></table></figure>
+<p>成功打上了断点，并且此时已经生成了msToken和X-Bogus参数。往前跟栈，来到一个叫 webmssdk.js 的 JS 文件，这里就是生成参数的主要 JS 逻辑了，也就是 JSVMP，整体上做了一个混淆如图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305252216469.png" alt="image-20230525221623399" style="zoom: 40%;" />
 
 
 
+<p>我们用<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E7%A5%9E%E5%99%A8v-jstools%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/">v_jstools</a>做一个简单的还原，还原之后用浏览器的override功能替换加载，如图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305251844250.png" alt="image-20230525184408160" style="zoom: 50%;" />
 
         </div>
 
@@ -205,7 +233,7 @@
     <div class="content">
         
 <span class="post-time">
-    Last updated: <time datetime="2022-07-04T11:51:03.000Z" itemprop="dateUpdated">2022-07-04 19:51:03</time>
+    Last updated: <time datetime="2023-05-25T14:18:55.334Z" itemprop="dateUpdated">2023-05-25 22:18:55</time>
 </span><br>
 
 
@@ -231,7 +259,7 @@
 
         <div class="post-footer">
             
-	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AST/" rel="tag">AST</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%8A%96%E9%9F%B3/" rel="tag">抖音</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%8F%92%E6%A1%A9/" rel="tag">插桩</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
 
 
             
@@ -241,7 +269,7 @@
 <div class="page-share" id="pageShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/&title=《AST解JS混淆之删除所有注释》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——某音 X-Bogus参数逆向分析》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
           <i class="icon icon-weibo"></i>
         </a>
       </li>
@@ -251,22 +279,22 @@
         </a>
       </li>
       <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/&title=《AST解JS混淆之删除所有注释》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——某音 X-Bogus参数逆向分析》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
           <i class="icon icon-qq"></i>
         </a>
       </li>
       <li>
-        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/" data-title=" Facebook">
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Facebook">
           <i class="icon icon-facebook"></i>
         </a>
       </li>
       <li>
-        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《AST解JS混淆之删除所有注释》 — 何仕鹏的个人博客&url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/&via=http://example.com" data-title=" Twitter">
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——某音 X-Bogus参数逆向分析》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&via=http://example.com" data-title=" Twitter">
           <i class="icon icon-twitter"></i>
         </a>
       </li>
       <li>
-        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/" data-title=" Google+">
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Google+">
           <i class="icon icon-google-plus"></i>
         </a>
       </li>
@@ -286,21 +314,14 @@
     </div>
 
     
-<nav class="post-nav flex-row flex-justify-between">
-  
-    <div class="waves-block waves-effect prev">
-      <a href="/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%8E%BB%E6%8E%89%E6%9C%AA%E8%A2%AB%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8F%98%E9%87%8F/" id="post-prev" class="post-nav-link">
-        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
-        <h4 class="title">AST解JS混淆之去掉未被使用的变量</h4>
-      </a>
-    </div>
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
   
 
   
     <div class="waves-block waves-effect next">
-      <a href="/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E8%BF%98%E5%8E%9F%E4%B8%AD%E6%96%87%E7%9A%84Unicode%E7%BC%96%E7%A0%81/" id="post-next" class="post-nav-link">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9E%81%E9%AA%8C%E6%97%A0%E6%84%9F%E9%AA%8C%E8%AF%81%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" id="post-next" class="post-nav-link">
         <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
-        <h4 class="title">AST解JS混淆之还原中文的Unicode编码</h4>
+        <h4 class="title">JS逆向案例——极验无感验证逆向分析</h4>
       </a>
     </div>
   
@@ -426,7 +447,7 @@
 <div class="global-share" id="globalShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/&title=《AST解JS混淆之删除所有注释》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——某音 X-Bogus参数逆向分析》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
           <i class="icon icon-weibo"></i>
         </a>
       </li>
@@ -436,22 +457,22 @@
         </a>
       </li>
       <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/&title=《AST解JS混淆之删除所有注释》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&title=《JS逆向案例——某音 X-Bogus参数逆向分析》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
           <i class="icon icon-qq"></i>
         </a>
       </li>
       <li>
-        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/" data-title=" Facebook">
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Facebook">
           <i class="icon icon-facebook"></i>
         </a>
       </li>
       <li>
-        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《AST解JS混淆之删除所有注释》 — 何仕鹏的个人博客&url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/&via=http://example.com" data-title=" Twitter">
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——某音 X-Bogus参数逆向分析》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/&via=http://example.com" data-title=" Twitter">
           <i class="icon icon-twitter"></i>
         </a>
       </li>
       <li>
-        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/AST%E8%A7%A3JS%E6%B7%B7%E6%B7%86%E4%B9%8B%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E6%B3%A8%E9%87%8A/" data-title=" Google+">
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" data-title=" Google+">
           <i class="icon icon-google-plus"></i>
         </a>
       </li>
@@ -462,7 +483,7 @@
 <div class="page-modal wx-share" id="wxShare">
     <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD5klEQVR42u3aQW7cMBAEQP//0w6QU4BEUvcMtXCA0snY9VJk6dDicL6+4uv79/Xn339/cvXt/Tjtr+5/ezX+4QsHDhw4cARLvbrup3s/rXzSV98md09mm6wRBw4cOHCc5WhDMQ/mWVTfL3jzKvCwdhw4cODA8UGOTQTmcTgL4OQB4MCBAweOn8yRlOTeq1y2S8WBAwcOHJ/nSEIxPyJqg3a2pE1p8kCtFAcOHDhwPFfY6mD7X/5+vb8DBw4cOHDEodjGYX7wM2txmJUUo3XhwIEDB441R9tA8Moxz9FGiuSRPIyJAwcOHDgWHG0cJtPdH2LNDpPaqC78cODAgQNHzLFpTcinnodrwpQTDx8eDhw4cOBYcNxP9FSBr/1tvrx22Q+f48CBAweOoxz7OJwttR0zP/RqHwwOHDhw4NhzbAJv1nuWR+msTJkT1ztaHDhw4MARV8PazVKy7KRcONtA5uO3pUwcOHDgwHGWI29omMVe22qQYM2Ol6I3Dhw4cODAMeKYNTRs4jZvmJgdhrVBjgMHDhw43uM4dcg0Kwvmm65NEbDYyOHAgQMHjhFHsbGJp9KW6jaHVflMis0bDhw4cOBYcMziNodox9kfRyUbwjp0ceDAgQNHzNFG4Ox4adYkMcu+WfvF8L0DBw4cOHDE27lZU0LLsTmgaueQrw4HDhw4cJziSAK1Zdo3TORNCW+MjwMHDhw4ZuPPoqgtxp1lnb0QFK1yOHDgwIFjzXG2SDc7UpoVFpNAHXZ54MCBAweOkiO55aky36x02G4CV611OHDgwIHjEMcswGZbuE3Jb1b+Kx4eDhw4cOA4ytFuvRLKUwXHDVPd04EDBw4cOBYc7VTOLqYt8M3ivCXDgQMHDhx7jjwy9+1o7aYxufvstWC1r8WBAwcOHBccm+aDN7ZYbWnv/pP6lQIHDhw4cBziyBvL2lLgvp0u/582Vv8xAg4cOHDgWHPMFjNbcP6rthEh2RAWI+DAgQMHjjXHrJA3C7a27WBTNMwjFgcOHDhwnOI4VcJrQ7rdsCX32jdJ4MCBAweOUxyzbVV++00czpohcvSiVooDBw4cOOIT/zzSZhuw9to0UuTjX84TBw4cOHAsOL7Lq42xtlmhDfi8rSFCxIEDBw4ca45Z+OXNask4yWLyCM/HX104cODAgaPc0rQHQnmktb/aBORsVjhw4MCB4xRHG66zI5+zhcJZoBbdgjhw4MCB44McCcGs3W1THNw8Qhw4cODA8XmOvJA3i8/ZodQM/eEsDgcOHDhwrDnaBuhNoTBvucs3YMcKmjhw4MCB48zZ0CtFura5bQ90qvECBw4cOHCMOH4BiUpEXu5FabsAAAAASUVORK5CYII=" alt="微信分享二维码">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAT4AAAE+CAAAAAAxUyPsAAAFOUlEQVR42u3b24rjSBAE0P7/n+6FfVrosSciUh4W5uipkXUpHRkclVn99RVv3/9uP/f8d//PY37uf3Wd9tOff7/a82p7deTXJzZ8+PDhw4fvBcT727wabv54Cfr745PrJ8+YfBWSkeDDhw8fPnwbXxI42riQx6D80y1FvB/hFsLw4cOHDx++T/PlrG2hIYoIJdNltPjw4cOHD9//ge8SCN5P+9tQku9vXx4+fPjw4cP3Z/hyoOTBLu3zyxjuJYYP9jrw4cOHDx++8jZ/z98Pb/jw4cOHD1/w89w2lfNY87ngsn06auDDhw8fPnyLxldeRm+P3JrZW4RKmgrt64xGiA8fPnz48B348ttvjeoEa1vu9hRlHZvw4cOHDx++Zcb9lf+QX5Z5XfbkJYYtHm3hCR8+fPjw4cv5khPyZWH5MS1Q261u94/hDB8+fPjw4Zv42p/8PEbkD3lpXW/3zZsKX+3g8OHDhw8fvod+/nOIosx9CBNtqyAv/X+1Gz58+PDhw1fCtZ3fbVq+UW4xaythtMUFfPjw4cOHr+XbYsdTUeYTxfQ8gtwjGj58+PDhw5c/V960vjfOv+NtCxBtwz4fc9Qmx4cPHz58+GK+tmGcT/jbonnOt4WqfE/EjQ8fPnz48JV8Wyv9vv8SOC6I7RXyLwQ+fPjw4cOX891jQVuCz2m2ESZF/Pt48OHDhw8fvo3vqRjRFtDbYsSlQv5sKeEjKQwfPnz48P0FfG3RfPtpb9vtbciovyPnLw0+fPjw4cN350tOaCfn+TXvQG1HIv9avHyR+PDhw4cP38S3lbO3pWyXTn5esn9/tbY98PJIfPjw4cOHr+RrC+VtIf5SUMgb3jnZvT0wlg/w4cOHDx++t3PeJCjkIea+pCw5d2uTn0oe+PDhw4cP31ItL4rXeQ5qo0nbsN+In4pi+PDhw4cP34VvCy7tpH0jSEJSHrO2V/IbXHz48OHDhy/mS1rdedF8K6Zv9700ubdw84tz8eHDhw8fvpKvXSi2FbLvBfS81d0Sbw1yfPjw4cOHb+PLS+qXoefXSeLFvanQXv83uQ8fPnz48OGb+MakcwgQ7WK1SxP9ct+X5+LDhw8fPnwl3yWCXFrmbRy5N9q36xdjw4cPHz58+Jax1Y3hreW8TdHzYsEWntp4hA8fPnz48LV8STn7qZjSTtq3hkE+2vuR+PDhw4cP36FP/fC/S20t9qeaAUnTfTu+Hhw+fPjw4cPXFp2nAnc77W+n8S16/gpPuQ8fPnz48OEr57yfKG23GaptsT8bdPKR4MOHDx8+fBtfO8FOYkR7ncvysk+8sCIq4cOHDx8+fDFffkIbWdpFbJfC+rNfgmL8+PDhw4cPX8nXlubb0nlR7C5jzRZB2qLAuOIAHz58+PDhe3HMs7EjDxBt6Gmv3BYyxuYEPnz48OHDt/S1i8Ve7W2ST9uAckFPRjXeFx8+fPjw4Qvu25bmE+48pmxF/HbxWdvUL0oM+PDhw4cP38TX3v473p4qwbdt9fcRZ2t7/+Je+PDhw4cP35kv59gWlt1L6u1ZOVxbyseHDx8+fPhavvZneyudbwPNr7m92vY6J0R8+PDhw4cvji/tYzwVYpIr3FvvefR5OWZ8+PDhw4dv4msn5Jc282VhXLu87NISeDjT4cOHDx8+fOdyQMvRRqIcKB9tXrCI9uDDhw8fPnx/hO++51m4pL2dN7/zRQP48OHDhw/fxteW2u9LuLZm+WUJXfJi2uPx4cOHDx++lu9Skb6EgLZ93pbykxh0GTM+fPjw4cNXjvkfYF8wd68dGLIAAAAASUVORK5CYII=" alt="微信分享二维码">
 </div>
 
 
