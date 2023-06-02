@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>JS逆向案例——某音X-Bogus参数逆向分析之补环境 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="逆向,JS,某音,JSVMP,补环境">
+    <meta name="description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  逆向目标 目标：抖音网页端用户信息接口 X-Bogus 参数 接口：aHR0cHM6Ly93d3cuZG91eWluLmNvbS9hd2VtZS92MS93ZWIvdXNlci9wcm9maWxlL290aGVyLw&#x3D;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS逆向案例——某音X-Bogus参数逆向分析之补环境">
+<meta property="og:url" content="http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="免责声明：本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！  逆向目标 目标：抖音网页端用户信息接口 X-Bogus 参数 接口：aHR0cHM6Ly93d3cuZG91eWluLmNvbS9hd2VtZS92MS93ZWIvdXNlci9wcm9maWxlL290aGVyLw&#x3D;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021819087.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021842621.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021843622.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021844205.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021952332.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021958353.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306022028877.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306022035628.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306022037028.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306022040700.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305222343422.png">
+<meta property="article:published_time" content="2023-06-02T09:47:13.000Z">
+<meta property="article:modified_time" content="2023-06-02T12:41:48.077Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="逆向">
+<meta property="article:tag" content="JS">
+<meta property="article:tag" content="某音">
+<meta property="article:tag" content="JSVMP">
+<meta property="article:tag" content="补环境">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021819087.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">JS逆向案例——某音X-Bogus参数逆向分析之补环境</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">JS逆向案例——某音X-Bogus参数逆向分析之补环境</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2023-06-02T09:47:13.000Z" itemprop="datePublished" class="page-time">
+  2023-06-02
+</time>
+
+
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E7%9B%AE%E6%A0%87"><span class="post-toc-number">1.</span> <span class="post-toc-text">逆向目标</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%85%B3%E4%BA%8EJSVMP"><span class="post-toc-number">2.</span> <span class="post-toc-text">关于JSVMP</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#JSVMP%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">JSVMP参考文章</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#JSVMP%E4%BB%A3%E7%A0%81%E7%89%B9%E5%BE%81"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">JSVMP代码特征</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#JSVMP%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E6%9C%89%E5%93%AA%E4%BA%9B%E6%96%B9%E6%B3%95%EF%BC%9F"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">JSVMP逆向分析有哪些方法？</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%80%86%E5%90%91%E8%BF%87%E7%A8%8B"><span class="post-toc-number">3.</span> <span class="post-toc-text">逆向过程</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%AD%BE%E5%90%8D%E5%8F%82%E6%95%B0%E5%AE%9A%E4%BD%8D"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">签名参数定位</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E8%A1%A5%E7%8E%AF%E5%A2%83"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">补环境</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%BF%90%E8%A1%8C%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="post-toc-number">4.</span> <span class="post-toc-text">运行与测试</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-JS逆向案例——某音X-Bogus参数逆向分析之补环境"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">JS逆向案例——某音X-Bogus参数逆向分析之补环境</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2023-06-02 17:47:13" datetime="2023-06-02T09:47:13.000Z"  itemprop="datePublished">2023-06-02</time>
+
+            
+	<ul class="article-category-list"><li class="article-category-list-item"><a class="article-category-list-link" href="/categories/JS%E9%80%86%E5%90%91/">JS逆向</a></li></ul>
+
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p>免责声明：<strong>本文章中所有内容仅供学习交流，抓包内容、敏感网址、数据接口均已做脱敏处理，严禁用于商业用途和非法用途，否则由此产生的一切后果均与作者无关，若有侵权，请联系我立即删除！</strong></p>
+</blockquote>
+<h2 id="逆向目标"><a href="#逆向目标" class="headerlink" title="逆向目标"></a>逆向目标</h2><ul>
+<li>目标：抖音网页端用户信息接口 X-Bogus 参数</li>
+<li>接口：<code>aHR0cHM6Ly93d3cuZG91eWluLmNvbS9hd2VtZS92MS93ZWIvdXNlci9wcm9maWxlL290aGVyLw==</code></li>
+<li>参数：<ul>
+<li>X-Bogus: DFSzswVYwR2ANJV5ttm-TDok&#x2F;RBL</li>
+<li>msToken: XdvBn3ow8atTxF5IT6Nozn_D976Sh-fQQais1pUkC0U-…3iUKTT_yGo4Q1A9KBUXxYALyw&#x3D;&#x3D;</li>
+<li>ttwid: 1%7CwRK6LHw2rKAyHM8EeD4WLyVctABf-…5f35595a6e1f587dcc9f09b4fe</li>
+</ul>
+</li>
+</ul>
+<p>虽然接口入参有很多，但是实际上必不可少且需要逆向的就只有X-Bogus，msToken和Cookie中的ttwid。本文主要介绍X-Bogus的逆向，关于msToken和ttwid，后续会发文。</p>
+<h2 id="关于JSVMP"><a href="#关于JSVMP" class="headerlink" title="关于JSVMP"></a>关于JSVMP</h2><h3 id="JSVMP参考文章"><a href="#JSVMP参考文章" class="headerlink" title="JSVMP参考文章"></a>JSVMP参考文章</h3><p><a target="_blank" rel="noopener" href="https://blog.jsvmp.com/%e6%91%98%e8%a6%81/">JSVMP是什么?</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.jsvmp.com/jsjiamihedaimabaohu/">JS加密的研究背景和意义</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.jsvmp.com/jshunxiao/">JS混淆和JS压缩的前端代码攻防机制分析</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.jsvmp.com/jsxunihua/">代码虚拟化保护原理分析</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.jsvmp.com/jsjiamihejsvmpyuanlifenx/">深入了解JS 加密技术及JSVMP保护原理分析</a></p>
+<p><a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-261414.htm">给”某音”的js虚拟机写一个编译器</a></p>
+<h3 id="JSVMP代码特征"><a href="#JSVMP代码特征" class="headerlink" title="JSVMP代码特征"></a>JSVMP代码特征</h3><p>$jsvmprt，_$webrt_1668687510之类的，第一个参数很长的一串字节码。</p>
+<h3 id="JSVMP逆向分析有哪些方法？"><a href="#JSVMP逆向分析有哪些方法？" class="headerlink" title="JSVMP逆向分析有哪些方法？"></a>JSVMP逆向分析有哪些方法？</h3><p>就目前来讲，除去Playwright等自动化工具，JSVMP 的逆向方法有三种：RPC 远程调用，补环境，日志断点还原算法。其中日志断点也称为插桩，找到关键位置，输出关键参数的日志信息，从结果往上倒推生成逻辑，以达到算法还原的目的，之前介绍过，参考《<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8%E6%8F%92%E6%A1%A9%E5%88%86%E6%9E%90%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0/">JS逆向案例——利用插桩分析某音X-Bogus参数</a>》。RPC的方式以后有时间再写，本文主要介绍如何使用补环境的方法来生成签名参数。</p>
+<h2 id="逆向过程"><a href="#逆向过程" class="headerlink" title="逆向过程"></a>逆向过程</h2><h3 id="签名参数定位"><a href="#签名参数定位" class="headerlink" title="签名参数定位"></a>签名参数定位</h3><p>先抓包，进入博主主页之后，刷新，看到相应的接口和入参：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021819087.png" alt="image-20230602181930856" style="zoom:50%;" />
+
+
+
+<p>打下XHR断点，然后刷新页面重新请求主页：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021842621.png" style="zoom:50%;" />
+
+
+
+<p>成功打上了断点，并且此时已经生成了msToken和X-Bogus参数。往前跟栈，来到一个叫 webmssdk.js 的JS文件，这里就是生成参数的主要JS逻辑了，也就是JSVMP，整体上做了一个混淆如图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021843622.png" alt="image-20230525221623399" style="zoom: 50%;" />
+
+
+
+<p>我们用<a target="_blank" rel="noopener" href="https://lyy077.github.io/JS%E9%80%86%E5%90%91%E7%A5%9E%E5%99%A8v-jstools%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/">v_jstools</a>做一个简单的还原，还原之后用浏览器的override功能替换，之后重新加载，如图：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021844205.png" alt="image-20230526141726633" style="zoom:33%;" />
+
+
+
+<p>往上跟栈到符号函数$这里：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021952332.png" alt="image-20230602195200151" style="zoom:33%;" />
+
+
+
+<p>在往上跟栈：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306021958353.png" alt="image-20230602195847236" style="zoom:50%;" />
+
+<p>可以看到很明显的JSVMP的特征，参数a是请求的params。</p>
+<p>确认一下定位的加密方法有没有问题：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306022028877.png" alt="image-20230602202828745" style="zoom: 33%;" />
+
+<p>没有问题，至此我们就成功定位到加密函数。</p>
+<h3 id="补环境"><a href="#补环境" class="headerlink" title="补环境"></a>补环境</h3><p>本文介绍手动补环境，关于自动补环境框架，半自动补环境框架后边发文介绍。</p>
+<p>将整个webmssdk.es5.js的代码抠出来，然后定义全局变量<code>__0x5a8f25</code>，将<code>_0x5a8f25</code>方法导出，然后运行，如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306022035628.png" alt="image-20230602203506375" style="zoom: 33%;" />
+
+
+
+<p>提示window未定义，补上window定义：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="variable language_">window</span> = <span class="variable language_">global</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>接着运行：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306022037028.png" alt="image-20230602203704800" style="zoom:33%;" />
+
+<p>提示document未定义，补上document:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>.<span class="property">document</span> = &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>后边的过程就不一一贴了，整理下最终全部的补环境代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="variable language_">window</span> = <span class="variable language_">global</span>;</span><br><span class="line"><span class="variable language_">window</span>.<span class="property">Request</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;;</span><br><span class="line"><span class="variable language_">window</span>.<span class="property">Headers</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;;</span><br><span class="line"><span class="variable language_">window</span>.<span class="property">document</span> = &#123;</span><br><span class="line">    <span class="attr">referrer</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">addEventListener</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;,</span><br><span class="line">    <span class="attr">createElement</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">window</span>.<span class="property">navigator</span> = &#123;</span><br><span class="line">    <span class="attr">userAgent</span>: <span class="string">&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36&quot;</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="variable language_">window</span>.<span class="property">location</span> = &#123;</span><br><span class="line">    <span class="string">&quot;ancestorOrigins&quot;</span>: &#123;&#125;,</span><br><span class="line">    <span class="string">&quot;href&quot;</span>: <span class="string">&quot;https://www.douyin.com/&quot;</span>,</span><br><span class="line">    <span class="string">&quot;origin&quot;</span>: <span class="string">&quot;https://www.douyin.com&quot;</span>,</span><br><span class="line">    <span class="string">&quot;protocol&quot;</span>: <span class="string">&quot;https:&quot;</span>,</span><br><span class="line">    <span class="string">&quot;host&quot;</span>: <span class="string">&quot;www.douyin.com&quot;</span>,</span><br><span class="line">    <span class="string">&quot;hostname&quot;</span>: <span class="string">&quot;www.douyin.com&quot;</span>,</span><br><span class="line">    <span class="string">&quot;port&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="string">&quot;pathname&quot;</span>: <span class="string">&quot;/&quot;</span>,</span><br><span class="line">    <span class="string">&quot;search&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="string">&quot;hash&quot;</span>: <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="variable language_">window</span>.<span class="property">screen</span> = &#123;</span><br><span class="line">    <span class="attr">availHeight</span>: <span class="number">900</span>,</span><br><span class="line">    <span class="attr">availLeft</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">availTop</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">availWidth</span>: <span class="number">1440</span>,</span><br><span class="line">    <span class="attr">colorDepth</span>: <span class="number">30</span>,</span><br><span class="line">    <span class="attr">height</span>: <span class="number">900</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="运行与测试"><a href="#运行与测试" class="headerlink" title="运行与测试"></a>运行与测试</h2><p>补好环境之后，运行，结果如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306022040700.png" alt="image-20230602204034504" style="zoom:33%;" />
+
+<p>成功生成X-Bogus参数。</p>
+<p>若需要完整代码或者讨论，扫描加微信。</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202305222343422.png" alt="image-20230517010053227" style="zoom:25%;" />
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-06-02T12:41:48.077Z" itemprop="dateUpdated">2023-06-02 20:41:48</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JS/" rel="tag">JS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JSVMP/" rel="tag">JSVMP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9F%90%E9%9F%B3/" rel="tag">某音</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%A1%A5%E7%8E%AF%E5%A2%83/" rel="tag">补环境</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%86%E5%90%91/" rel="tag">逆向</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/&title=《JS逆向案例——某音X-Bogus参数逆向分析之补环境》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/&title=《JS逆向案例——某音X-Bogus参数逆向分析之补环境》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——某音X-Bogus参数逆向分析之补环境》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8%E6%8F%92%E6%A1%A9%E5%88%86%E6%9E%90%E6%9F%90%E9%9F%B3-X-Bogus%E5%8F%82%E6%95%B0/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">JS逆向案例——利用插桩分析某音X-Bogus参数</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: 'eb07520a302f5438d2f9',
+          clientSecret: 'dcd2e7c80f28c206cd938c3d2f4317bc45bc3adf',
+          repo: 'lyy077.github.io',
+          owner: 'lyy077',
+          admin: ['lyy077'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/&title=《JS逆向案例——某音X-Bogus参数逆向分析之补环境》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/&title=《JS逆向案例——某音X-Bogus参数逆向分析之补环境》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《JS逆向案例——某音X-Bogus参数逆向分析之补环境》 — 何仕鹏的个人博客&url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/JS%E9%80%86%E5%90%91%E6%A1%88%E4%BE%8B%E2%80%94%E2%80%94%E6%9F%90%E9%9F%B3X-Bogus%E5%8F%82%E6%95%B0%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B9%8B%E8%A1%A5%E7%8E%AF%E5%A2%83/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,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" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
