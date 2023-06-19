@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>临时 | 何仕鹏的个人博客 | healthy,weathy,freedom,lucky,happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="">
+    <meta name="description" content="第一部分：Python常见面试题 实现一个单例模式   使用装饰器实现：  123456789101112131415161718from functools import wrapsdef singleton(cls):    instances &#x3D; &amp;#123;&amp;#125;    @wraps(cls)    def wrapper(*args, **kwargs):        if cl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="临时">
+<meta property="og:url" content="http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/index.html">
+<meta property="og:site_name" content="何仕鹏的个人博客">
+<meta property="og:description" content="第一部分：Python常见面试题 实现一个单例模式   使用装饰器实现：  123456789101112131415161718from functools import wrapsdef singleton(cls):    instances &#x3D; &amp;#123;&amp;#125;    @wraps(cls)    def wrapper(*args, **kwargs):        if cl">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306181245321.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306181248801.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306181249637.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306181250196.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182247502.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182247301.webp">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182247204.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182247689.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182247537.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182252383.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182252748.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182252371.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182252802.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182252944.png">
+<meta property="article:published_time" content="2021-05-28T12:32:08.000Z">
+<meta property="article:modified_time" content="2023-06-19T02:18:40.166Z">
+<meta property="article:author" content="拾光的碎羽">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="golang">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="crawler">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306181245321.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="何仕鹏的个人博客" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092054351.png">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092044923.jpeg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">拾光的碎羽</h5>
+          <a href="mailto:1615433864@qq.com" title="1615433864@qq.com" class="mail">1615433864@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/atom.xml" target="_blank" >
+                <i class="icon icon-lg icon-feed"></i>
+                RSS
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">临时</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">临时</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2021-05-28T12:32:08.000Z" itemprop="datePublished" class="page-time">
+  2021-05-28
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9APython%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="post-toc-number">1.</span> <span class="post-toc-text">第一部分：Python常见面试题</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="post-toc-number">2.</span> <span class="post-toc-text">第二部分：网络常见面试题</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88MySQL%E4%BD%BF%E7%94%A8B-%E6%A0%91%E5%AE%9E%E7%8E%B0%E7%B4%A2%E5%BC%95%EF%BC%9F"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">为什么MySQL使用B+树实现索引？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E5%88%86%E7%B1%BB%EF%BC%9F"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">索引的分类？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8BMySQL%E7%B4%A2%E5%BC%95%E4%BC%9A%E5%A4%B1%E6%95%88%EF%BC%9F%EF%BC%88%E4%BD%BF%E7%94%A8%E7%B4%A2%E5%BC%95%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E5%9C%B0%E6%96%B9%EF%BC%89"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">什么情况下MySQL索引会失效？（使用索引需要注意的地方）</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9%EF%BC%9F"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">索引的优缺点？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%B8%8D%E4%BD%BF%E7%94%A8%E7%B4%A2%E5%BC%95"><span class="post-toc-number">2.5.</span> <span class="post-toc-text">什么时候不使用索引</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E7%B4%A2%E5%BC%95%E5%88%9B%E5%BB%BA%E7%9A%84%E5%8E%9F%E5%88%99%EF%BC%9F"><span class="post-toc-number">2.6.</span> <span class="post-toc-text">索引创建的原则？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E8%B0%88%E8%B0%88%E5%89%8D%E7%BC%80%E7%B4%A2%E5%BC%95%EF%BC%9F"><span class="post-toc-number">2.7.</span> <span class="post-toc-text">谈谈前缀索引？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95%EF%BC%9F"><span class="post-toc-number">2.8.</span> <span class="post-toc-text">如何创建索引？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%B4%A2%E5%BC%95%E4%B8%8B%E6%8E%A8%EF%BC%9F"><span class="post-toc-number">2.9.</span> <span class="post-toc-text">什么是索引下推？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#MySQL%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BB%BA%E8%AE%AE%E4%BD%BF%E7%94%A8%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%EF%BC%9F"><span class="post-toc-number">2.10.</span> <span class="post-toc-text">MySQL为什么建议使用自增主键？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E8%B0%88%E8%B0%88Change-Buffer%EF%BC%9F"><span class="post-toc-number">2.11.</span> <span class="post-toc-text">谈谈Change Buffer？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E6%99%AE%E9%80%9A%E7%B4%A2%E5%BC%95%E4%B8%8E%E5%94%AF%E4%B8%80%E7%B4%A2%E5%BC%95%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%EF%BC%9F"><span class="post-toc-number">2.12.</span> <span class="post-toc-text">普通索引与唯一索引如何选择？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E8%B0%88%E8%B0%88MySQL%E4%B8%BA%E5%95%A5%E4%BC%9A%E9%80%89%E9%94%99%E7%B4%A2%E5%BC%95%EF%BC%9F"><span class="post-toc-number">2.13.</span> <span class="post-toc-text">谈谈MySQL为啥会选错索引？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Explain%E5%91%BD%E4%BB%A4%E6%9F%A5%E7%9C%8B%E5%93%AA%E4%BA%9B%E5%B1%9E%E6%80%A7%EF%BC%9F"><span class="post-toc-number">2.14.</span> <span class="post-toc-text">Explain命令查看哪些属性？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#varchar%E4%B8%8Echar%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="post-toc-number">2.15.</span> <span class="post-toc-text">varchar与char的区别？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#MySQL%E6%89%A7%E8%A1%8C%E6%9F%A5%E8%AF%A2%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="post-toc-number">2.16.</span> <span class="post-toc-text">MySQL执行查询的过程？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%EF%BC%9F"><span class="post-toc-number">2.17.</span> <span class="post-toc-text">什么是数据库事务？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#MySQL%E7%9A%84%E5%9B%9B%E7%A7%8D%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%EF%BC%9F"><span class="post-toc-number">2.18.</span> <span class="post-toc-text">MySQL的四种隔离级别？</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="post-toc-number">2.19.</span> <span class="post-toc-text">事务的实现原理</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E7%BD%91%E7%BB%9C%E9%83%A8%E5%88%86"><span class="post-toc-number">3.</span> <span class="post-toc-text">第三部分：网络部分</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9A%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="post-toc-number">4.</span> <span class="post-toc-text">第四部分：操作系统</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%AC%AC%E4%BA%94%E9%83%A8%E5%88%86%EF%BC%9A%E7%88%AC%E8%99%AB"><span class="post-toc-number">5.</span> <span class="post-toc-text">第五部分：爬虫</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%AC%AC%E5%85%AD%E9%83%A8%E5%88%86%EF%BC%9A%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86"><span class="post-toc-number">6.</span> <span class="post-toc-text">第六部分：加密与解密</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-面试准备20230617"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">临时</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2021-05-28 20:32:08" datetime="2021-05-28T12:32:08.000Z"  itemprop="datePublished">2021-05-28</time>
+
+            
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h3 id="第一部分：Python常见面试题"><a href="#第一部分：Python常见面试题" class="headerlink" title="第一部分：Python常见面试题"></a>第一部分：Python常见面试题</h3><ol>
+<li>实现一个单例模式</li>
+</ol>
+<ul>
+<li>使用装饰器实现：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> wraps</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">singleton</span>(<span class="params">cls</span>):</span><br><span class="line">    instances = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">    @wraps(<span class="params">cls</span>)</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">wrapper</span>(<span class="params">*args, **kwargs</span>):</span><br><span class="line">        <span class="keyword">if</span> cls <span class="keyword">not</span> <span class="keyword">in</span> instances:</span><br><span class="line">            instances[cls] = cls(*args, **kwargs)</span><br><span class="line">        <span class="keyword">return</span> instances[cls]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> wrapper</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@singleton</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MySQLConnector</span>:</span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>上面的单例并不是线程安全的，如果要做到线程安全，需要对创建对象的代码进行加锁的处理。在Python中可以使用threading模块的RLock对象来提供锁，可以使用锁对象的acquire和release方法来实现加锁和解锁的操作。当然，更为简便的做法是使用锁对象的with上下文语法来进行隐式的加锁和解锁操作。</p>
+</blockquote>
+<p>装饰器概念？</p>
+<p>装饰器是Python中非常有特色的语法，用一个函数去装饰另一个函数或类，为其添加额外的能力。通常通过装饰来实现的功能都属横切关注功能，也就是跟正常的业务逻辑没有必然联系，可以动态添加或移除的功能。装饰器可以为代码提供缓存、代理、上下文环境等服务，它是对设计模式中代理模式的践行。</p>
+<p>为什么使用wrapped属性？</p>
+<p>在写装饰器的时候，带装饰功能的函数（上面代码中的wrapper函数）通常都会用functools模块中的wraps再加以装饰，这个装饰器最重要的作用是给被装饰的类或函数动态添加一个__wrapped__属性，这个属性会将被装饰之前的类或函数保留下来，这样在我们不需要装饰功能的时候，可以通过它来取消装饰器，例如可以使用President &#x3D; President.__wrapped__来取消对President类做的单例处理。</p>
+<ul>
+<li>使用元类实现单例模式</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SingletonMeta</span>(<span class="title class_ inherited__">type</span>):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">cls, *args, **kwargs</span>):</span><br><span class="line">        cls.__instance = <span class="literal">None</span></span><br><span class="line">        <span class="built_in">super</span>().__init__(*args, **kwargs)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">cls, *args, **kwargs</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;call SingletonMeta __call__&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> cls.__instance:</span><br><span class="line">            cls.__instance = <span class="built_in">super</span>().__call__(*args, **kwargs)</span><br><span class="line">        <span class="keyword">return</span> cls.__instance</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Student</span>(metaclass=SingletonMeta):</span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<p>单例模式还会被问到应用场景：<strong>通常一个对象的状态是被其他对象共享的，就可以将其设计为单例</strong>，例如项目中使用的数据库连接池对象和配置对象通常都是单例，这样才能保证所有地方获取到的数据库连接和配置信息是完全一致的；而且由于对象只有唯一的实例，因此从根本上避免了重复创建对象造成的时间和空间上的开销，也避免了对资源的多重占用。再举个例子，项目中的日志操作通常也会使用单例模式，这是因为共享的日志文件一直处于打开状态，只能有一个实例去操作它，否则在写入日志的时候会产生混乱。</p>
+<p>元类的概念：</p>
+<p>Python是面向对象的编程语言，在面向对象的世界中，一切皆为对象。对象是通过类来创建的，而类本身也是对象，类这样的对象是通过元类来创建的。我们在定义类时，如果没有给一个类指定父类，那么默认的父类是<code>object</code>，如果没有给一个类指定元类，那么默认的元类是<code>type</code>。通过自定义的元类，我们可以改变一个类默认的行为，就如同上面的代码中，我们通过元类的<code>__call__</code>魔术方法，改变了<code>Student</code>类的构造器那样。</p>
+<ol start="2">
+<li>不使用中间变量，交换a和b</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a, b = b, a</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>需要注意，<code>a, b = b, a</code>这种做法其实并不是元组解包，虽然很多人都这样认为。Python字节码指令中有<code>ROT_TWO</code>指令来支持这个操作，类似的还有<code>ROT_THREE</code>，对于3个以上的元素，如<code>a, b, c, d = b, c, d, a</code>，才会用到创建元组和元组解包。想知道你的代码对应的字节码指令，可以使用Python标准库中<code>dis</code>模块的<code>dis</code>函数来反汇编你的Python代码。</p>
+</blockquote>
+<ol start="3">
+<li>写一个删除列表中重复元素的函数，要求去重后相对位置不变。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">dedup</span>(<span class="params">items</span>):</span><br><span class="line">    no_dup_items = []</span><br><span class="line">    seen = <span class="built_in">set</span>()</span><br><span class="line">    <span class="keyword">for</span> item <span class="keyword">in</span> items:</span><br><span class="line">        <span class="keyword">if</span> item <span class="keyword">not</span> <span class="keyword">in</span> seen:</span><br><span class="line">            no_dup_items.append(item)</span><br><span class="line">            seen.add(item)</span><br><span class="line">    <span class="keyword">return</span> no_dup_items</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>由于Python中的集合底层使用哈希存储，所以集合的<code>in</code>和<code>not in</code>成员运算在性能上远远优于列表，所以上面的代码我们使用了集合来保存已经出现过的元素。集合中的元素必须是<code>hashable</code>对象，因此上面的代码在列表元素不是<code>hashable</code>对象时会失效，要解决这个问题可以给函数增加一个参数，该参数可以设计为返回哈希码或<code>hashable</code>对象的函数。</p>
+</blockquote>
+<ol start="4">
+<li>Lambda函数是什么？举例说明一下应用场景</li>
+</ol>
+<p>Lambda函数也叫匿名函数，它是功能简单用一行代码就能实现的小型函数。Python中的Lambda函数只能写一个表达式，这个表达式的执行结果就是函数的返回值，不用写<code>return</code>关键字。Lambda函数因为没有名字，所以也不会跟其他函数发生命名冲突的问题。</p>
+<p>用lambda函数实现阶乘：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fac = <span class="keyword">lambda</span> x: x * fac(x - <span class="number">1</span>) <span class="keyword">if</span> x &gt; <span class="number">1</span> <span class="keyword">else</span> <span class="number">1</span></span><br><span class="line">fac = <span class="keyword">lambda</span> x: <span class="built_in">__import__</span>(<span class="string">&#x27;functools&#x27;</span>).reduce(<span class="built_in">int</span>.__mul__, <span class="built_in">range</span>(<span class="number">1</span>, x + <span class="number">1</span>))</span><br></pre></td></tr></table></figure>
+
+<p>用lambda函数实现最大公约数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcd = <span class="keyword">lambda</span> x, y: y % x <span class="keyword">and</span> gcd(y % x, x) <span class="keyword">or</span> x</span><br></pre></td></tr></table></figure>
+
+<p>Lambda函数其实最为主要的用途是把一个函数传入另一个高阶函数（如Python内置的<code>filter</code>，<code>map</code>，<code>sorted</code>等）中来为函数做解耦合，增强函数的灵活性和通用性。如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Student</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, age</span>):</span><br><span class="line">        self.name = name</span><br><span class="line">        self.age = age</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    a = Student(<span class="string">&quot;a&quot;</span>, <span class="number">21</span>)</span><br><span class="line">    b = Student(<span class="string">&quot;b&quot;</span>, <span class="number">22</span>)</span><br><span class="line">    l = [a, b]</span><br><span class="line">    l = <span class="built_in">sorted</span>(l, key=<span class="keyword">lambda</span> x: x.age, reverse=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">for</span> item <span class="keyword">in</span> l:</span><br><span class="line">        <span class="built_in">print</span>(item.name, item.age)</span><br></pre></td></tr></table></figure>
+
+<p>sorted函数传入lambda函数提供的key就可以为Student做排序。</p>
+<ol start="5">
+<li>Python的赋值引用，浅拷贝和深拷贝区别？</li>
+</ol>
+<p><strong>浅拷贝通常只复制对象本身，而深拷贝不仅会复制对象，还会递归的复制对象所关联的对象</strong>。</p>
+<p>深拷贝可能会遇到两个问题：一是一个对象如果直接或间接的引用了自身，会导致无休止的递归拷贝；二是深拷贝可能对原本设计为多个对象共享的数据也进行拷贝。Python通过<code>copy</code>模块中的<code>copy</code>和<code>deepcopy</code>函数来实现浅拷贝和深拷贝操作，其中<code>deepcopy</code>可以通过<code>memo</code>字典来保存已经拷贝过的对象，从而避免刚才所说的自引用递归问题；此外，可以通过<code>copyreg</code>模块的<code>pickle</code>函数来定制指定类型对象的拷贝行为。</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306181245321.png" alt="image-20230618124509163" style="zoom:50%;" />
+
+<ul>
+<li><p>赋值引用：a 和 b 都指向同一个对象。</p>
+<p>  <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306181248801.png" alt="img"></p>
+</li>
+<li><p>浅拷贝： a 和 c 是一个独立的对象，但他们的子对象还是指向统一对象（是引用）。</p>
+</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306181249637.png" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+<ul>
+<li>深拷贝：a 和 d 完全拷贝了父对象及其子对象，两者是完全独立的。</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306181250196.png" alt="img" title="">
+                </div>
+                <div class="image-caption">img</div>
+            </figure>
+
+<p>如何用自定义函数实现对象的深拷贝操作？</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"></span><br><span class="line">my_deep_copy = <span class="keyword">lambda</span> obj: pickle.loads(pickle.dumps(obj))</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="6">
+<li>Python如何实现内存管理？</li>
+</ol>
+<p>Python内存管理有三个关键点：引用计数、标记清理、分代收集。</p>
+<p><strong>引用计数</strong></p>
+<p>对于CPython解释器来说，Python中的每一个对象其实就是<code>PyObject</code>结构体，它的内部有一个名为<code>ob_refcnt</code> 的引用计数器成员变量。程序在运行的过程中<code>ob_refcnt</code>的值会被更新并藉此来反映引用有多少个变量引用到该对象。当对象的引用计数值为0时，它的内存就会被释放掉。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">object</span> &#123;</span></span><br><span class="line">    _PyObject_HEAD_EXTRA</span><br><span class="line">    Py_ssize_t ob_refcnt;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">typeobject</span> *<span class="title">ob_type</span>;</span></span><br><span class="line">&#125; PyObject;</span><br></pre></td></tr></table></figure>
+
+<p>以下情况会导致引用计数加<code>1</code>：</p>
+<ul>
+<li>对象被创建</li>
+<li>对象被引用</li>
+<li>对象作为参数传入到一个函数中</li>
+<li>对象作为元素存储到一个容器中</li>
+</ul>
+<p>以下情况会导致引用计数减<code>1</code>：</p>
+<ul>
+<li>用<code>del</code>语句显示删除对象引用</li>
+<li>对象引用被重新赋值其他对象</li>
+<li>一个对象离开它所在的作用域</li>
+<li>持有该对象的容器自身被销毁</li>
+<li>持有该对象的容器删除该对象</li>
+</ul>
+<p><strong>标记清理</strong></p>
+<p>CPython使用了“标记-清理”（Mark and Sweep）算法解决容器类型可能产生的循环引用问题。该算法在垃圾回收时分为两个阶段：标记阶段，遍历所有的对象，如果对象是可达的（被其他对象引用），那么就标记该对象为可达；清除阶段，再次遍历对象，如果发现某个对象没有标记为可达，则就将其回收。</p>
+<p>CPython底层维护了两个双端链表，一个链表存放着需要被扫描的容器对象（姑且称之为链表A），另一个链表存放着临时不可达对象（姑且称之为链表B）。为了实现“标记-清理”算法，链表中的每个节点除了有记录当前引用计数的<code>ref_count</code>变量外，还有一个<code>gc_ref</code>变量，这个<code>gc_ref</code>是<code>ref_count</code>的一个副本，所以初始值为<code>ref_count</code>的大小。执行垃圾回收时，首先遍历链表A中的节点，并且将当前对象所引用的所有对象的<code>gc_ref</code>减<code>1</code>，这一步主要作用是解除循环引用对引用计数的影响。再次遍历链表A中的节点，如果节点的<code>gc_ref</code>值为<code>0</code>，那么这个对象就被标记为“暂时不可达”（<code>GC_TENTATIVELY_UNREACHABLE</code>）并被移动到链表B中；如果节点的<code>gc_ref</code>不为<code>0</code>，那么这个对象就会被标记为“可达“（<code>GC_REACHABLE</code>），对于”可达“对象，还要递归的将该节点可以到达的节点标记为”可达“；链表B中被标记为”可达“的节点要重新放回到链表A中。在两次遍历之后，链表B中的节点就是需要释放内存的节点。</p>
+<p><strong>分代回收</strong></p>
+<p>在循环引用对象的回收中，整个应用程序会被暂停，为了减少应用程序暂停的时间，Python 通过分代回收（空间换时间）的方法提高垃圾回收效率。分代回收的基本思想是：<strong>对象存在的时间越长，是垃圾的可能性就越小，应该尽量不对这样的对象进行垃圾回收</strong>。CPython将对象分为三种世代分别记为<code>0</code>、<code>1</code>、<code>2</code>，每一个新生对象都在第<code>0</code>代中，如果该对象在一轮垃圾回收扫描中存活下来，那么它将被移到第<code>1</code>代中，存在于第<code>1</code>代的对象将较少的被垃圾回收扫描到；如果在对第<code>1</code>代进行垃圾回收扫描时，这个对象又存活下来，那么它将被移至第2代中，在那里它被垃圾回收扫描的次数将会更少。分代回收扫描的门限值可以通过<code>gc</code>模块的<code>get_threshold</code>函数来获得，该函数返回一个三元组，分别表示多少次内存分配操作后会执行<code>0</code>代垃圾回收，多少次<code>0</code>代垃圾回收后会执行<code>1</code>代垃圾回收，多少次<code>1</code>代垃圾回收后会执行<code>2</code>代垃圾回收。需要说明的是，如果执行一次<code>2</code>代垃圾回收，那么比它年轻的代都要执行垃圾回收。如果想修改这几个门限值，可以通过<code>gc</code>模块的<code>set_threshold</code>函数来做到。</p>
+<ol start="7">
+<li>说一下对迭代器与生成器的理解</li>
+</ol>
+<p>迭代器是实现了迭代器协议的对象。跟其他编程语言不通，Python中没有用于定义协议或表示约定的关键字，像<code>interface</code>、<code>protocol</code>这些单词并不在Python语言的关键字列表中。Python语言通过魔法方法来表示约定，也就是我们所说的协议，而<code>__next__</code>和<code>__iter__</code>这两个魔法方法就代表了迭代器协议。可以通过<code>for-in</code>循环从迭代器对象中取出值，也可以使用<code>next</code>函数取出迭代器对象中的下一个值。生成器是迭代器的语法升级版本，可以用更为简单的代码来实现一个迭代器。</p>
+<p>迭代器的Fib：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Fib</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, num</span>):</span><br><span class="line">        self.num = num</span><br><span class="line">        self.a, self.b = <span class="number">0</span>, <span class="number">1</span></span><br><span class="line">        self.idx = <span class="number">0</span></span><br><span class="line">   </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__iter__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__next__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">if</span> self.idx &lt; self.num:</span><br><span class="line">            self.a, self.b = self.b, self.a + self.b</span><br><span class="line">            self.idx += <span class="number">1</span></span><br><span class="line">            <span class="keyword">return</span> self.a</span><br><span class="line">        <span class="keyword">raise</span> StopIteration()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>生成器的Fib：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">fib</span>(<span class="params">num</span>):</span><br><span class="line">    a, b = <span class="number">0</span>, <span class="number">1</span></span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(num):</span><br><span class="line">        a, b = b, a + b</span><br><span class="line">        <span class="keyword">yield</span> a</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="8">
+<li>正则表达式match和search的区别？</li>
+</ol>
+<p><code>match</code>方法是从字符串的起始位置进行正则表达式匹配，返回<code>Match</code>对象或None。<code>search</code>方法会扫描整个字符串来找寻匹配的模式，同样也是返回Match对象或None。</p>
+<ol start="9">
+<li>Python中为啥没有函数重载？</li>
+</ol>
+<p>首先Python是解释型语言，函数重载现象通常出现在编译型语言中。其次Python是动态类型语言，函数的参数没有类型约束，也就无法根据参数类型来区分重载。再者Python中函数的参数可以有默认值，可以使用可变参数和关键字参数，因此即便没有函数重载，也要可以让一个函数根据调用者传入的参数产生不同的行为。</p>
+<ol start="10">
+<li>用Python编写一个遍历文件夹的功能？</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">g = os.walk(<span class="string">&#x27;/Users/Hao/Downloads/&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> path, dir_list, file_list <span class="keyword">in</span> g:</span><br><span class="line">    <span class="keyword">for</span> dir_name <span class="keyword">in</span> dir_list:</span><br><span class="line">        <span class="built_in">print</span>(os.path.join(path, dir_name))</span><br><span class="line">    <span class="keyword">for</span> file_name <span class="keyword">in</span> file_list:</span><br><span class="line">        <span class="built_in">print</span>(os.path.join(path, file_name))</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="11">
+<li>用过的Python哪些库以及标准库中哪些模块？</li>
+</ol>
+<p>库：requests&#x2F;scrapy&#x2F;PIL&#x2F;execjs&#x2F;BeautifulSoup&#x2F;flask&#x2F;lxml等等。</p>
+<p>sys，os，re，math，logging，json，urllib，collections，functools</p>
+<ol start="12">
+<li><code>__init__</code>与<code>__new__</code>区别？</li>
+</ol>
+<p>Python中调用构造器创建对象属于两阶段构造过程，首先执行<code>__new__</code>方法获得保存对象所需的内存空间，再通过<code>__init__</code>执行对内存空间数据的填充（对象属性的初始化）。<code>__new__</code>方法的返回值是创建好的Python对象（的引用），而<code>__init__</code>方法的第一个参数就是这个对象（的引用），所以在<code>__init__</code>中可以完成对对象的初始化操作。<code>__new__</code>是类方法，它的第一个参数是类，<code>__init__</code>是对象方法，它的第一个参数是对象。</p>
+<ol start="13">
+<li>常用的魔术方法？</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>魔术方法</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>__new__</code>、<code>__init__</code>、<code>__del__</code></td>
+<td>创建和销毁对象相关</td>
+</tr>
+<tr>
+<td><code>__add__</code>、<code>__sub__</code>、<code>__mul__</code>、<code>__div__</code>、<code>__floordiv__</code>、<code>__mod__</code></td>
+<td>算术运算符相关</td>
+</tr>
+<tr>
+<td><code>__eq__</code>、<code>__ne__</code>、<code>__lt__</code>、<code>__gt__</code>、<code>__le__</code>、<code>__ge__</code></td>
+<td>关系运算符相关</td>
+</tr>
+<tr>
+<td><code>__pos__</code>、<code>__neg__</code>、<code>__invert__</code></td>
+<td>一元运算符相关</td>
+</tr>
+<tr>
+<td><code>__lshift__</code>、<code>__rshift__</code>、<code>__and__</code>、<code>__or__</code>、<code>__xor__</code></td>
+<td>位运算相关</td>
+</tr>
+<tr>
+<td><code>__enter__</code>、<code>__exit__</code></td>
+<td>上下文管理器协议</td>
+</tr>
+<tr>
+<td><code>__iter__</code>、<code>__next__</code>、<code>__reversed__</code></td>
+<td>迭代器协议</td>
+</tr>
+<tr>
+<td><code>__int__</code>、<code>__long__</code>、<code>__float__</code>、<code>__oct__</code>、<code>__hex__</code></td>
+<td>类型&#x2F;进制转换相关</td>
+</tr>
+<tr>
+<td><code>__str__</code>、<code>__repr__</code>、<code>__hash__</code>、<code>__dir__</code></td>
+<td>对象表述相关</td>
+</tr>
+<tr>
+<td><code>__len__</code>、<code>__getitem__</code>、<code>__setitem__</code>、<code>__contains__</code>、<code>__missing__</code></td>
+<td>序列相关</td>
+</tr>
+<tr>
+<td><code>__copy__</code>、<code>__deepcopy__</code></td>
+<td>对象拷贝相关</td>
+</tr>
+<tr>
+<td><code>__call__</code>、<code>__setattr__</code>、<code>__getattr__</code>、<code>__delattr__</code></td>
+<td>其他魔术方法</td>
+</tr>
+</tbody></table>
+<ol start="14">
+<li><code>*args</code>和<code>**kwargs</code>区别？</li>
+</ol>
+<p>Python中，函数的参数分为位置参数、可变参数、关键字参数、命名关键字参数。<code>*args</code>代表可变参数，可以接收<code>0</code>个或任意多个参数，当不确定调用者会传入多少个位置参数时，就可以使用可变参数，它会将传入的参数打包成一个元组。<code>**kwargs</code>代表关键字参数，可以接收用<code>参数名=参数值</code>的方式传入的参数，传入的参数的会打包成一个字典。定义函数时如果同时使用<code>*args</code>和<code>**kwargs</code>，那么函数可以接收任意参数。</p>
+<ol start="15">
+<li>说一下Python的多进程和多线程以及适用的场景？</li>
+</ol>
+<p>线程是操作系统分配CPU的基本单位，进程是操作系统分配内存的基本单位。通常我们运行的程序会包含一个或多个进程，而每个进程中又包含一个或多个线程。多线程的优点在于多个线程可以共享进程的内存空间，所以线程间的通信非常容易实现；但是如果使用官方的CPython解释器，多线程受制于GIL（全局解释器锁），并不能利用CPU的多核特性，这是一个很大的问题。使用多进程可以充分利用CPU的多核特性，但是进程间通信相对比较麻烦，需要使用IPC机制（管道、套接字等）。</p>
+<p>多线程适合那些会花费大量时间在I&#x2F;O操作上，但没有太多并行计算需求且不需占用太多内存的I&#x2F;O密集型应用。多进程适合执行计算密集型任务（如：视频编码解码、数据处理、科学计算等）、可以分解为多个并行子任务并能合并子任务执行结果的任务以及在内存使用方面没有任何限制且不强依赖于I&#x2F;O操作的任务。</p>
+<ol start="16">
+<li>聊聊Python的GIL全局解释锁？</li>
+</ol>
+<p>GIL 是python的全局解释器锁，同一进程中假如有多个线程运行，一个线程在运行python程序的时候会霸占python解释器（加了一把锁即GIL），使该进程内的其他线程无法运行，等该线程运行完后其他线程才能运行。如果线程运行过程中遇到耗时操作，则解释器锁解开，使其他线程运行。所以在多线程中，线程的运行仍是有先后顺序的，并不是同时进行。</p>
+<p>多进程中因为每个进程都能被系统分配资源，相当于每个进程有了一个python解释器，所以多进程可以实现多个进程的同时运行，缺点是进程系统资源开销大。</p>
+<ol start="17">
+<li>几个小的编码题。</li>
+</ol>
+<ul>
+<li>一行代码实现1-100</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sum</span>(<span class="built_in">range</span>(<span class="number">1</span>, <span class="number">101</span>))</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>字典按照键排序</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">dict</span> = &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;aa&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">21</span>, <span class="string">&quot;tel&quot;</span>: <span class="string">&quot;15000921111&quot;</span>&#125;</span><br><span class="line">l = <span class="built_in">sorted</span>(ditc.items(), key=<span class="keyword">lambda</span> x: x[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>filter求出列表所有奇数并形成一个新的列表</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>]</span><br><span class="line">b = <span class="built_in">list</span>(<span class="built_in">filter</span>(<span class="keyword">lambda</span> x: x % <span class="number">2</span> != <span class="number">0</span>, a))</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="18">
+<li>Python中不能够进行hash操作的数据类型？</li>
+</ol>
+<p>不可变数据类型：数值型、字符串型string和元组tuple，能够进行hash操作。</p>
+<p>可变数据类型：list，dict，set。</p>
+<ol start="19">
+<li>正则表达式中<code>.*</code>和<code>.*?</code> 的区别？</li>
+</ol>
+<p><code>.*</code>是贪婪匹配，会把满足正则的尽可能多的往后匹配。</p>
+<p><code>.*?</code>是非贪婪匹配，会把满足正则的尽可能少匹配。</p>
+<h3 id="第二部分：网络常见面试题"><a href="#第二部分：网络常见面试题" class="headerlink" title="第二部分：网络常见面试题"></a>第二部分：网络常见面试题</h3><h4 id="为什么MySQL使用B-树实现索引？"><a href="#为什么MySQL使用B-树实现索引？" class="headerlink" title="为什么MySQL使用B+树实现索引？"></a>为什么MySQL使用B+树实现索引？</h4><p>看下索引的备选数据结构：顺序数组，哈希表，二叉搜索树，B树，B+树。</p>
+<ol>
+<li>首先顺序数组。</li>
+</ol>
+<p>顺序数组做查找操作很方便，使用二分查找，时间效率可以达到<code>logN</code>，但是如果做更新和删除操作，都需要移动大量元素，成本比较大。所以顺序数组更适合用于查询的领域，适合存储一些改动较小的静态存储引擎。</p>
+<ol start="2">
+<li>哈希表</li>
+</ol>
+<p>哈希表的结构示意图如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182247502.png" alt="img" style="zoom:50%;" />
+
+<p>哈希索引虽然查找效率可以达到常数级别，但是仍然存在一些缺点：</p>
+<ul>
+<li>Hash索引只能满足相等，不等，IN查询，不能够做范围查询。因为有序的键值经过Hash算法之后可能变为不连续的了，这个时候就无法用索引完成范围查询。</li>
+<li>Hash索引无法利用索引排序。因为索引数据并不是按照索引值顺序存储的。</li>
+<li>联合索引中，Hash索引不能利用部分索引键查询。Hash索引在计算Hash值的时候，是联合索引合并后一起计算的Hash值，所以通过前面一个或几个索引键进行查询的时候，Hash索引也无法被利用。</li>
+<li>Hash索引在任何时候都不能避免表扫描。哈希索引只包含哈希值和行指针，而不存储字段值，所以不能使用索引中的值来避免读取行。</li>
+<li>在有大量重复键值情况下，哈希索引的效率也是极低的，因为存在所谓的哈希碰撞问题。当出现哈希冲突的时候，存储引擎必须遍历链表中所有的行指针，逐行进行比较，直到找到所有符合条件的行。</li>
+</ul>
+<ol start="3">
+<li>二叉搜索树</li>
+</ol>
+<p>二叉搜索树的结构如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182247301.webp" alt="img" style="zoom:67%;" />
+
+<p>二叉搜索树的每个节点都只存储一个键值，并且左子树所有节点的值都要小于根节点的值，右子树所有节点的值都要大于根节点的值。当二叉搜索树的所有非叶子节点的左右子树的节点数目均保持差不多时，搜索性能接近二分查找。并且相对于有序数组，二叉搜索树插入与删除操作不需要移动大量数据。</p>
+<p>但是数据库存储大多不使用二叉树，因为数据量较大时，树高会过高，这样子会增加磁盘IO的开销。</p>
+<ol start="4">
+<li>B树</li>
+</ol>
+<p>B树的结构如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182247204.png" alt="img" style="zoom:30%;" />
+
+<p>B树的特点是：</p>
+<ul>
+<li>所有键值分布在整颗树中。</li>
+<li>搜索有可能在非叶子结点结束，在关键字全集内做一次查找，性能接近二分查找。</li>
+<li>每个节点最多拥有m个子树，最多有m-1个键值。</li>
+<li>根节点至少有2个子树。</li>
+<li>分支节点至少拥有m&#x2F;2颗子树。</li>
+<li>所有叶子节点都在同一层、每个节点最多可以有m-1个key，并且以升序排列。</li>
+</ul>
+<p>B树相比于二叉搜索树，性能都可以接近二分查找，但是B树是多叉树，可以降低树的高度。但是B树也有缺点：</p>
+<ul>
+<li>每个节点都有key，同时也包含data，而每个页存储空间是有限的，如果data比较大的话会导致每个节点存储的key数量变小。</li>
+<li>当存储的数据量很大的时候会导致深度较大，增大查询时磁盘io次数，进而影响查询性能。</li>
+</ul>
+<ol start="5">
+<li>B+树</li>
+</ol>
+<p>B+树的结构如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182247689.png" alt="img" style="zoom: 50%;" />
+
+<p>B+树在B树的基础上做了一些优化：</p>
+<ul>
+<li>B+树每个节点可以包含更多的节点。</li>
+<li>非叶子节点存储key，叶子节点存储key和数据。</li>
+<li>叶子节点两两指针相互连接。</li>
+</ul>
+<p>B+树相对于B树更加适合用于索引的原因：</p>
+<ul>
+<li>降低了树的高度，减少了磁盘IO次数，将数据范围变为多个区间，区间越多，数据检索越快。</li>
+<li>支持区间查询。</li>
+</ul>
+<p>综上，B+树更加适用于用于创建索引。</p>
+<h4 id="索引的分类？"><a href="#索引的分类？" class="headerlink" title="索引的分类？"></a>索引的分类？</h4><ol>
+<li>按照数据结构分</li>
+</ol>
+<ul>
+<li>B+树索引</li>
+<li>Hash索引</li>
+<li>Full-text索引。</li>
+</ul>
+<ol start="2">
+<li>按照物理存储分</li>
+</ol>
+<ul>
+<li><p>聚簇索引</p>
+<ul>
+<li><p>每个叶子节点存储了一行完整的表数据，叶子节点间按id列递增连接，可以方便地进行顺序检索。</p>
+</li>
+<li><p><strong>以InnoDB为引擎的表要求必须有聚簇索引</strong>，默认在主键字段上建立聚簇索引，在没有主键字段的情况下，表的第一个非空的唯一索引将被建立为聚簇索引，在前两者都没有的情况下，InnoDB将自动生成一个隐式的自增id列，并在此列上建立聚簇索引。</p>
+</li>
+<li><p>数据页只能按照一颗B+树进行排序，因此<strong>每张表只能拥有一个聚集索引</strong>。</p>
+</li>
+<li><p><strong>以MyISAM为引擎的表不存在聚簇索引</strong>。</p>
+</li>
+</ul>
+</li>
+<li><p>二级索引</p>
+<ul>
+<li>在<strong>聚集索引之上创建的索引叫做二级索引&#x2F;辅助索引</strong>。</li>
+<li>当通过二级索引查询到聚簇索引列值后，还需要回到聚簇索引也就是表数据本身进一步获取数据（回表查询）。</li>
+<li><strong>通过二级索引查询时，回表不是必须的过程</strong>，当<strong>SELECT的所有字段在单个二级索引中都能够找到</strong>时，就不需要回表，MySQL称此时的二级索引为<strong>覆盖索引</strong>或触发了<strong>索引覆盖</strong>。（<strong>会问到回表过程是否是必须的</strong>）</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li>按功能特性分</li>
+</ol>
+<ul>
+<li>主键索引：一张数据表只能有一个主键索引，<strong>索引列值不允许有空值</strong>。（<strong>会问到主键与唯一索引的区别</strong>）</li>
+<li>唯一索引：一张表可以有多个唯一索引，<strong>索引列值允许为空，列值中出现多个空值不会发生重复冲突</strong>。</li>
+<li>普通索引</li>
+<li>前缀索引<ul>
+<li>前缀索引可以建立在类型为char、varchar、binary、varbinary的列上，可以大大减少索引占用的存储空间。</li>
+<li>对于INNODB存储引擎而言，默认前缀长度最大能支持767字节；而在开启<strong>innodb_large_prefix</strong>属性值的情况下，最大能支持3072字节。</li>
+<li>对于MyISAM存储引擎而言，前缀长度限制为1000字节。</li>
+</ul>
+</li>
+</ul>
+<ol start="4">
+<li>按照索引字段个数分</li>
+</ol>
+<ul>
+<li>单列索引</li>
+<li>联合索引</li>
+</ul>
+<h4 id="什么情况下MySQL索引会失效？（使用索引需要注意的地方）"><a href="#什么情况下MySQL索引会失效？（使用索引需要注意的地方）" class="headerlink" title="什么情况下MySQL索引会失效？（使用索引需要注意的地方）"></a>什么情况下MySQL索引会失效？（使用索引需要注意的地方）</h4><ol>
+<li>联合索引不满足最左匹配原则</li>
+</ol>
+<p>最左匹配原则：在联合索引中，最左侧的字段优先匹配（最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符）。因此，在创建联合索引时，where子句中使用最频繁的字段放在联合索引的最左侧。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- 索引为 id_no-username-age</span><br><span class="line">-- 索引有效</span><br><span class="line">explain select * from t_user where id_no = &#x27;1002&#x27;;</span><br><span class="line">explain select * from t_user where id_no = &#x27;1002&#x27; and username = &#x27;Tom2&#x27;;</span><br><span class="line">explain select * from t_user where id_no = &#x27;1002&#x27; and age = 12;</span><br><span class="line">explain select * from t_user where id_no like &quot;1001%&quot;;</span><br><span class="line">-- 索引失效</span><br><span class="line">explain select * from t_user where username = &#x27;Tom2&#x27; and age = 12;</span><br><span class="line">explain select * from t_user where age = 12;</span><br><span class="line">explain select * from t_user where username = &#x27;Tom2&#x27;;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>使用了select *</li>
+</ol>
+<p>禁止使用select * 语句可能会带来的附带好处就是：某些情况下可以走覆盖索引。如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">explain select id_no, username, age from t_user where username = &#x27;Tom2&#x27;;</span><br><span class="line">explain select id_no, username, age from t_user where age = 12;</span><br></pre></td></tr></table></figure>
+
+<p>不需要做回表查询。</p>
+<ol start="3">
+<li>索引列参与运算</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user where id + 1 = 2 ;</span><br></pre></td></tr></table></figure>
+
+<p>上述SQL语句为例，数据库需要全表扫描出所有的id字段值，然后对其计算，计算之后再与参数值进行比较。</p>
+<p>优化：先在内存中进行计算好预期的值，或者在SQL语句条件的右侧进行参数值的计算。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-- 内存计算，得知要查询的id为1</span><br><span class="line">explain select * from t_user where id = 1 ;</span><br><span class="line">-- 参数侧计算</span><br><span class="line">explain select * from t_user where id = 2 - 1 ;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="4">
+<li>索引列作为函数的参数</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user where SUBSTR(id_no,1,3) = &#x27;100&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p>数据库要先进行全表扫描，获得数据之后再进行截取、计算，导致索引索引失效。</p>
+<ol start="5">
+<li>错误的使用like</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user where id_no like &#x27;%00%&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p>占位符出现在首部，导致无法走索引。引本身就相当于目录，从左到右逐个排序。而条件的左侧使用了占位符，导致无法按照正常的目录进行匹配，导致失效。</p>
+<ol start="6">
+<li>类型隐式转换</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user where id_no = 1002;</span><br></pre></td></tr></table></figure>
+
+<p>类型不一致，导致全表扫描。</p>
+<p><strong>注意一个特殊情况：如果字段类型为int类型，而查询条件添加了单引号或双引号，则Mysql会参数转化为int类型，虽然使用了单引号或双引号。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user where id = &#x27;2&#x27;;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="7">
+<li>使用OR操作</li>
+</ol>
+<ul>
+<li>使用or操作的左右两边的字段都必须要有索引，否则会全表扫描，索引失效。</li>
+<li>or两边为范围查询时，索引会失效。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user where id = 2 or username = &#x27;Tom2&#x27;;</span><br><span class="line">explain select * from t_user where id  &gt; 1 or id  &lt; 80;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="8">
+<li>两列做比较</li>
+</ol>
+<p>带索引的两列如果做比较，也会导致索引失效：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user where id &gt; age;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="9">
+<li>不等于比较可能导致索引失效。</li>
+</ol>
+<p>使用不等条件查询时，当查询结果集占比比较小时，会走索引，占比比较大时不会走索引。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-- 有效</span><br><span class="line">explain select * from t_user where id != 2;</span><br><span class="line">-- 失效</span><br><span class="line">explain select * from t_user where create_time != &#x27;2022-02-26 09:04:23&#x27;;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="10">
+<li>使用<code>is not null</code></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user where id_no is not null;</span><br></pre></td></tr></table></figure>
+
+<p>查询条件使用<code>is null</code>时正常走索引，使用<code>is not null</code>时，不走索引。</p>
+<ol start="11">
+<li>使用<code>not in</code>和<code>not exists</code></li>
+</ol>
+<p>范围查询中有2个特例：<code>not in</code>和<code>not exists</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 有效</span><br><span class="line">explain select * from t_user where id not in (2,3);</span><br><span class="line">-- 失效</span><br><span class="line">explain select * from t_user where create_time not in (&#x27;2022-02-26 09:04:23&#x27;);</span><br><span class="line">explain select * from t_user u1 where not exists (select 1 from t_user u2 where u2.id  = 2 and u2.id = u1.id);</span><br></pre></td></tr></table></figure>
+
+<p>如果是主键则走索引，如果是普通索引，则索引失效。</p>
+<ol start="12">
+<li>order by导致索引失效</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user order by id_no ;</span><br></pre></td></tr></table></figure>
+
+<p>对全表数据进行排序处理，导致索引失效。</p>
+<p>使用<code>limit</code>索引依然失效：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user order by id_no limit 60;</span><br></pre></td></tr></table></figure>
+
+<p><strong>也看结果集占总数据的占比，如果占比比较大，索引不会失效</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-- 有效</span><br><span class="line">explain select * from t_user order by id_no limit 60;</span><br></pre></td></tr></table></figure>
+
+<p><strong>对主键使用order by索引不会失效</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user order by id desc;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="13">
+<li>参数不同导致索引失效</li>
+</ol>
+<p>DBMS发现全表扫描比走索引效率更高，因此就放弃了走索引。如上边的<code>order by limit</code>，不等于比较。</p>
+<h4 id="索引的优缺点？"><a href="#索引的优缺点？" class="headerlink" title="索引的优缺点？"></a>索引的优缺点？</h4><ol>
+<li>优点</li>
+</ol>
+<ul>
+<li>建立索引的列可以保证行的唯一性，生成唯一的rowId。</li>
+<li>建立索引可以有效缩短数据的检索时间。</li>
+<li>建立索引可以加快表与表之间的连接。</li>
+</ul>
+<ol start="2">
+<li>缺点</li>
+</ol>
+<ul>
+<li>创建索引和维护索引需要时间成本和空间成本。</li>
+<li>会降低表的增删改的效率，因为每次增删改索引需要进行动态维护，导致时间变长。</li>
+</ul>
+<h4 id="什么时候不使用索引"><a href="#什么时候不使用索引" class="headerlink" title="什么时候不使用索引"></a>什么时候不使用索引</h4><ul>
+<li>经常增删改的列不要建立索引</li>
+<li>有大量重复数据&#x2F;数据区分度低的列不要建立索引</li>
+<li>表记录太少不要建立索引</li>
+</ul>
+<h4 id="索引创建的原则？"><a href="#索引创建的原则？" class="headerlink" title="索引创建的原则？"></a>索引创建的原则？</h4><ol>
+<li>选择区分度高&#x2F;离散度高&#x2F;重复值少的字段创建索引。</li>
+</ol>
+<p>比如性别不适合做索引，手机号适合做索引。</p>
+<ol start="2">
+<li>只为用于搜索，排序，分组的列创建索引。</li>
+<li>不要为联合索引的第一个索引列单独创建索引；建立联合索引时，一定要把最常用的列放在最左边。</li>
+<li>对过长的字段，建立前缀索引。可以节省磁盘空间。</li>
+<li>频繁更新的值，不要作为主键或者索引。索引会降低增删改的效率，频繁更新的值会导致性能问题。</li>
+</ol>
+<h4 id="谈谈前缀索引？"><a href="#谈谈前缀索引？" class="headerlink" title="谈谈前缀索引？"></a>谈谈前缀索引？</h4><ol>
+<li>什么是前缀索引</li>
+</ol>
+<p>前缀索引也叫局部索引，比如给身份证的前 10 位添加索引，类似这种给某列部分信息添加索引的方式叫做前缀索引。</p>
+<ol start="2">
+<li>前缀索引的优缺点</li>
+</ol>
+<p>优点：前缀索引能有效减小索引文件的大小，让每个索引页可以保存更多的索引值，从而提高了索引查询的速度。</p>
+<p>缺点：不能在 order by 或者 group by 中触发前缀索引，也不能把它们用于覆盖索引。</p>
+<ol start="3">
+<li>什么情况下使用前缀索引</li>
+</ol>
+<p>当字符串本身可能比较长，而且前几个字符就开始不相同，适合使用前缀索引；相反情况下不适合使用前缀索引。</p>
+<h4 id="如何创建索引？"><a href="#如何创建索引？" class="headerlink" title="如何创建索引？"></a>如何创建索引？</h4><ol>
+<li>使用<code>create table</code>语句创建</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE user_index2 (</span><br><span class="line">    id INT auto_increment PRIMARY KEY,</span><br><span class="line">    first_name VARCHAR (16),</span><br><span class="line">    last_name VARCHAR (16),</span><br><span class="line">    id_card VARCHAR (18),</span><br><span class="line">    information text,</span><br><span class="line">    KEY name (first_name, last_name),</span><br><span class="line">    FULLTEXT KEY (information),</span><br><span class="line">    UNIQUE KEY (id_card)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>使用<code>alter table</code>语句创建</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE table_name ADD INDEX index_name (column_list);</span><br><span class="line">ALTER TABLE table_name ADD UNIQUE INDEX index_name (column_list);</span><br><span class="line">ALTER TABLE table_name ADD PRIMARY KEY index_name (column_list);</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="3">
+<li>使用<code>create index</code>语句创建</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE INDEX index_name ON table_name (column_list);</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="什么是索引下推？"><a href="#什么是索引下推？" class="headerlink" title="什么是索引下推？"></a>什么是索引下推？</h4><p>索引下推指的是可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
+<p>举个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain select * from t_user where id_no = &#x27;1002&#x27; and age = 12;</span><br></pre></td></tr></table></figure>
+
+<p>联合索引为<code>id_no-age</code>，如果没有索引下推，在B+树搜索的时候InnoDB并不会看age字段的值，只是按顺序把id_no为12的记录一条条取出来回表。引入索引下推之后，InnoDB 在 <code>id_no-age</code> 索引内部就判断了 age 是否等于 12，对于不等于 12 的记录，直接判断并跳过，这样有效的减少了回表的次数。</p>
+<h4 id="MySQL为什么建议使用自增主键？"><a href="#MySQL为什么建议使用自增主键？" class="headerlink" title="MySQL为什么建议使用自增主键？"></a>MySQL为什么建议使用自增主键？</h4><p>使用自增id可以避免页分裂。mysql在底层是以数据页为单位来存储数据的，一个数据页大小默认为16k（这个大小可以自定义）。如果主键为自增id的话，mysql在写满一个数据页的时候，直接申请另一个新数据页接着写就可以了。如果主键是非自增 id，为了把数据放到合适的节点上(保证插入数据后依然维持B+树的特性)，可能会对已存在的节点造成分裂在组合的影响，分裂在组合就是不必要的性能消耗，而且当往一个快满或已满的数据页中插入数据时，新插入的数据会将数据页写满，mysql 就需要申请新的数据页，并且把上个数据页中的部分数据挪到新的数据页上，这就造成了页分裂，移动数据的过程是会严重影响插入效率的。</p>
+<h4 id="谈谈Change-Buffer？"><a href="#谈谈Change-Buffer？" class="headerlink" title="谈谈Change Buffer？"></a>谈谈Change Buffer？</h4><p>当需要更新一个数据页时，如果数据页在内存中就直接更新，而如果这个数据页还没有在内存中的话，在不影响数据一致性的前提下，InnoDB 会将这些更新操作缓存在 change buffer 中，这样就不需要从磁盘中读入这个数据页了。在下次查询需要访问这个数据页的时候，将数据页读入内存，然后执行 change buffer 中与这个页有关的操作。（change buffer好比黑板，磁盘上的数据页好比账本）</p>
+<p><strong>change buffer也可以持久化到磁盘上</strong>。</p>
+<p>将change buffer与原始页数据进行合并的操作称为merge。merge的时机：</p>
+<ul>
+<li>访问数据页。</li>
+<li>系统有后台线程会定期 merge。</li>
+<li>在数据库正常关闭的过程中。</li>
+</ul>
+<h4 id="普通索引与唯一索引如何选择？"><a href="#普通索引与唯一索引如何选择？" class="headerlink" title="普通索引与唯一索引如何选择？"></a>普通索引与唯一索引如何选择？</h4><p>通常情况下尽量使用普通索引。理由如下：</p>
+<ol>
+<li>查询过程</li>
+</ol>
+<p><strong>普通索引和唯一索引性能相差无几</strong>。对于唯一索引，在查找过程中，找到第一个满足条件的记录就会停止继续检索；对于普通索引，查找到第一个满足条件的记录之后，会继续查找直到碰到第一个不满足条件的。</p>
+<p>InnoDB 的数据是按数据页为单位来读写的，也就是说，当需要读一条记录的时候，并不是将这个记录本身从磁盘读出来，而是以页为单位，将其整体读入内存。所以，对于普通索引无非是继续在内存中做一次指针寻找和计算。</p>
+<ol start="2">
+<li>更新过程</li>
+</ol>
+<p><strong>普通索引在更新时可以使用change buffer，唯一索引不使用change buffer，通常情况下前者更新效率更高</strong>。当要更新的数据页在内存，唯一索引相比于普通索引无非是多一次比较操作，性能相差无几；当要更新的数据页不在内存中时，唯一索引做更新时要判断记录是否存在时，需要把数据页读入内存，不会去使用change buffer；而普通索引做更新时不需要判断记录是否存在，直接把数据更新到change buffer，而不会把数据页读入到内存，降低了磁盘IO。</p>
+<p><strong>写多读少使用 change buffer 可以加快执行速度，减少数据页磁盘IO。 但是，如果业务模型是写后立马会做查询，则会触发change buffer立即merge 到磁盘，这样的场景磁盘io次数不会减少，反而会增加change buffer的维护代价。</strong></p>
+<h4 id="谈谈MySQL为啥会选错索引？"><a href="#谈谈MySQL为啥会选错索引？" class="headerlink" title="谈谈MySQL为啥会选错索引？"></a>谈谈MySQL为啥会选错索引？</h4><p>选择索引是优化器的工作。优化器是根据扫描行数，否使用临时表、是否排序等因素进行综合判断。在某些情况下优化器没有准确的判断出扫描行数，导致MySQL选错索引。</p>
+<ol>
+<li>mysql如何判断一个查询的扫描行数?</li>
+</ol>
+<p>通过索引的区分度即基数（一个索引上不同的值的个数）来估算记录数。</p>
+<ol start="2">
+<li>索引基数如何计算?</li>
+</ol>
+<p>InnoDB 默认会选择 N 个数据页，统计这些页面上的不同值，得到一个平均值，然后乘以这个索引的页面数，就得到了这个索引的基数。</p>
+<ol start="3">
+<li>可以重新统计索引信息的命令是什么?</li>
+</ol>
+<p><code>analyze table t</code>命令。</p>
+<ol start="4">
+<li>索引选择异常如何解决?</li>
+</ol>
+<ul>
+<li>采用 force index 强行选择一个索引。MySQL 会根据词法解析的结果分析出可能可以使用的索引作为候选项，然后在候选列表中依次判断每个索引需要扫描多少行。如果 force index 指定的索引在候选索引列表中，就直接选择这个索引，不再评估其他索引的执行代价。</li>
+<li>可以修改语句，引导 MySQL 使用我们期望的索引。</li>
+<li>可以新建一个更合适的索引，来提供给优化器做选择，或删掉误用的索引。</li>
+</ul>
+<h4 id="Explain命令查看哪些属性？"><a href="#Explain命令查看哪些属性？" class="headerlink" title="Explain命令查看哪些属性？"></a>Explain命令查看哪些属性？</h4><ul>
+<li><p><strong>select_type</strong>：查询的类型，主要是区别普通查询和联合查询、子查询之类的复杂查询。</p>
+<ul>
+<li><code>SIMPLE</code>：查询中不包含子查询或者<code>UNION</code></li>
+<li>查询中若包含任何复杂的子部分，最外层查询则被标记为：<code>PRIMARY</code></li>
+<li>在<code>SELECT</code>或<code>WHERE</code>列表中包含了子查询，该子查询被标记为：<code>SUBQUERY</code></li>
+</ul>
+</li>
+<li><p><strong>type</strong>：访问类型。</p>
+<ul>
+<li>ALL：全表扫描</li>
+<li>index：扫描全部索引树</li>
+<li>range：扫描部分索引，索引范围扫描，对索引的扫描开始于某一点，返回匹配值域的行，常见于between、&lt;、&gt;等的查询。</li>
+<li>ref：使用非唯一索引或非唯一索引前缀进行的查找</li>
+<li>fulltext：全文索引检索，要注意，全文索引的优先级很高，若全文索引和普通索引同时存在时，mysql不管代价，优先选择使用全文索引。</li>
+<li>eq_ref：查找唯一性索引，返回的数据至多一条。属于精确查找。</li>
+<li>const：查找主键索引，返回的数据至多一条（0或者1条）。属于精确查找。</li>
+<li>system：表中只有一行数据或者是空表，且只能用于myisam和memory表。</li>
+</ul>
+</li>
+<li><p><strong>possible_keys</strong>：显示可能应用在这张表中的索引，一个或多个。</p>
+</li>
+<li><p><strong>key</strong>：优化器实际使用的索引，必然包含在possible_keys中，如果没有索引被选择，是NULL。</p>
+</li>
+<li><p><strong>key_len</strong>：使用到索引字段的长度。</p>
+</li>
+<li><p><strong>rows</strong>：MySQL根据表统计信息及索引选用情况，估算mysql查询过程中遍历的行数，不是准确值。</p>
+</li>
+</ul>
+<h4 id="varchar与char的区别？"><a href="#varchar与char的区别？" class="headerlink" title="varchar与char的区别？"></a>varchar与char的区别？</h4><ul>
+<li>char是一个定长字段，比如申请了<code>char(10)</code>的空间,那么无论实际存储多少内容，该字段都占用 10 个字符；而varchar是变长的，申请的只是最大长度，占用的空间为实际字符长度+1，最后一个字符存储使用了多长的空间。</li>
+<li>检索效率上char的效率高于varchar，如果某个字段既可以使用char又可以使用varchar，应该尽量使用varchar，比如md5码。</li>
+</ul>
+<h4 id="MySQL执行查询的过程？"><a href="#MySQL执行查询的过程？" class="headerlink" title="MySQL执行查询的过程？"></a>MySQL执行查询的过程？</h4><p>mysql的逻辑架构图如下：</p>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182247537.png" alt="img" style="zoom: 20%;" />
+
+<ol>
+<li>与MySQL连接器进行连接。客户端通过 TCP 连接发送连接请求到 MySQL 连接器，连接器会对该请求进行权限验证及连接资源分配。</li>
+<li>查询缓存。MySQL 拿到一个查询请求后，会先到查询缓存看看，之前是不是执行过这条语句，如果缓存命中，直接返回查询结果。</li>
+<li>SQL语法分析。若没命中，分析器对SQL语句进行词法分析，语法分析，检查SQL语法是否正确。</li>
+<li>优化。优化器对SQL进行优化，比如使用哪个索引，多表关联的时候，决定各个表的连接顺序。</li>
+<li>执行。执行器会判断对查询的表是否有执行查询的权限，如果有权限，就打开表继续执行。打开表的时候，执行器就会根据表的引擎定义，去使用这个引擎提供的接口。</li>
+</ol>
+<h4 id="什么是数据库事务？"><a href="#什么是数据库事务？" class="headerlink" title="什么是数据库事务？"></a>什么是数据库事务？</h4><p>事务就是要保证一组数据库操作，要么全部成功，要么全部失败。事务具备四个特点：</p>
+<ul>
+<li>原子性。事务是数据库的逻辑工作单位，事务中包含的各操作要么都做，要么都不做。</li>
+<li>一致性。在事务开始之前和事务结束以后，数据库的完整性没有被破坏。</li>
+<li>隔离性。一个事务的执行不能其它事务干扰，一个事务内部的操作及使用的数据对其它并发事务是隔离的。</li>
+<li>持续性。指一个事务一旦提交，它对数据库中的数据的改变就应该是永久性的。</li>
+</ul>
+<h4 id="MySQL的四种隔离级别？"><a href="#MySQL的四种隔离级别？" class="headerlink" title="MySQL的四种隔离级别？"></a>MySQL的四种隔离级别？</h4><ul>
+<li>读未提交：一个事务还没提交时，它做的变更就能被别的事务看到。</li>
+<li>读提交：一个事务提交之后，它做的变更才会被其他事务看到。</li>
+<li>可重复读：一个事务执行过程中看到的数据，总是跟这个事务在启动时看到的数据是一致的。</li>
+<li>串行化：当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。</li>
+</ul>
+<p>四种隔离级别：并行性能依次降低，安全性依次提高。</p>
+<h4 id="事务的实现原理"><a href="#事务的实现原理" class="headerlink" title="事务的实现原理"></a>事务的实现原理</h4><ul>
+<li>事务的原子性是通过 undo log 来实现的。</li>
+<li>事务的持久性性是通过 redo log 来实现的。</li>
+<li>事务的隔离性是通过 (读写锁+MVCC)来实现的。</li>
+</ul>
+<ol>
+<li>原子性的实现</li>
+</ol>
+<ul>
+<li>每条数据变更(insert&#x2F;update&#x2F;delete)操作都伴随一条undo log的生成，并且回滚日志必须先于数据持久化到磁盘上；</li>
+<li>所谓的回滚就是根据回滚日志做逆向操作，比如delete的逆向操作为insert，insert的逆向操作为delete，update的逆向为update等。</li>
+</ul>
+<ol start="2">
+<li>持久化的实现</li>
+</ol>
+<p>每提交一个事务必须先将该事务的所有日志写入到redo log文件进行持久化，数据库就可以通过重做日志来保证事务的持久性。</p>
+<ol start="3">
+<li>隔离性的实现</li>
+</ol>
+<h3 id="第三部分：网络部分"><a href="#第三部分：网络部分" class="headerlink" title="第三部分：网络部分"></a>第三部分：网络部分</h3><ol>
+<li>简述 OSI七层模型和TCP&#x2F;IP五层模型 各层的作用</li>
+</ol>
+<ul>
+<li>应用层：<strong>为应用程序提供网络服务</strong>，常见的协议有HTTPS&#x2F;HTTP&#x2F;FTP&#x2F;SMTP&#x2F;DNS&#x2F;SSH&#x2F;TELNET。</li>
+<li>表示层：主要<strong>负责数据格式的转换，如加密解密、转换翻译、压缩解压缩</strong>等。</li>
+<li>会话层：<strong>建立、断开和维护通信链接</strong>，如服务器验证用户登录便是由会话层完成的。</li>
+<li>传输层：<strong>为上层协议提供端到端的可靠传输</strong>。该层主要有以下两种协议：<ul>
+<li>TCP：提供面向连接的、可靠的数据传输服务；</li>
+<li>UDP：提供无连接的、尽最大努力的数据传输服务，但不保证数据传输的可靠性。</li>
+</ul>
+</li>
+<li>网络层：<strong>选择合适的路由和交换结点</strong>，确保数据及时传送。主要的协议有IP&#x2F;ARP&#x2F;RARP。</li>
+<li>数据链路层：数据链路层通常简称为链路层。<strong>定义通过通信媒介互连的设备之间传输的规范</strong>，常见协议PPP。</li>
+<li>物理层：<strong>利用物理传输介质为数据链路层提供物理连接</strong>。</li>
+</ul>
+<p>TCP&#x2F;IP五层模型：</p>
+<ul>
+<li><p>应用层：将OSI的应用层，表示层，会话层合并。常见协议：HTTPS&#x2F;HTTP&#x2F;FTP&#x2F;SMTP&#x2F;DNS&#x2F;SSH&#x2F;TELNET。</p>
+</li>
+<li><p>传输层：常见协议：TCP&#x2F;IP</p>
+</li>
+<li><p>网络层：常见协议：IP&#x2F;ARP&#x2F;RARP</p>
+</li>
+<li><p>数据链路层：PPP</p>
+</li>
+<li><p>物理层</p>
+</li>
+</ul>
+<ol start="2">
+<li>TCP与UDP的区别？</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>UDP</th>
+<th>TCP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>是否连接</td>
+<td>无连接</td>
+<td>面向连接</td>
+</tr>
+<tr>
+<td>是否可靠</td>
+<td>不可靠传输，不使用流量控制和拥塞控制</td>
+<td>可靠传输，使用流量控制和拥塞控制</td>
+</tr>
+<tr>
+<td>是否有序</td>
+<td>无序</td>
+<td>有序，消息在传输过程中可能会乱序，TCP 会重新排序</td>
+</tr>
+<tr>
+<td>传输速度</td>
+<td>快</td>
+<td>慢</td>
+</tr>
+<tr>
+<td>连接对象个数</td>
+<td>支持一对一，一对多，多对一和多对多交互通信</td>
+<td>只能是一对一通信</td>
+</tr>
+<tr>
+<td>传输方式</td>
+<td>面向报文</td>
+<td>面向字节流</td>
+</tr>
+<tr>
+<td>首部开销</td>
+<td>首部开销小，仅8字节</td>
+<td>首部最小20字节，最大60字节</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>适用于实时应用（IP电话、视频会议、直播等）</td>
+<td>适用于要求可靠传输的应用，例如文件传输</td>
+</tr>
+</tbody></table>
+<p>总结：<strong>TCP在数据传输之前必须建立连接，面向有连接，TCP是可靠传输，使用流量控制和拥塞控制，TCP保证了数据的正确有序性；UDP是面向无连接的，不可靠传输，不使用流量控制和拥塞控制，UDP可能会丢包，并且不保证数据的有序性</strong>。</p>
+<ol start="3">
+<li>TCP与UDP对应的场景？</li>
+</ol>
+<p>TCP 是面向连接，能保证数据的可靠性交付，因此经常用于：</p>
+<ul>
+<li>FTP文件传输</li>
+<li>HTTP &#x2F; HTTPS</li>
+</ul>
+<p>UDP 面向无连接，它可以随时发送数据，再加上UDP本身的处理既简单又高效，因此经常用于：</p>
+<ul>
+<li>包总量较少的通信，如 DNS 、SNMP等</li>
+<li>视频、音频等多媒体通信</li>
+<li>广播通信</li>
+</ul>
+<ol start="4">
+<li>简述TCP三次握手过程</li>
+</ol>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182252383.png" alt="image-20230613171500317" style="zoom: 33%;" />
+
+<ul>
+<li>第一次握手：客户端请求建立连接，向服务端发送一个同步报文(SYN&#x3D;1)，同时选择一个随机数seq&#x3D;x作为初始序列号，客户端进入SYN_SENT状态，等待服务器确认。</li>
+<li>第二次握手：服务端同意建立连接，向客户端发送同步确认报文(SYN&#x3D;1, ACK&#x3D;1)，确认号为ack&#x3D;x+1，同时选择一个随机数seq&#x3D;y作为初始序列号，此时服务器进入SYN_RECV状态。</li>
+<li>第三次握手：客户端收到服务器的确认，向服务器发送一个确认报文(ACK&#x3D;1)，确认号ack&#x3D;y+1，序列号seq&#x3D;x+1，客户端和服务端进入ESTABLISHED状态。完成三次握手。</li>
+</ul>
+<p>注意：<strong>如果每次建立连接客户端和服务端的初始化序列号都「一样」，就有大概率遇到历史报文的序列号刚「好在」对方的接收窗口内，从而导致历史报文被新连接成功接收</strong>。</p>
+<ol start="5">
+<li>为什么TCP需要三次而不是两次或者四次握手建立连接？</li>
+</ol>
+<p>为什么不是2次握手：</p>
+<ul>
+<li>防止已过期的连接请求报文突然又传送到服务器，因而产生错误和资源浪费。</li>
+</ul>
+<p>比如客户端建立连接，向服务端发送一个同步报文，由于网络延迟导致服务端没有接收到，这个时候客户端会重新发送一个同步报文，假设第二次成功建立连接并传输数据，此时连接断开客户端是CLOSED状态，而服务端接收到之前由于延迟导致的同步报文进入SYNC_RECV状态，会导致服务器长时间单方面等待，造成资源浪费。</p>
+<ul>
+<li><p>告知对方自己的初始序号值，并确认收到对方的初始序号值。告知对方自己的初始序号值，并确认收到对方的初始序号值。</p>
+<ul>
+<li>第一次握手：客户端告知服务端自己的信息序号。</li>
+<li>第二次握手：服务端确认客户端的信息序号，同时告知客户端自己的信息序号。</li>
+<li>第三次握手：客户端确认服务端的信息序号。</li>
+</ul>
+  <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182252748.png" alt="在这里插入图片描述" style="zoom:66%;" /></li>
+</ul>
+<ol start="6">
+<li>三次握手连接阶段，最后一次ACK包丢失，会发生什么？</li>
+</ol>
+<ul>
+<li>服务端</li>
+</ul>
+<p>第三次的ACK在网络中丢失，那么服务端该TCP连接的状态为SYN_RECV，并且会根据 TCP的超时重传机制，会等待3秒、6秒、12秒后重新发送SYN+ACK包，以便客户端重新发送ACK包。如果重发指定次数之后，仍然未收到 客户端的ACK应答，那么一段时间后，服务端自动关闭这个连接。</p>
+<ul>
+<li>客户端</li>
+</ul>
+<p>客户端认为这个连接已经建立，如果客户端向服务端发送数据，服务端将以RST包（Reset，标示复位，用于异常的关闭连接）响应。此时，客户端知道第三次握手失败。</p>
+<ol start="7">
+<li>TCP如何处理丢包问题和乱序问题？</li>
+</ol>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182252371.png" alt="image-20230613181402063" style="zoom:33%;" />
+
+<p>tcp协议为每一个连接建立了一个发送缓冲区，从建立连接后的第一个字节的序列号为0，后边每个字节的序列号会增加1，发送数据时，从发送缓冲区取一部分数据组成发送报文，在其tcp协议头中会附带序列号和长度，接收端在收到序列号后需要回复确认报文，确认报文中的ACK&#x3D;序列号+长度，也就是下一包的起始序列号，这样一问一答的方式能够使发送端确认发送的数据已经被对方收到。发送端也可以发送连续的多包数据，接收端只需要回复一次ACK就可以了。假设其中丢失了某些数据包，接收端可以要求发送端重传，比如丢失了100-199这100个字节，接收端向发送端发送ACK&#x3D;100的报文，发送端会进行重传。</p>
+<ol start="8">
+<li>简述TCP四次挥手过程</li>
+</ol>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182252802.png" alt="img" style="zoom: 50%;" />
+
+<ul>
+<li>第一次挥手：客户端向服务端发送连接释放报文(FIN&#x3D;1, ACK&#x3D;1)，主动关闭连接，同时等待服务端的确认。<ul>
+<li>序列号 seq&#x3D;u，即客户端上次发送报文的最后一个字节的序号+1；</li>
+<li>确认号ack&#x3D;k，即服务端上次发送的报文的最后一个字节的序号+1；</li>
+</ul>
+</li>
+<li>第二次挥手：服务端收到连接释放报文后，立即发出<strong>确认报文</strong>(ACK&#x3D;1)，序列号seq&#x3D;k，确认号ack&#x3D;u+1。</li>
+</ul>
+<p>这时TCP连接处于半关闭状态，即客户端到服务端的连接已经释放了，但是服务端到客户端的连接还未释放。这表示客户端已经没有数据发送了，但是服务端可能还要给客户端发送数据。</p>
+<ul>
+<li>第三次挥手：服务端向客户端发送连接释放报文（FIN&#x3D;1，ACK&#x3D;1），主动关闭连接，同时等待 A 的确认。<ul>
+<li>序列号 seq &#x3D; w，即服务端上次发送的报文的最后一个字节的序号 + 1。</li>
+<li>确认号 ack &#x3D; u + 1，与第二次挥手相同，因为这段时间客户端没有发送数据。</li>
+</ul>
+</li>
+<li>第四次挥手：客户端收到服务端的连接释放报文后，立即发出<strong>确认报文</strong>（ACK&#x3D;1），序列号 seq &#x3D; u + 1，确认号为 ack &#x3D; w + 1。</li>
+</ul>
+<p>此时，客户端就进入了 <code>TIME-WAIT</code> 状态。注意此时客户端到 TCP 连接还没有释放，必须经过 2*MSL（最长报文段寿命）的时间后，才进入 <code>CLOSED</code> 状态。而服务端只要收到客户端发出的确认，就立即进入 <code>CLOSED</code> 状态。可以看到，服务端结束 TCP 连接的时间要比客户端早一些。</p>
+<ol start="9">
+<li>为什么在第四次挥手时，客户端TCP要进入<code>TIME-WAIT</code>状态，而服务端TCP立即释放连接？</li>
+</ol>
+<p>确保 ACK 报文能够到达服务端，从而使服务端正常关闭连接。第四次挥手时，客户端第四次挥手的 ACK 报文不一定会到达服务端。服务端会超时重传 FIN&#x2F;ACK 报文，此时如果客户端已经断开了连接，那么就无法响应服务端的二次请求，这样服务端迟迟收不到 FIN&#x2F;ACK 报文的确认，就无法正常断开连接。</p>
+<ol start="10">
+<li>为什么连接的时候是三次握手，关闭的时候是四次握手？</li>
+</ol>
+<p>因为握手的时候并没有数据传输，所以服务端的 SYN 和 ACK 报文可以一起发送，但是挥手的时候有数据在传输，所以 ACK 和 FIN 报文不能同时发送，需要分两步，所以会比握手多一步。</p>
+<ol start="11">
+<li>HTTP常见的状态码？</li>
+</ol>
+<p>以1-5开头的状态码含义：</p>
+<ul>
+<li>1xx：服务器收到请求，需要请求者继续执行操作。</li>
+<li>2xx：请求正常处理完毕。如200</li>
+<li>3xx：重定向，需要进一步操作已完成请求。</li>
+<li>4xx：客户端错误，服务器无法处理请求。</li>
+<li>5xx：服务器处理请求错误。</li>
+</ul>
+<p>常见的状态码含义：</p>
+<ul>
+<li>200：服务器已成功处理了请求。 通常，这表示服务器提供了请求的网页。</li>
+<li>301 ： (永久移动) 请求的网页已永久移动到新位置。 服务器返回此响应(对 GET 或 HEAD 请求的响应)时，会自动将请求者转到新位置。</li>
+<li>302：(临时移动) 服务器目前从不同位置的网页响应请求，但请求者应继续使用原有位置来进行以后的请求。</li>
+<li>400 ：客户端请求有语法错误，不能被服务器所理解。</li>
+<li>403 ：服务器收到请求，但是拒绝提供服务。</li>
+<li>404 ：(未找到) 服务器找不到请求的网页。</li>
+<li>500： (服务器内部错误) 服务器遇到错误，无法完成请求。</li>
+</ul>
+<ol start="12">
+<li>301和302的区别？</li>
+</ol>
+<p>301表示旧地址的资源已经被永久地移除了(这个资源不可访问了)，搜索引擎在抓取新内容的同时也将旧的网址交换为重定向之后的网址；302表示旧地址的资源还在（仍然可以访问），这个重定向只是临时地从旧地址跳转到新地址，搜索引擎会抓取新的内容而保存旧的网址。</p>
+<ol start="13">
+<li>GET请求与POST请求的区别？</li>
+</ol>
+<ul>
+<li>GET 请求参数通过 URL 传递，POST 的参数放在请求体中。</li>
+<li>GET 请求会被浏览器主动缓存，而 POST 不会，除非手动设置。</li>
+<li>GET 请求只能进行 url 编码，而 POST 支持多种编码方式。</li>
+<li>GET 请求参数会被完整保留在浏览器历史记录里，而 POST 中的参数不会被保留。</li>
+</ul>
+<ol start="14">
+<li>HTTP请求报文与响应报文的格式？</li>
+</ol>
+<p><strong>请求报文</strong>：</p>
+<ul>
+<li><p>请求行（请求方法+URI协议+版本）</p>
+</li>
+<li><p>请求头部</p>
+</li>
+<li><p>空行</p>
+</li>
+<li><p>请求主体</p>
+</li>
+</ul>
+<p>如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">GET/sample.jspHTTP/1.1        // 请求行</span><br><span class="line">Accept:image/gif.image/jpeg,  // 请求头部</span><br><span class="line">Accept-Language:zh-cn</span><br><span class="line">Connection:Keep-Alive</span><br><span class="line">Host:localhost</span><br><span class="line">User-Agent:Mozila/4.0(compatible;MSIE5.01;Window NT5.0)</span><br><span class="line">Accept-Encoding:gzip,deflate</span><br><span class="line"></span><br><span class="line">username=jinqiao&amp;password=1234 // 请求主体</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>响应报文</strong>：</p>
+<ul>
+<li><p>状态行（版本+状态码+原因短语）</p>
+</li>
+<li><p>响应首部</p>
+</li>
+<li><p>空行</p>
+</li>
+<li><p>响应主体</p>
+</li>
+</ul>
+<p>如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Server:Apache Tomcat/5.0.12</span><br><span class="line">Date:Mon,6Oct2003 13:23:42 GMT</span><br><span class="line">Content-Length:112</span><br><span class="line"></span><br><span class="line">&lt;html&gt;</span><br><span class="line">    &lt;head&gt;</span><br><span class="line">        &lt;title&gt;HTTP响应示例&lt;title&gt;</span><br><span class="line">    &lt;/head&gt;</span><br><span class="line">    &lt;body&gt;</span><br><span class="line">        Hello HTTP!</span><br><span class="line">    &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="15">
+<li>HTTP 1.0，HTTP 1.1和HTTP 2.0的区别？</li>
+</ol>
+<p>HTTP 2.0 与 HTTP 1.1的区别：</p>
+<ul>
+<li><strong>新的二进制格式</strong>。HTTP1.1的解析是基于文本，HTTP2.0采用二进制格式。</li>
+<li><strong>多路复用</strong>：<strong>HTTP&#x2F;2.0实现了真正的并行传输，它能够在一个TCP上进行任意数量HTTP请求。而这个强大的功能则是基于“二进制分帧”的特性。</strong>。</li>
+<li><strong>服务器推送</strong>：服务器除了对最初请求的响应外，服务器还可以额外的向客户端推送资源，而无需客户端明确的请求。</li>
+<li><strong>头部压缩</strong>：HTTP&#x2F;2.0使用<code>encoder</code>来减少需要传输的<code>header</code>大小，通讯双方各自<code>cache</code>一份<code>header fields</code>表，既避免了重复<code>header</code>的传输，又减小了需要传输的大小。高效的压缩算法可以很大的压缩<code>header</code>，减少发送包的数量从而降低延迟。</li>
+</ul>
+<p>HTTP 1.1 与 HTTP 1.0的区别：</p>
+<ul>
+<li><strong>长连接</strong>。HTTP 1.1支持长连接和请求的流水线处理，在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟，在HTTP1.1中默认开启<code>Connection： keep-alive</code>，一定程度上弥补了HTTP1.0每次请求都要创建连接的缺点。</li>
+<li><strong>缓存处理</strong>：在HTTP1.0中主要使用header里的If-Modified-Since,Expires来做为缓存判断的标准，HTTP1.1则引入了更多的缓存控制策略，可供选择的缓存头来控制缓存策略。</li>
+<li><strong>带宽优化及网络连接的使用</strong>：HTTP1.0中，存在一些浪费带宽的现象，例如客户端只是需要某个对象的一部分，而服务器却将整个对象送过来了，并且不支持断点续传功能，HTTP1.1则在请求头引入了range头域，它允许只请求资源的某个部分，即返回码是206（Partial Content），这样就方便了开发者自由的选择以便于充分利用带宽和连接。</li>
+<li><strong>错误通知的管理</strong>：在HTTP1.1中新增了24个错误状态响应码，如409（Conflict）表示请求的资源与资源的当前状态发生冲突；410（Gone）表示服务器上的某个资源被永久性的删除。</li>
+<li><strong>Host头处理</strong>：在HTTP1.0中认为每台服务器都绑定一个唯一的IP地址，因此，请求消息中的URL并没有传递主机名（hostname）。但随着虚拟主机技术的发展，在一台物理服务器上可以存在多个虚拟主机（Multi-homed Web Servers），并且它们共享一个IP地址。HTTP1.1的请求消息和响应消息都应支持Host头域，且请求消息中如果没有Host头域会报告一个错误（400 Bad Request）。</li>
+</ul>
+<ol start="16">
+<li>HTTP常见的请求头和响应头？</li>
+</ol>
+<p>常见的请求头：</p>
+<ul>
+<li>Accept</li>
+<li>Accept-Encoding</li>
+<li>Accept-Language</li>
+<li>Connection</li>
+<li>Host</li>
+<li>Referer</li>
+<li>User-Agent</li>
+<li>Cookie</li>
+</ul>
+<p>常见的响应头：</p>
+<ul>
+<li>Content-Type</li>
+<li>Content-Encoding</li>
+<li>Date</li>
+<li>Server</li>
+</ul>
+<ol start="17">
+<li>HTTP 与 HTTPS的区别？</li>
+</ol>
+<ul>
+<li><p>HTTP 明文传输，安全性较差，HTTPS 使用TLS (SSL) 来加密普通的HTTP 请求和响应，并对这些请求和响应进行数字签名；</p>
+</li>
+<li><p>HTTPS 协议需要到 CA申请证书，一般免费证书较少，因而需要一定费用。</p>
+</li>
+<li><p>HTTP 和 HTTP 使用的是完全不同的连接方式，用的端口也不一样，前者是 80，后者是 443。</p>
+</li>
+</ul>
+<ol start="18">
+<li>HTTPS的优缺点？</li>
+</ol>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>安全性：<ul>
+<li>使用HTTPS协议可认证用户和服务器，确保数据发送到正确的客户机和服务器；</li>
+<li>HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议，要比http协议安全，可防止数据在传输过程中不被窃取、改变，确保数据的完整性。</li>
+<li>HTTPS是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</li>
+</ul>
+</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>在相同网络环境中，HTTPS 相比 HTTP 无论是响应时间还是耗电量都有大幅度上升。</li>
+<li>HTTPS 的安全是有范围的，在黑客攻击、服务器劫持等情况下几乎起不到作用。</li>
+<li>在现有的证书机制下，中间人攻击依然有可能发生。</li>
+<li>HTTPS 需要更多的服务器资源，也会导致成本的升高。</li>
+</ul>
+<ol start="19">
+<li>简述HTTPS的原理？</li>
+</ol>
+<img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202306182252944.png" alt="img" style="zoom:80%;" />
+
+<ul>
+<li><p>客户端请求 HTTPS 网址，然后连接到 server 的 443 端口 (HTTPS 默认端口，类似于 HTTP 的80端口)。</p>
+</li>
+<li><p>采用 HTTPS 协议的服务器必须要有一套数字 CA (Certification Authority)证书。颁发证书的同时会产生一个私钥和公钥。私钥由服务端自己保存，不可泄漏。公钥则是附带在证书的信息中，可以公开的。证书本身也附带一个证书电子签名，这个签名用来验证证书的完整性和真实性，可以防止证书被篡改。</p>
+</li>
+<li><p>服务器响应客户端请求，将证书传递给客户端，证书包含公钥和大量其他信息，比如证书颁发机构信息，公司信息和证书有效期等。</p>
+</li>
+<li><p>客户端解析证书并对其进行验证。如果证书不是可信机构颁布，或者证书中的域名与实际域名不一致，或者证书已经过期，就会向访问者显示一个警告，由其选择是否还要继续通信。</p>
+<p>  如果证书没有问题，客户端就会从服务器证书中取出服务器的公钥A。然后客户端还会生成一个随机码 KEY，并使用公钥A将其加密。</p>
+</li>
+<li><p>客户端把加密后的随机码 KEY 发送给服务器，作为后面对称加密的密钥。</p>
+</li>
+<li><p>服务器在收到随机码 KEY 之后会使用私钥B将其解密。经过以上这些步骤，客户端和服务器终于建立了安全连接，完美解决了对称加密的密钥泄露问题，接下来就可以用对称加密愉快地进行通信了。</p>
+</li>
+<li><p>服务器使用密钥 (随机码 KEY)对数据进行对称加密并发送给客户端，客户端使用相同的密钥 (随机码 KEY)解密数据。</p>
+</li>
+<li><p>双方使用对称加密愉快地传输所有数据。</p>
+</li>
+</ul>
+<ol start="20">
+<li>在浏览器中输入一个网址后执行的全部过程</li>
+</ol>
+<ul>
+<li>浏览器构建请求行，向服务器发送一个请求。GET URL&#x2F; HTTP 1.1。HTTP的所有版本：0.9&#x2F;1.0&#x2F;1.1&#x2F;2.0。</li>
+<li>查找强缓存(若命中则直接使用)。 HTTP&#x2F;1.1 中使用的Cache-Control。</li>
+<li>浏览器向DNS服务器请求解析该URL中的域名对应的IP地址。</li>
+<li>解析出IP地址后，根据该IP地址和默认端口80，和服务器建立TCP连接。</li>
+<li>浏览器发出读取文件的HTTP请求。</li>
+<li>服务器对浏览器请求作出响应，并把对应的HTML文本发送给浏览器。</li>
+<li>服务器释放TCP连接。（如果keep-alive为关闭状态）</li>
+<li>浏览器将该html文本并显示内容。</li>
+</ul>
+<ol start="21">
+<li>抓包软件抓取Https包的工作原理</li>
+</ol>
+<ul>
+<li>首先客户端发起一个建立连接的请求，中间人获取到这个信息，伪装成客户端，将消息发给服务端。</li>
+<li>服务器下发服务器证书，中间人保存这个证书，同时将自己伪造的数字证书发给客户端，由于客户端已经安装了中间人的根证书并且将其设置成可信任，因此会通过根证书的公钥验证伪造的数字签名，确认伪造的公钥的合法性，从而能够认证通过。</li>
+<li>客户端使用证书中的公钥加密，向服务端上传对称密钥，中间人用自己的私钥解密对称密钥，然后用保存的服务器证书加密这个对称密钥然后向服务器上传对称密钥。</li>
+<li>接着服务端开始用传输加密数据，中间人用私钥解密数据然后呈现在抓包工具客户端，用伪造的证书加密后传输给客户端。</li>
+<li>客户端使用对称密钥解密。</li>
+</ul>
+<ol start="22">
+<li>什么是Cookie？</li>
+</ol>
+<ul>
+<li>Cookie 实际上是一小段的文本信息。客户端请求服务器，如果服务器需要记录该用户状态，就在Response的响应头中带上一个Set-Cookie的键值对，客户端会把 Cookie 保存起来。</li>
+<li>当浏览器再请求该网站时，浏览器把请求的网址连同该 Cookie 一同提交给服务器。服务器检查该 Cookie，以此来辨认用户状态。服务器还可以根据需要修改 Cookie 的内容。</li>
+<li>Cookie的有效期可以根据需要设置。如果没有设置 Cookie 失效日期,它们仅保存到关闭浏览器程序为止。</li>
+</ul>
+<ol start="23">
+<li>什么是Session？</li>
+</ol>
+<ul>
+<li>Session 是另一种记录客户状态的机制，不同的是 Cookie 保存在客户端浏览器中，而 Session 保存在服务器上。客户端浏览器访问服务器的时候，服务器把客户端信息以某种形式记录在服务器上。这就是 Session。客户端浏览器再次访问时只需要从该 Session 中查找该客户的状态就可以了。</li>
+<li>每个用户访问服务器都会建立一个 session。</li>
+</ul>
+<ol start="24">
+<li>Cookie和Session的区别？</li>
+</ol>
+<ul>
+<li>cookie 数据存放在客户的浏览器上，session 数据放在服务器上。</li>
+<li>cookie 不是很安全，别人可以分析存放在本地的 cookie 并进行 cookie 欺骗，考虑到安全应当使用 session。</li>
+</ul>
+<h3 id="第四部分：操作系统"><a href="#第四部分：操作系统" class="headerlink" title="第四部分：操作系统"></a>第四部分：操作系统</h3><ol>
+<li>进程与线程的区别？</li>
+</ol>
+<ul>
+<li>调度：进程是资源管理的基本单位，线程是程序执行的基本单位。</li>
+<li>切换：线程上下文切换比进程上下文切换要快得多。</li>
+<li>拥有资源： 进程是拥有资源的一个独立单位，线程不拥有系统资源，但是可以访问隶属于进程的资源。</li>
+<li>系统开销： 创建或撤销进程时，系统都要为之分配或回收系统资源，如内存空间，I&#x2F;O设备等，OS所付出的开销显著大于在创建或撤销线程时的开销，进程切换的开销也远大于线程切换的开销。</li>
+</ul>
+<ol start="2">
+<li>协程与线程的区别？</li>
+</ol>
+<ul>
+<li>线程和进程都是同步机制，而协程是异步机制。</li>
+<li>线程是抢占式，而协程是非抢占式的。需要用户释放使用权切换到其他协程，因此同一时间其实只有一个协程拥有运行权，相当于单线程的能力。</li>
+<li>一个线程可以有多个协程，一个进程也可以有多个协程。</li>
+<li>协程不被操作系统内核管理，而完全是由程序控制。线程是被分割的CPU资源，协程是组织好的代码流程，线程是协程的资源。但协程不会直接使用线程，协程直接利用的是执行器关联任意线程或线程池。</li>
+<li>协程能保留上一次调用时的状态。</li>
+</ul>
+<ol start="3">
+<li>进程间通信方式？</li>
+</ol>
+<ul>
+<li>管道</li>
+<li>信号</li>
+<li>信号量</li>
+<li>消息队列</li>
+<li>共享内存</li>
+</ul>
+<ol start="4">
+<li>死锁的概念以及产生的必要条件？</li>
+</ol>
+<p>在两个或者多个并发进程中，如果每个进程持有某种资源而又等待其它进程释放它或它们现在保持着的资源，在未改变这种状态之前都不能向前推进，称这一组进程产生了死锁。通俗的讲就是两个或多个进程无限期的阻塞、相互等待的一种状态。</p>
+<p><strong>死锁产生的四个必要条件</strong>：（有一个条件不成立，则不会产生死锁）</p>
+<ul>
+<li>互斥条件：一个资源一次只能被一个进程使用</li>
+<li>请求与保持条件：一个进程因请求资源而阻塞时，对已获得资源保持不放</li>
+<li>不剥夺条件：进程获得的资源，在未完全使用完之前，不能强行剥夺</li>
+<li>循环等待条件：若干进程之间形成一种头尾相接的环形等待资源关系</li>
+</ul>
+<h3 id="第五部分：爬虫"><a href="#第五部分：爬虫" class="headerlink" title="第五部分：爬虫"></a>第五部分：爬虫</h3><ol>
+<li>Scrapy的重要组件</li>
+</ol>
+<ul>
+<li>引擎：用来控制整个系统的数据处理流程，用来协调各个组件。</li>
+<li>调度器：控制抓取URL的调度，按照指定的策略分发URL。</li>
+<li>下载器：用于下载网页内容，并将网页内容返回给爬虫。</li>
+<li>爬虫：自定义逻辑，主要是信息的提取。</li>
+<li>项目管道：一般负责数据的验证，数据的清晰，数据的持久化等。</li>
+<li>调度器中间件：位于Scrapy引擎和调度器之间的框架，主要用于处理从Scrapy引擎发送到调度器的请求和响应。</li>
+<li>下载器中间件：位于Scrapy引擎和下载器之间的框架，主要用于处理Scrapy引擎与下载器之间的请求及响应，一般代理IP和用户代理可以在这里设置。</li>
+<li>爬虫中间件：位于Scrapy引擎和调度器之间的框架，主要用于处理从Scrapy引擎发送到调度器的请求和响应。</li>
+</ul>
+<ol start="2">
+<li>Scrapy的工作流程</li>
+</ol>
+<ul>
+<li>引擎从调度器中取出一个URL用于接下来的抓取；</li>
+<li>引擎把URL封装成一个请求(request)传给下载器；</li>
+<li>下载器把资源下载下来，并封装成一个响应对象(response)；</li>
+<li>爬虫解析响应；</li>
+<li>若解析出来的item，交给管道进行进一步的处理；</li>
+<li>若解析出的是链接URL，则把URL交给调度器等待下一步的抓取。</li>
+</ul>
+<ol start="3">
+<li>Scrapy如何去重？</li>
+</ol>
+<p>Scrapy使用Request对象的的指纹，这个指纹实际上就是Request的散列值。</p>
+<ol start="4">
+<li>使用布隆过滤器去重？</li>
+</ol>
+<p>布隆过滤器的算法思想：当一个元素被加入集合时，通过 K 个散列函数将这个元素映射成一个位数组（Bit array）中的 K 个点，把它们置为 1 。检索时，只要看看这些点是不是都是1就知道元素是否在集合中；如果这些点有任何一个 0，则被检元素一定不在；如果都是1，则被检元素很可能在。</p>
+<p>算法步骤：</p>
+<ul>
+<li>初始化时，需要一个长度为n比特的数组，每个比特位初始化为0；</li>
+<li>然后需要准备k个hash函数，每个函数可以把key散列成为1个整数；</li>
+<li>某个key加入集合时，用k个hash函数计算出k个散列值，并把bit数组中对应的比特位置为1；</li>
+<li>判断某个key是否在集合时，用k个hash函数计算出k个散列值，并查询数组中对应的比特位，如果有比特位是0，则该key一定不在集合中。</li>
+</ul>
+<ol start="5">
+<li>Scrapy爬虫有内存泄漏&#x2F;内存爆了&#x2F;栈溢出，如何处理？</li>
+</ol>
+<ul>
+<li><p>首先检查编写的中间件，管道(pipeline) 或扩展。例如，在 spider_opened 中分配资源但在 spider_closed 中没有释放它们。</p>
+</li>
+<li><p>检查是否出现下载速度和管道存储速度是否平衡，如果差距很大，会造成队列积压</p>
+</li>
+<li><p>使用Scrapy的trackref在telNet下调试内存泄露，查看具体是哪个爬虫导致了内存泄漏。</p>
+</li>
+</ul>
+<ol start="6">
+<li>Scrapy优缺点？</li>
+</ol>
+<p>优点：</p>
+<ul>
+<li>scrapy是异步的</li>
+<li>采取可读性更强的xpath代替正则</li>
+<li>强大的统计和log系统</li>
+<li>同时在不同的url上爬行</li>
+<li>支持shell方式，方便独立调试</li>
+<li>写middleware,方便写一些统一的过滤器</li>
+<li>通过管道的方式存入数据库</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>基于twisted框架，运行中的exception是不会干掉reactor，并且异步框架出错后是不会停掉其他任务的，数据出错后难以察觉。</li>
+</ul>
+<ol start="7">
+<li>前端常见的反爬手段？</li>
+</ol>
+<ul>
+<li>动态Cookie：Hook技术定位Cookie对应生成的地方，抠算法抠代码。</li>
+<li>数据加密或者请求签名，如AES&#x2F;DES,RSA：抠算法抠代码。</li>
+<li>验证码：滑块，点选，旋转：自动过验证码。</li>
+<li>反调试手段<ul>
+<li>反Hook</li>
+<li>无限Debug</li>
+</ul>
+</li>
+</ul>
+<ol start="8">
+<li>Hook及其原理？</li>
+</ol>
+<p>Hook概念：Hook是一种钩子技术，在系统没有调用函数之前，钩子程序就先得到控制权，这时钩子函数既可以加工处理（改变）该函数的执行行为，也可以强制结束消息的传递。</p>
+<p>原理：</p>
+<ul>
+<li><p>客户端拥有JS的最高解释权，可以决定在任何时候注入JS，而服务器无法阻止或干预。服务端只能通过检测和混淆的手段，让Hook难度加大，但是无法直接阻止。</p>
+</li>
+<li><p>JS是一种弱类型语言，同一个变量可以多次定义、根据需要进行不同的赋值。</p>
+</li>
+</ul>
+<p>反Hook手段：</p>
+<ul>
+<li>toString 检测识别 Hook<br>eval.toString返回值function eval() { [native code] }</li>
+<li>禁止对某些对象的属性重写<br>Object.defineProperty</li>
+</ul>
+<ol start="9">
+<li>浏览器指纹检测，常见的检测都有哪些？</li>
+</ol>
+<p>Useragent，cpu核心，内存大小，屏幕大小，Canvas，WebGL，Fonts，Timezone，浏览器语言等。</p>
+<ol start="10">
+<li>快速定位加密参数的方法？</li>
+</ol>
+<ul>
+<li><p>搜索，包括页面搜索和全局搜索，有一个技巧是搜索不到整个参数名字时可以搜索一部分或者搜索接口名，如搜索”,关键词:”。</p>
+</li>
+<li><p>堆栈调试，根据接口调用堆栈信息依次查找上层的调用。</p>
+</li>
+<li><p>监听XHR，通过监听XHR的断点可以匹配URL中params参数的触发点和调用堆栈，另外post请求中Form Data的参数也可以用XHR来拦截。</p>
+</li>
+<li><p>事件监听，有时候找不到参数位置，但是知道它触发的条件，则可以使用事件监听器来进行断点</p>
+</li>
+<li><p>Hook，通过hook技术输出相关信息，快速找到代码位置。</p>
+</li>
+<li><p>内存漫游，基于AST和Hook构建的内存漫游工具ast-hook-for-js-RE，借助此工具可以随意检索chrome浏览器内存中的数据。<br>  内存漫游原理：通过设置Anyproxy代理服务器拦截响应，并通过AST实时处理，让所有涉及变量改动的地方都经过Hook方法，这样所有变量值的改变都可以捕获并保存到一个变量数据库中，接下来并可以根据变量值搜索到存储这个自负的变量以及变量的代码。</p>
+</li>
+</ul>
+<ol start="11">
+<li>常见的反爬手段？</li>
+</ol>
+<ul>
+<li><p>检测UA</p>
+</li>
+<li><p>Cookie认证</p>
+</li>
+<li><p>验证码</p>
+</li>
+<li><p>入参带签名，返回数据加密</p>
+</li>
+<li><p>IP封禁，代理IP</p>
+</li>
+<li><p>字体反爬</p>
+</li>
+<li><p>图片伪装</p>
+</li>
+<li><p>反调试手段：无限Debugger，反Hook。</p>
+</li>
+</ul>
+<ol start="12">
+<li>补环境中需要注意什么？</li>
+</ol>
+<p>window，window是否为方法；location检测：hostname，origin；navigator检测：UA。</p>
+<h3 id="第六部分：加密与解密"><a href="#第六部分：加密与解密" class="headerlink" title="第六部分：加密与解密"></a>第六部分：加密与解密</h3><ol>
+<li><p>对称加密与非对称加密的区别<br> 对称加密：加密与解密时使用的是相同的密钥，如AES、DES。<br> 非对称加密：加密与解密时使用不相同的密钥，如RSA。</p>
+</li>
+<li><p>Base64编码的基本原理<br> 原理：用64个可见字符A-Za-z0-9+&#x2F;对文本进行编码，文本取ASCII码的每6位代表一个编码后的索引值。<br> btoa – base64编码<br> atob – base64解码</p>
+</li>
+<li><p>DES加密与AES加密算法与区别</p>
+</li>
+</ol>
+<ul>
+<li>AES与DES之间的主要区别在于加密过程，在DES中，将明文分为两半，然后再进行进一步处理；而在AES中，整个块不进行除法，整个块一起处理以生成密文。</li>
+<li>AES比DES快得多，与DES相比，AES能够在几秒钟内加密大型文件。</li>
+<li>DES的密钥长度只有8字节，向量也是8字节；AES的密钥长度可以为16，24，32字节，向量长度则为16字节。</li>
+</ul>
+<ol start="4">
+<li><p>DES&#x2F;AES 几个参数的意义：<br> key：密钥。<br> IV： IV称为初始向量，不同的IV加密后的字符串是不同的，加密和解密需要相同的IV。<br> mode：AES&#x2F;DES分为五种模式，除了ECB由于没有使用IV而不太安全，其他模式差别并没有太明显。<br> padding：对于加密解密两端需要使用同一的PADDING模式。</p>
+</li>
+<li><p>md5与sha256的区别</p>
+</li>
+</ol>
+<p>相同点：</p>
+<ul>
+<li>都是密码散列函数，加密不可逆。</li>
+<li>都可以实现对任意长度对象加密，都不能防止碰撞。(hash碰撞：在给定的哈希算法下，找到两个不同的输入数据，使得它们的哈希值相同)</li>
+</ul>
+<p>不同点：</p>
+<ul>
+<li>SHA256（⼜称SHA2）的安全性最⾼，但是耗时要⽐其他两种多很多。</li>
+<li>md5相对来说比较容易碰撞，安全性没这么高。</li>
+<li>md5为32位，sha256为64位。</li>
+</ul>
+<ol start="16">
+<li>RSA加密算法<br>RSA非对称加密，使用公钥加密的数据,利用私钥进行解密，使用私钥加密的数据,利用公钥进行解密。<br>JS代码中如何看出来：setPublicKey。</li>
+</ol>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    Last updated: <time datetime="2023-06-19T02:18:40.166Z" itemprop="dateUpdated">2023-06-19 10:18:40</time>
+</span><br>
+
+
+        
+        关注微信公众号~~逆向一步步~~，第一时间获取更新文章的推送 <br/> 版权声明：本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg" alt="拾光的碎羽">
+            拾光的碎羽
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/&title=《临时》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/&title=《临时》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《临时》 — 何仕鹏的个人博客&url=http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/%E4%B8%80%E6%96%87%E4%BA%86%E8%A7%A3Android%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94AAPT2/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">一文了解Android构建工具——AAPT2</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E5%AD%A6%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">从零开始学深度学习——泰勒公式</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var id = location.pathname
+        if (location.pathname.length > 50) {
+          id = location.pathname.replace(/\/\d+\/\d+\/\d+\//, '').replace('/', '').substring(0, 50)
+        }
+        const gitalk = new Gitalk({
+          clientID: 'eb07520a302f5438d2f9',
+          clientSecret: 'dcd2e7c80f28c206cd938c3d2f4317bc45bc3adf',
+          repo: 'lyy077.github.io',
+          owner: 'lyy077',
+          admin: ['lyy077'],
+          id: id,      // Ensure uniqueness and length less than 50
+          title: document.title.split('|')[0],
+          distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    </script>
+</section>
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢宝贝~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205100208236.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205100208236.jpg" data-alipay="https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205100209914.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>This blog is licensed under a <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>拾光的碎羽 &copy; 2021 - 2023</span>
+            <span>
+                
+                <a href="http://www.miitbeian.gov.cn/" target="_blank">鄂ICP备2022001140号</a><br>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/&title=《临时》 — 何仕鹏的个人博客&pic=https://raw.githubusercontent.com/lyy077/blg-pic/main/pic/202205092042366.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/&title=《临时》 — 何仕鹏的个人博客&source=专注于爬虫,机器学习,深度学习,算法,后端等领域的学习" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《临时》 — 何仕鹏的个人博客&url=http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/&via=http://example.com" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://example.com/%E9%9D%A2%E8%AF%95%E5%87%86%E5%A4%8720230617/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACtElEQVR42u3ay24jMQwEwPz/T2eB3D3uJiVvAtScAj/GKgUYEU1+fcXX98/Vvvv9eD1/5tW7XzcuPDw8vNHSk5959a0N5tXd8s+/2QI8PDy8a7znx/3zo/l5O3JMfjgla8bDw8P7Dbx86W19m1fFeHh4eH+Ll5S8eeH7fM9fce7h4eHhPfI2YWsSH7QHT16mH8ta8PDw8GLeJgj4X39f7O/h4eHhLbrqeeHbBhBJUy0v31+uFg8PD+8C7/ln9iFsstA8tB3Gx3h4eHhHee1jehPj1vFrAHtzNzw8PLwLvFn8ujla8s/Mjp8iq8bDw8M7xMsL4nzIoG1itXdORhzw8PDwTvFmQe2szJ1tZX6E1GcLHh4e3og367+3UUIbLmwK9APjBXh4eHglLwlk2/K3bXdtVvIGiYeHh3eUt2lubYauZmNedSmPh4eHd4HXNrr229EGxHlsMaTi4eHhxbz8Yd3GFu0oVR5tFP8lPDw8vAu89sttCz85Tk4NMeDh4eF9hpcHqclyZ0X5ZjThzarw8PDwjvI2g1b5Y70tmo+FuXh4eHjXeGfbTskRsm+YJTEKHh4e3j3e2VGnHJZHHu34Ah4eHt493uEHcXkwbJZeBCJ4eHh4R3mzZnzyk6cGBfIDBg8PD+/zvPzxnTe62ru1LbE38TEeHh7eR3gz/Kzg3jfe3jTb8PDw8C7w9kNOM+Rsy2ajBnh4eHhnefvwtP3krA02K9/x8PDwbvOSqx1dbUONUxsaTR/g4eHhjXj51cYBedDQDhMkW4mHh4d3mze7dRJStAMBs/u/uSceHh7eNV5e4J6KG9pSPg9zo6MQDw8P7yO8HD9rmM1ewcPDw/uLvPaVvOxuN+XlAAEeHh7eBd6+6bWPFerhgKR8x8PDw7vAaxtgbTs/iRhm27Tq6eHh4eFNeP8AMxcYPEl7c1sAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.js?v=1.7.2" async></script>
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<!--<script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" async></script>-->
+<script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+
+
+
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
